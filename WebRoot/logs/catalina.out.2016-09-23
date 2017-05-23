@@ -1,0 +1,92 @@
+2016-09-23 09:34:37 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 09:34:37 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 09:45:28 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-09-23 09:45:28 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-09-23 09:45:28 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-09-23 09:45:28 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-09-23 09:45:28 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-09-23 09:45:28 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-09-23 09:45:28 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-09-23 09:45:28 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-09-23 09:45:28 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-09-23 09:45:28 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-09-23 09:47:13 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 09:47:13 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 09:54:23 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 09:54:23 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 10:00:29 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-09-23 10:00:29 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-09-23 10:00:29 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-09-23 10:00:29 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-09-23 10:00:29 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-09-23 10:00:29 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-09-23 10:00:29 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-09-23 10:00:29 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-09-23 10:00:29 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-09-23 10:00:29 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-09-23 10:00:45 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 10:00:45 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 10:01:40 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 10:01:40 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 10:03:21 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 10:03:21 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 10:06:35 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 10:06:35 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 10:09:09 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 10:09:09 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 10:20:34 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 10:20:34 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 10:23:14 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 10:23:15 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 10:24:31 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 10:24:31 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 10:25:41 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 10:25:41 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 10:26:42 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 10:26:42 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 10:35:00 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 10:35:00 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 10:37:04 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 10:37:04 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 10:51:03 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 10:51:03 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 10:58:23 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 10:58:23 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 11:04:16 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 11:04:16 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 11:07:54 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 11:07:54 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 11:17:23 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 11:17:23 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 11:20:30 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 11:20:30 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 11:31:05 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-09-23 11:31:05 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-09-23 11:31:05 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-09-23 11:31:05 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-09-23 11:31:05 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-09-23 11:31:05 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-09-23 11:31:05 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-09-23 11:31:05 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-09-23 11:31:05 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-09-23 11:31:05 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-09-23 11:31:35 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 11:31:35 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 13:55:49 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-09-23 13:55:49 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-09-23 13:55:49 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-09-23 13:55:49 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-09-23 13:55:49 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-09-23 13:55:49 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-09-23 13:55:49 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-09-23 13:55:49 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-09-23 13:55:49 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-09-23 13:55:49 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-09-23 13:56:16 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 13:56:16 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 13:58:18 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 13:58:18 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 14:22:54 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 14:22:54 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-09-23 14:33:03 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-09-23 14:33:03 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]

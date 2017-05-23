@@ -1,0 +1,224 @@
+package noumena.payment.gmobi;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import noumena.payment.bean.OrdersBean;
+import noumena.payment.model.Orders;
+import noumena.payment.userverify.util.StringEncrypt;
+import noumena.payment.util.Constants;
+import noumena.payment.util.DateUtil;
+import noumena.payment.util.OSUtil;
+import noumena.payment.vo.OrderIdVO;
+import noumena.payment.vo.OrderStatusVO;
+
+
+public class GmobiCharge
+{
+	private static GmobiParams params = new GmobiParams();
+	
+	public static SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
+	public static String getTransactionId(Orders order)
+	{
+		order.setCurrency(Constants.CURRENCY_TWD);
+		order.setUnit(Constants.CURRENCY_UNIT_YUAN);
+		OrdersBean bean = new OrdersBean();
+		
+		String cburl = order.getCallbackUrl();
+		String payId;
+		if (cburl == null || cburl.equals(""))
+		{
+			payId = bean.CreateOrder(order);
+		}
+		else
+		{
+			if (cburl.indexOf("?") == -1)
+			{
+				cburl += "?pt=" + Constants.PAY_TYPE_GMOBI;
+			}
+			else
+			{
+				cburl += "&pt=" + Constants.PAY_TYPE_GMOBI;
+			}
+			cburl += "&currency=" + Constants.CURRENCY_TWD;
+			cburl += "&unit=" + Constants.CURRENCY_UNIT_YUAN;
+			payId = bean.CreateOrder(order, cburl);
+		}
+		order.setCallbackUrl(cburl);
+		String date = DateUtil.formatDate(order.getCreateTime());
+		OrderIdVO orderIdVO = new OrderIdVO(payId, date);
+		JSONObject json = JSONObject.fromObject(orderIdVO);
+		return json.toString();
+	}
+	
+	public static String checkOrdersStatus(String payIds)
+	{
+		String[] orderIds = payIds.split(",");
+
+		OrdersBean bean = new OrdersBean();
+		List<Orders> orders = bean.qureyOrders(orderIds);
+		List<OrderStatusVO> statusret = new ArrayList<OrderStatusVO>();
+		for (int i = 0 ; i < orders.size() ; i++)
+		{
+			Orders order = orders.get(i);
+			int status = order.getKStatus();
+			OrderStatusVO st = new OrderStatusVO();
+			st.setPayId(order.getOrderId());
+			if (status == Constants.K_STSTUS_DEFAULT || status == Constants.K_CON_ERROR)
+			{
+				//如果订单状态是初始订单或者是网络连接有问题状态，返回不知道
+				Calendar cal1 = DateUtil.getCalendar(order.getCreateTime());
+				Calendar cal2 = Calendar.getInstance();
+				if ((cal2.getTimeInMillis() - cal1.getTimeInMillis()) >= Constants.ORDER_TIMEOUT)
+				{
+					st.setStatus(4);
+				}
+				else
+				{
+					st.setStatus(3);
+				}
+			}
+			else if (status == Constants.K_STSTUS_SUCCESS)
+			{
+				//如果订单已经成功，直接返回订单状态
+				st.setStatus(1);
+			}
+			else
+			{
+				//订单已经失败，直接返回订单状态
+				st.setStatus(2);
+			}
+			statusret.add(st);
+		}
+		JSONArray arr = JSONArray.fromObject(statusret);
+		
+		return arr.toString();
+	}
+	
+	public static String getCallbackFromGmobi(Map<String,String> m)
+	{
+		String ret = "{\"response\":{\"result_code\":0}}";
+		System.out.println("gmobi cb ->" + m.toString());
+		GmobiOrderVO covo = new GmobiOrderVO();
+		covo.setAppId(m.get("appId"));
+		covo.setTrack_id(m.get("track_id"));
+		covo.setBill_id(m.get("bill_id"));
+		covo.setAmount(m.get("amount"));
+		covo.setCcy(m.get("ccy"));
+		covo.setStatus(m.get("status"));
+		covo.setClient_user_id(m.get("client_user_id"));
+		covo.setComment(m.get("comment"));
+		covo.setAuth(m.get("auth"));
+		covo.setPay_type(m.get("pay_type"));
+		covo.setTimeStamp(format.format(new Date()));
+		
+		long amount = validateSign(covo);
+		
+			OrdersBean bean = new OrdersBean();
+			try {
+				// 支付成功
+				Orders order = bean.qureyOrder(covo.getTrack_id());
+				if(amount>0){
+					if (order != null) {
+							if (order.getKStatus() != Constants.K_STSTUS_SUCCESS) {
+								bean.updateOrderAmountPayIdExinfo(covo.getTrack_id(), covo.getBill_id(), covo.getAmount(), "");
+								bean.updateOrderKStatus(covo.getTrack_id(),Constants.K_STSTUS_SUCCESS);
+							} else {
+								System.out.println("gmobi order ("+ order.getOrderId() + ") had been succeed");
+							}
+					}
+				}else{
+					ret = "{\"response\":{\"result_code\":1,\"description\":\"status or amount is error.\"}}";
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			System.out.println("gmobi cb ret->" + ret);
+
+			String path = OSUtil.getRootPath() + "../../logs/gmobicb/"
+					+ DateUtil.getCurTimeStr().substring(0, 8);
+			OSUtil.makeDirs(path);
+			String filename = path + "/" + covo.getTrack_id();
+
+			OSUtil.saveFile(filename, m.toString());
+		
+		return ret;
+	}
+	public static long validateSign(GmobiOrderVO covo){
+		String res = "";
+		long date = Calendar.getInstance().getTimeInMillis()/1000;
+		StringBuffer sb = new StringBuffer();
+		sb.append("appId=").append(covo.getAppId()).append("&");
+		sb.append("trackId=").append(covo.getTrack_id()).append("&");
+		sb.append("timeStamp=").append(date).append("&");
+		sb.append("auth=").append(StringEncrypt.Encrypt((covo.getAppId()+params.getParams(covo.getAppId()).getSecretkey()+covo.getTrack_id()+date)));
+		System.out.println(covo.getAppId()+params.getParams(covo.getAppId()).getSecretkey()+covo.getTrack_id()+date);
+		try {
+		URL	url = new URL("http://payment466.generalmobi.com/qiwiwallet/invoice/search?"+sb.toString());
+		System.out.println(url);
+		HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		
+		connection.setDoOutput(true);
+		connection.setDoInput(true);
+		connection.setInstanceFollowRedirects(false);
+		connection.setUseCaches(false);
+		connection.setRequestProperty("Connection", "Keep-Alive");
+		connection.setRequestMethod("GET");
+		connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded"); 
+		connection.setRequestProperty("charset", "utf-8");
+		
+		connection.connect();
+		
+		//DataOutputStream wr = new DataOutputStream(connection.getOutputStream ());
+		//wr.flush();
+		//wr.close();
+		
+		BufferedReader in = new BufferedReader
+			(
+				new InputStreamReader(connection.getInputStream())
+			);
+		String line = null;
+		while ((line = in.readLine()) != null)
+		{
+			res += line;
+		}
+		connection.disconnect();
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println("res:"+res);
+		//{"amount":"1490.00","ccy":"NTD","timeStamp":"1463107004078","error":"","pay_type":"GOOGLE","status":"paid",
+		//"app_id":"d08d0029d0284082b359e5ea03e19831","comment":"asserver","bill_id":"625752",
+		//"track_id":"20160513103616437Cb0","auth":"86da9240043ff107288121243a1c6da3","client_user_id":"2963662"}
+		JSONObject json = JSONObject.fromObject(res);
+		if("paid".equals(json.get("status"))){
+			return json.getLong("amount");
+		}else{
+			return 0L;
+		}
+		
+	}
+	public static void init()
+	{
+		params.initParams(GmobiParams.CHANNEL_ID, new GmobiParamsVO());
+	}
+	
+	public static void main(String args[]){
+		//System.out.println(StringEncrypt.Encrypt("d08d0029d0284082b359e5ea03e19831b5924894508f4be29f087e78432cfaff20160511185948468E702016-05-11 19:00:58"));
+		System.out.println(URLDecoder.decode("GET&%2Fv3%2Fr%2Fmpay%2Fget_balance_m&appid%3D1105285057%26openid%3DopnFdwIAljms1Xeh6N2MSmKVCHrg%26openkey%3DOezXcEiiBSKSxW0eoylIeF3fsmX53crxnEk9mfKu22SMAXrxvef6wB4wGA8vf4O3CG5_JN7OsuJ1gfMPJ8mkIIFTJKMfohyrFol3Yz5DqBBdraDGteypVDpxs79JfOj5J8BXwaocOAAtRAbPZOrMAg%26pf%3Dmyapp_m_wx-00000000-android-00000000-ysdk%26pfkey%3D8e89f54ce0dbf7cb015be3db01af26fd%26ts%3D1463128292%26zoneid%3D1"));
+	}
+}

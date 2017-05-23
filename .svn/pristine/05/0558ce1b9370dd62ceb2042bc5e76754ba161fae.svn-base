@@ -1,0 +1,41 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%
+String path = request.getContextPath();
+String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+%>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <base href="<%=basePath%>">
+    
+    <title>My JSP 'index.jsp' starting page</title>
+    
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="0">    
+	<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+	<meta http-equiv="description" content="This is my page">
+	<!--
+	<link rel="stylesheet" type="text/css" href="styles.css">
+	-->
+
+  </head>
+  
+  <body>
+    <form action="/PaymentKong/pay/submit.jsp">
+    appid:<input type="text" name="appid" value="<%=request.getSession().getAttribute("appid") %>"/><br/>
+    uid:<input type="text" name="uid" value="<%=request.getSession().getAttribute("uid") %>"/><br/>
+    packagename:<input type="text" name="packagename" value="<%=request.getSession().getAttribute("packagename") %>"/><br/>
+    amount:<input type="text" name="amount" value="<%=request.getSession().getAttribute("amount") %>"/><br/>
+    channel:<input type="text" name="channel" value="<%=request.getSession().getAttribute("channel") %>"/><br/>
+    productdesc:<input type="text" name="productdesc" value="<%=request.getSession().getAttribute("productdesc") %>"/><br/>
+    cbgameurl:<input type="text" name="cbgameurl" value="<%=request.getSession().getAttribute("cbgameurl") %>"/><br/>
+    cburl:<input type="text" name="cburl" value="<%=request.getSession().getAttribute("cburl") %>"/><br/>
+    productid:<input type="text" name="productid" value="<%=request.getSession().getAttribute("productid") %>"/><br/>
+    productname:<input type="text" name="productname" value="<%=request.getSession().getAttribute("productname") %>"/><br/>
+     type:<input type="" name="type" value="<%=request.getSession().getAttribute("type") %>"/><br/>
+    <button type="submit" value="">提交</button>
+    </form>
+  </body>
+</html>

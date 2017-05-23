@@ -1,0 +1,41 @@
+package noumena.payment.naver;
+
+import java.io.InputStream;
+import java.util.Properties;
+
+import javax.crypto.Mac;
+
+public class MACManager
+{
+  private static final String KEY_FILENAME = "/NHNAPIGatewayKey.properties";
+  private static Mac mac;
+
+  public static void initialize(String key)
+    throws Exception
+  {
+//    String key = null;
+
+//    Properties properties = new Properties();
+//    InputStream is = null;
+    try
+    {
+//      is = MACManager.class.getResourceAsStream("/NHNAPIGatewayKey.properties");
+//      properties.load(is);
+//      key = (String)properties.elements().nextElement();
+      mac = HmacUtil.getMac(key);
+    } finally {
+//      if (is != null)
+//        is.close();
+    }
+  }
+
+  public static String getEncryptUrl(String url, String key)
+    throws Exception
+  {
+    if (mac == null) {
+      initialize(key);
+    }
+
+    return HmacUtil.makeEncryptUrl(mac, url);
+  }
+}

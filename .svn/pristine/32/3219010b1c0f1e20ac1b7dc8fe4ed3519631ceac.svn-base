@@ -1,0 +1,9 @@
+package noumena.payment.dao;
+
+import noumena.payment.model.CreateOrderId;
+
+import org.springframework.dao.DataAccessException;
+
+public interface CreateOrderIdDao {
+	public int save(CreateOrderId vo) throws DataAccessException;
+}

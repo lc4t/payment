@@ -1,0 +1,48 @@
+/**
+ * ==================================
+ * Arvin v1.0.0
+ * kongzhong  caolong
+ * ==================================
+ */
+
+/* 初始化 */
+* {
+	margin: 0;
+	padding: 0
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0
+}
+h1, h2, h3, h4, h5, h6 {
+	font-size: 100%
+}
+ul, ol, li {
+	list-style: none
+}
+em, i {
+	font-style: normal
+}
+img {
+	border: 0
+}
+input, img {
+	vertical-align: middle
+}
+
+/* 基本样式
+-------------------------------------------------- */
+
+body {
+  font: 12px/1.25 "SimHei", sans-serif;
+  color: #222;
+}
+
+/* 链接样式 */
+a {
+  color: #000;
+  text-decoration: none;
+  display:inline-block;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* 移除点击时的虚线 */
+}
+

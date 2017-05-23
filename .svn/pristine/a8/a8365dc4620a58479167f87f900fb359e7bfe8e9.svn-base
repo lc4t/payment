@@ -1,0 +1,234 @@
+package noumena.pay;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import noumena.pay.util.MD5;
+import noumena.payment.alipay.AlipayParams;
+import noumena.payment.alipay.RSA;
+
+public class ZFBcbServlet extends HttpServlet {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Constructor of the object.
+	 */
+	public ZFBcbServlet() {
+		super();
+	}
+
+	/**
+	 * The doGet method of the servlet. <br>
+	 * 
+	 * This method is called when a form has its tag value method equals to get.
+	 * 
+	 * @param request
+	 *            the request send by the client to the server
+	 * @param response
+	 *            the response send by the server to the client
+	 * @throws ServletException
+	 *             if an error occurred
+	 * @throws IOException
+	 *             if an error occurred
+	 */
+	public void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		doPost(request, response);
+	}
+
+	/**
+	 * The doPost method of the servlet. <br>
+	 * 
+	 * This method is called when a form has its tag value method equals to
+	 * post.
+	 * 
+	 * @param request
+	 *            the request send by the client to the server
+	 * @param response
+	 *            the response send by the server to the client
+	 * @throws ServletException
+	 *             if an error occurred
+	 * @throws IOException
+	 *             if an error occurred
+	 */
+	public void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		// 获取支付宝GET过来反馈信息
+		Map<String, String> params = new HashMap<String, String>();
+		Map<?, ?> requestParams = request.getParameterMap();
+		for (Iterator<?> iter = requestParams.keySet().iterator(); iter
+				.hasNext();) {
+			String name = (String) iter.next();
+			String[] values = (String[]) requestParams.get(name);
+			String valueStr = "";
+			for (int i = 0; i < values.length; i++) {
+				valueStr = (i == values.length - 1) ? valueStr + values[i]
+						: valueStr + values[i] + ",";
+			}
+			// 乱码解决，这段代码在出现乱码时使用。如果mysign和sign不相等也可以使用这段代码转化
+			valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
+			params.put(name, valueStr);
+		}
+
+		// 获取支付宝的通知返回参数，可参考技术文档中页面跳转同步通知参数列表(以下仅供参考)//
+		// 商户订单号
+
+		String out_trade_no = new String(request.getParameter("out_trade_no")
+				.getBytes("ISO-8859-1"), "UTF-8");
+
+		// 支付宝交易号
+		// String trade_no = new
+		// String(request.getParameter("trade_no").getBytes("ISO-8859-1"),"UTF-8");
+		// 交易状态
+		String trade_status = new String(request.getParameter("trade_status")
+				.getBytes("ISO-8859-1"), "UTF-8");
+
+		// 获取支付宝的通知返回参数，可参考技术文档中页面跳转同步通知参数列表(以上仅供参考)//
+
+		// 计算得出通知验证结果
+		System.out.println("ZFBcbServlet  param========>" + params);
+		boolean verify_result = verify(params);
+		request.getSession().setAttribute("orderid", out_trade_no);
+		if (verify_result) {// 验证成功
+			if (trade_status.equals("TRADE_FINISHED")
+					|| trade_status.equals("TRADE_SUCCESS")) {
+				request.getSession().setAttribute("result", "success");
+			} else {
+				request.getSession().setAttribute("result", "false");
+			}
+		} else {
+			request.getSession().setAttribute("result", "false");
+		}
+		String url = request.getContextPath();
+		System.out.println("ZFBcbServlet result url-------------" + url);
+		response.sendRedirect(url + "/pay/phoneResult.jsp");
+	}
+
+	/**
+	 * 支付宝消息验证地址
+	 */
+	private static final String HTTPS_VERIFY_URL = "https://mapi.alipay.com/gateway.do?service=notify_verify&";
+
+	/**
+	 * 验证消息是否是支付宝发出的合法消息
+	 * 
+	 * @param params
+	 *            通知返回来的参数数组
+	 * @return 验证结果
+	 */
+	public static boolean verify(Map<String, String> params) {
+
+		// 判断responsetTxt是否为true，isSign是否为true
+		// responsetTxt的结果不是true，与服务器设置问题、合作身份者ID、notify_id一分钟失效有关
+		// isSign不是true，与安全校验码、请求时的参数格式（如：带自定义参数等）、编码格式有关
+		String responseTxt = "false";
+		if (params.get("notify_id") != null) {
+			String notify_id = params.get("notify_id");
+			responseTxt = verifyResponse(notify_id);
+			System.out.println("verify responseTxt========>" + responseTxt);
+		}
+		String sign = "";
+		if (params.get("sign") != null) {
+			sign = params.get("sign");
+		}
+		boolean isSign = getSignVeryfy(params, sign);
+
+		// 写日志记录（若要调试，请取消下面两行注释）
+		// String sWord = "responseTxt=" + responseTxt + "\n isSign=" + isSign +
+		// "\n 返回回来的参数：" + AlipayCore.createLinkString(params);
+		// AlipayCore.logResult(sWord);
+
+		if (isSign && responseTxt.equals("true")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * 根据反馈回来的信息，生成签名结果
+	 * 
+	 * @param Params
+	 *            通知返回来的参数数组
+	 * @param sign
+	 *            比对的签名结果
+	 * @return 生成的签名结果
+	 */
+	private static boolean getSignVeryfy(Map<String, String> Params, String sign) {
+		// 过滤空值、sign与sign_type参数
+		Map<String, String> sParaNew = ZFBSubmit.paraFilter(Params);
+		// 获取待签名字符串
+		String preSignStr = ZFBSubmit.createLinkString(sParaNew);
+		// 获得签名验证结果
+		boolean isSign = false;
+		if (ZFBSubmit.sign_type.equals("MD5")) {
+			isSign = MD5.verify(preSignStr, sign, ZFBSubmit.key,
+					ZFBSubmit.input_charset);
+		} else if (ZFBSubmit.sign_type.equals("RSA")) {
+			isSign = RSA.verify(preSignStr, sign,
+					AlipayParams.ALIPAY_PUBLIC_KEY, "UTF-8");
+		}
+		return isSign;
+	}
+
+	/**
+	 * 获取远程服务器ATN结果,验证返回URL
+	 * 
+	 * @param notify_id
+	 *            通知校验ID
+	 * @return 服务器ATN结果 验证结果集： invalid命令参数不对 出现这个错误，请检测返回处理中partner和key是否为空 true
+	 *         返回正确信息 false 请检查防火墙或者是服务器阻止端口问题以及验证时间是否超过一分钟
+	 */
+	private static String verifyResponse(String notify_id) {
+		// 获取远程服务器ATN结果，验证是否是支付宝服务器发来的请求
+
+		String partner = ZFBSubmit.partner;
+		String veryfy_url = HTTPS_VERIFY_URL + "partner=" + partner
+				+ "&notify_id=" + notify_id;
+
+		return checkUrl(veryfy_url);
+	}
+
+	/**
+	 * 获取远程服务器ATN结果
+	 * 
+	 * @param urlvalue
+	 *            指定URL路径地址
+	 * @return 服务器ATN结果 验证结果集： invalid命令参数不对 出现这个错误，请检测返回处理中partner和key是否为空 true
+	 *         返回正确信息 false 请检查防火墙或者是服务器阻止端口问题以及验证时间是否超过一分钟
+	 */
+	private static String checkUrl(String urlvalue) {
+		String inputLine = "";
+
+		try {
+			URL url = new URL(urlvalue);
+			HttpURLConnection urlConnection = (HttpURLConnection) url
+					.openConnection();
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					urlConnection.getInputStream()));
+			inputLine = in.readLine().toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			inputLine = "";
+		}
+
+		return inputLine;
+	}
+
+}

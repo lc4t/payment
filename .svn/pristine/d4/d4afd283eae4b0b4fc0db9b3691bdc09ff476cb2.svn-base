@@ -1,0 +1,64 @@
+package noumena.payment.c921sdk;
+
+import java.util.Map;
+
+import noumena.payment.bean.OrdersBean;
+import noumena.payment.model.Orders;
+import noumena.payment.now.MD5;
+import noumena.payment.util.Constants;
+
+public class C921SDKCharge {
+	private static String payKey = "tPh77ggr3BfCdCiu";
+
+	public static String getCallbackFrom921SDK(Map<String, String> c921nparams) {
+		String gameNo = c921nparams.get("game_no");
+		String orderNum = c921nparams.get("order_num");
+		String subject = c921nparams.get("subject");
+		String time = c921nparams.get("time");
+		String totalFee = c921nparams.get("total_fee");
+		String tradeNo = c921nparams.get("trade_no");
+		String ext = c921nparams.get("ext");
+		String cpackage = c921nparams.get("package");
+		String sign = c921nparams.get("sign");
+		String preSign = "ext=" + ext + "&game_no=" + gameNo + "&order_num="
+				+ orderNum;
+		if (cpackage != null && !"".equals(cpackage)) {
+			preSign = preSign + "&package" + cpackage;
+		}
+		String perSign = "&subject=" + subject + "&time=" + time
+				+ "&total_fee=" + totalFee + "&trade_no=" + tradeNo + payKey;
+		System.out.println("getCallbackFrom921SDK==========>perSign" + perSign);
+		// MD5加密验证
+		String signmd5 = "";
+		try {
+			signmd5 = MD5.md5(perSign, "");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("getCallbackFrom921SDK=========signmd5" + signmd5
+				+ " sign" + sign);
+		if (!signmd5.equals(sign)) {
+			return "sign is error";
+		}
+		// 验证订单
+		OrdersBean bean = new OrdersBean();
+		Orders order = bean.qureyOrder(gameNo);
+		if (order == null) {
+			return "order is not exit";
+		}
+		//更改订单状态
+		if (order.getKStatus() != Constants.K_STSTUS_SUCCESS) {
+			bean.updateOrderAmountPayIdExinfo(gameNo, orderNum, totalFee, ext);
+			bean.updateOrderKStatus(gameNo, Constants.K_STSTUS_SUCCESS);
+			System.out.println("921SDK============ order ("
+					+ order.getOrderId() + ")  succeed");
+			return "success";
+		} else {
+			System.out.println("921SDK================== order ("
+					+ order.getOrderId() + ") had been succeed");
+			return "success";
+		}
+
+	}
+}

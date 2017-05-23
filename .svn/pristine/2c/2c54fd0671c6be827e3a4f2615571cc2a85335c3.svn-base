@@ -1,0 +1,41 @@
+package noumena.payment.util;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.sql.DataSource;
+
+public class DBUtil {
+
+	public static Connection getDBConn(String dbName) throws SQLException
+	{
+		try
+		{
+			Context ctx = new InitialContext();
+			DataSource ds = (DataSource) ctx.lookup(dbName);
+			return ds.getConnection();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			throw new SQLException();
+		}
+	}
+	
+	public static Connection getOrderDBConn() throws SQLException
+	{
+		return getDBConn("java:comp/env/jdbc/PaymentSysDb");
+	}
+	
+	public static Connection getLogDBConn() throws SQLException
+	{
+		return getDBConn("java:comp/env/jdbc/Log");
+	}
+	
+	public static Connection getReceiptOrderDBConn() throws SQLException
+	{
+		return getDBConn("java:comp/env/jdbc/receipt");
+	}
+}

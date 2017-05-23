@@ -1,0 +1,222 @@
+package noumena.payment.game65;
+
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.ConnectException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import noumena.payment.bean.CallbackBean;
+import noumena.payment.bean.OrdersBean;
+import noumena.payment.caishen.CaishenOrderVO;
+import noumena.payment.lenovo.util.Base64;
+import noumena.payment.model.Callback;
+import noumena.payment.model.Orders;
+import noumena.payment.util.Constants;
+import noumena.payment.util.DateUtil;
+import noumena.payment.util.OSUtil;
+import noumena.payment.util.StringEncrypt;
+import noumena.payment.util.TrustAnyTrustManager;
+import noumena.payment.vo.OrderIdVO;
+import noumena.payment.vo.OrderStatusVO;
+
+public class Game65Charge
+{
+	private static Game65Params params = new Game65Params();
+	
+	public static String getTransactionId(Orders order)
+	{
+		order.setUnit(Constants.CURRENCY_UNIT_YUAN);
+		OrdersBean bean = new OrdersBean();
+		String cburl = order.getCallbackUrl();
+		String payId;
+		if (cburl == null || cburl.equals(""))
+		{
+			payId = bean.CreateOrder(order);
+		}
+		else
+		{
+			/*if (cburl.indexOf("?") == -1)
+			{
+				cburl += "?pt=" + Constants.PAY_TYPE_GAME65;
+			}
+			else
+			{
+				cburl += "&pt=" + Constants.PAY_TYPE_GAME65;
+			}*/
+			//cburl += "&currency=" + Constants.CURRENCY_RMB;
+			cburl += "&unit=" + Constants.CURRENCY_UNIT_YUAN;
+			payId = bean.CreateOrder(order, cburl);
+		}
+		order.setCallbackUrl(cburl);
+		String date = DateUtil.formatDate(order.getCreateTime());
+		OrderIdVO orderIdVO = new OrderIdVO(payId, date);
+		JSONObject json = JSONObject.fromObject(orderIdVO);
+		return json.toString();
+	}
+	
+	public static String checkOrdersStatus(String payIds)
+	{
+		String[] orderIds = payIds.split(",");
+
+		OrdersBean bean = new OrdersBean();
+		List<Orders> orders = bean.qureyOrders(orderIds);
+		List<OrderStatusVO> statusret = new ArrayList<OrderStatusVO>();
+		for (int i = 0 ; i < orders.size() ; i++)
+		{
+			Orders order = orders.get(i);
+			int status = order.getKStatus();
+			OrderStatusVO st = new OrderStatusVO();
+			st.setPayId(order.getOrderId());
+			if (status == Constants.K_STSTUS_DEFAULT || status == Constants.K_CON_ERROR)
+			{
+				//如果订单状态是初始订单或者是网络连接有问题状态，返回不知道
+				Calendar cal1 = DateUtil.getCalendar(order.getCreateTime());
+				Calendar cal2 = Calendar.getInstance();
+				if ((cal2.getTimeInMillis() - cal1.getTimeInMillis()) >= Constants.ORDER_TIMEOUT)
+				{
+					st.setStatus(4);
+				}
+				else
+				{
+					st.setStatus(3);
+				}
+			}
+			else if (status == Constants.K_STSTUS_SUCCESS)
+			{
+				//如果订单已经成功，直接返回订单状态
+				st.setStatus(1);
+			}
+			else
+			{
+				//订单已经失败，直接返回订单状态
+				st.setStatus(2);
+			}
+			statusret.add(st);
+		}
+		JSONArray arr = JSONArray.fromObject(statusret);
+		
+		return arr.toString();
+	}
+	
+	public static String getCallbackFromGame65(Map<String,String> game65params)
+	{
+		String ret = "";
+		System.out.println("game65 cb ->" + game65params.toString());
+		Game65OrderVO covo = new Game65OrderVO();
+		covo.setAccount(game65params.get("account"));
+		covo.setAct(game65params.get("act"));
+		covo.setClientip(game65params.get("clientip"));
+		covo.setGameid(game65params.get("gameid"));
+		covo.setMoney(game65params.get("money"));
+		covo.setOrderno(game65params.get("orderno"));
+		covo.setOther(game65params.get("other"));
+		covo.setPartnerid(game65params.get("partnerid"));
+		covo.setPaytype(game65params.get("paytype"));
+		covo.setSid(game65params.get("sid"));
+		covo.setTs(game65params.get("ts"));
+		String miwen = "";
+		miwen+=covo.getAct();
+		miwen+=covo.getTs();
+		miwen+=covo.getGameid();
+		miwen+=covo.getPartnerid();
+		miwen+=covo.getSid();
+		miwen+=covo.getMoney();
+		miwen+=covo.getClientip();
+		miwen+=covo.getOrderno();
+		miwen+=params.getParams(covo.getGameid()).getAppkey();
+		System.out.println("game65miwen:"+miwen);
+		String sign = StringEncrypt.Encrypt(miwen).toLowerCase();
+		System.out.println("game65sign:"+sign);
+		OrdersBean bean = new OrdersBean();
+			try {
+				if(sign.equals(game65params.get("sign"))){
+					// 支付成功
+					Orders order = bean.qureyOrder(covo.getOther());
+					if (order != null) {
+						if(order.getAmount().equals(Float.valueOf(covo.getMoney()))){
+							if (order.getKStatus() != Constants.K_STSTUS_SUCCESS) {
+								//bean.updateOrderAmountPayIdExinfo(covo.getOther(), covo.getOrderno(), covo.getMoney(), "");
+								if (order.getIscallback() == Constants.CALLBACK_ON){
+									CallbackBean callbackBean = new CallbackBean();
+									Callback callbackvo = callbackBean.qureyCallback(covo.getOther());
+									String cburl = callbackvo.getCallbackUrl();
+									if (cburl != null && !cburl.equals("")){
+										if (cburl.indexOf("?") == -1){
+											cburl += "?pt=game65_" + covo.getPartnerid();
+										}else{
+											cburl += "&pt=game65_" + covo.getPartnerid();
+										}
+										if("0".equals(covo.getPaytype())){
+											cburl += "&currency=" + Constants.CURRENCY_RMB;
+										}else{
+											cburl += "&currency=" + Constants.CURRENCY_USD;
+										}
+										callbackvo.setCallbackUrl(cburl);
+										callbackBean.updateCallback(callbackvo);
+									}
+								}
+				        		order.setPayId(covo.getOrderno());
+				        		order.setMoney(covo.getMoney());
+				        		if("0".equals(covo.getPaytype())){
+				        			order.setCurrency(Constants.CURRENCY_RMB);
+				        		}else{
+				        			order.setCurrency(Constants.CURRENCY_USD);
+				        		}
+				        		order.setUpdateTime(DateUtil.getCurrentTime());
+				        		order.setPayType("game65_"+covo.getPartnerid());
+				        		bean.updateOrder(covo.getOther(), order);
+								bean.updateOrderKStatus(covo.getOther(),Constants.K_STSTUS_SUCCESS);
+								ret = "{\"code\": 1,\"data\": {\"result\": \"发货成功\",\"orderno\": \""+covo.getOrderno()+"\"}}";
+							} else {
+								ret = "{\"code\": -17,\"data\": {\"result\": \"订单重复\",\"orderno\": \""+covo.getOrderno()+"\"}}";
+								System.out.println("game65 order ("+ order.getOrderId() + ") had been succeed");
+							}
+						}else{
+							System.out.println(covo.getOrderno()+"：jine_is_diff");
+							ret = "{\"code\": 2,\"data\": {\"result\": \"金额不匹配\",\"orderno\": \""+covo.getOrderno()+"\"}}";
+						}
+					}
+				}else{
+					ret = "{\"code\": 2,\"data\": {\"result\": \"发货失败\",\"orderno\": \""+covo.getOrderno()+"\"}}";
+					System.out.println("game65 order ("+ covo.getOther() + ") sign is error");
+				}
+			} catch (Exception e) {
+				ret = "{\"code\": 2,\"data\": {\"result\": \"发货失败\",\"orderno\": \""+covo.getOrderno()+"\"}}";
+				e.printStackTrace();
+			}
+			
+			System.out.println("game65 cb ret->" + ret);
+
+			String path = OSUtil.getRootPath() + "../../logs/game65cb/"
+					+ DateUtil.getCurTimeStr().substring(0, 8);
+			OSUtil.makeDirs(path);
+			String filename = path + "/" + covo.getOther();
+
+			OSUtil.saveFile(filename, game65params.toString());
+		return ret;
+	}
+	
+	public static void init()
+	{
+		params.initParams(Game65Params.CHANNEL_ID, new Game65ParamsVO());
+	}
+	
+	public static void main(String args[]){//recharge.1467963301.54.65.0.1.00.119.147.176.68.20160708144949346385.73b106701858e9122c8f47b34037d059
+		
+	}
+
+}

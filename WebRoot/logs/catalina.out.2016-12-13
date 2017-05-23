@@ -1,0 +1,198 @@
+2016-12-13 11:19:33 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-12-13 11:19:33 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-12-13 11:20:12 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:20:12 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_ATM' in 'where clause'
+2016-12-13 11:20:32 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-12-13 11:20:32 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-12-13 11:20:32 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-12-13 11:20:32 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-12-13 11:20:32 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-13 11:20:32 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-12-13 11:20:32 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-12-13 11:20:32 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-12-13 11:20:32 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-13 11:20:32 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-13 11:20:37 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-12-13 11:20:37 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-12-13 11:20:50 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:20:50 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_ATM' in 'where clause'
+2016-12-13 11:21:39 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-12-13 11:21:39 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-12-13 11:21:39 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-12-13 11:21:39 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-12-13 11:21:39 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-13 11:21:39 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-12-13 11:21:39 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-12-13 11:21:39 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-12-13 11:21:39 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-13 11:21:39 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-13 11:21:42 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-12-13 11:21:42 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-12-13 11:21:48 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:21:48 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_ATM' in 'where clause'
+2016-12-13 11:22:44 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-12-13 11:22:44 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-12-13 11:22:44 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-12-13 11:22:44 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-12-13 11:22:44 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-13 11:22:44 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-12-13 11:22:44 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-12-13 11:22:44 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-12-13 11:22:44 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-13 11:22:44 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-13 11:22:47 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-12-13 11:22:47 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-12-13 11:24:11 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-12-13 11:24:11 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-12-13 11:25:02 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-12-13 11:25:02 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-12-13 11:25:02 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-12-13 11:25:02 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-12-13 11:25:02 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-13 11:25:02 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-12-13 11:25:02 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-12-13 11:25:02 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-12-13 11:25:02 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-13 11:25:02 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-13 11:25:06 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-12-13 11:25:06 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-12-13 11:31:29 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-12-13 11:31:29 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-12-13 11:32:47 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:32:47 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_ATM' in 'where clause'
+2016-12-13 11:32:47 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:32:47 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSD' in 'where clause'
+2016-12-13 11:32:47 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:32:47 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_DXZD' in 'where clause'
+2016-12-13 11:32:47 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:32:47 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSDF' in 'where clause'
+2016-12-13 11:32:47 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:32:47 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_XYK' in 'where clause'
+2016-12-13 11:32:47 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:32:47 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_STTL' in 'where clause'
+2016-12-13 11:32:56 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:32:56 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_ATM' in 'where clause'
+2016-12-13 11:32:57 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:32:57 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSD' in 'where clause'
+2016-12-13 11:32:57 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:32:57 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_DXZD' in 'where clause'
+2016-12-13 11:32:57 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:32:57 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSDF' in 'where clause'
+2016-12-13 11:32:57 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:32:57 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_XYK' in 'where clause'
+2016-12-13 11:32:57 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:32:57 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_STTL' in 'where clause'
+2016-12-13 11:37:53 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:37:53 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_ATM' in 'where clause'
+2016-12-13 11:37:53 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:37:53 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSD' in 'where clause'
+2016-12-13 11:37:53 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:37:53 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_DXZD' in 'where clause'
+2016-12-13 11:37:53 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:37:53 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSDF' in 'where clause'
+2016-12-13 11:37:53 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:37:53 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_XYK' in 'where clause'
+2016-12-13 11:37:53 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:37:53 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_STTL' in 'where clause'
+2016-12-13 11:37:59 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:37:59 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_ATM' in 'where clause'
+2016-12-13 11:38:00 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:38:00 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSD' in 'where clause'
+2016-12-13 11:38:00 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:38:00 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_DXZD' in 'where clause'
+2016-12-13 11:38:00 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:38:00 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSDF' in 'where clause'
+2016-12-13 11:38:00 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:38:00 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_XYK' in 'where clause'
+2016-12-13 11:38:00 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:38:00 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_STTL' in 'where clause'
+2016-12-13 11:38:04 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:38:04 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_ATM' in 'where clause'
+2016-12-13 11:38:04 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:38:04 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSD' in 'where clause'
+2016-12-13 11:38:04 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:38:04 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_DXZD' in 'where clause'
+2016-12-13 11:38:04 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:38:04 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSDF' in 'where clause'
+2016-12-13 11:38:04 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:38:04 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_XYK' in 'where clause'
+2016-12-13 11:38:04 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 11:38:04 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_STTL' in 'where clause'
+2016-12-13 14:12:09 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-12-13 14:12:09 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-12-13 14:15:20 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:15:20 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_ATM' in 'where clause'
+2016-12-13 14:15:20 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:15:20 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSD' in 'where clause'
+2016-12-13 14:15:21 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:15:21 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_DXZD' in 'where clause'
+2016-12-13 14:15:21 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:15:21 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSDF' in 'where clause'
+2016-12-13 14:15:21 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:15:21 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_XYK' in 'where clause'
+2016-12-13 14:15:21 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:15:21 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_STTL' in 'where clause'
+2016-12-13 14:17:18 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:17:18 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_ATM' in 'where clause'
+2016-12-13 14:17:26 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:17:26 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSD' in 'where clause'
+2016-12-13 14:17:26 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:17:26 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_DXZD' in 'where clause'
+2016-12-13 14:17:27 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:17:27 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSDF' in 'where clause'
+2016-12-13 14:17:27 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:17:27 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_XYK' in 'where clause'
+2016-12-13 14:17:27 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:17:27 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_STTL' in 'where clause'
+2016-12-13 14:17:54 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:17:54 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_ATM' in 'where clause'
+2016-12-13 14:17:55 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:17:55 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSD' in 'where clause'
+2016-12-13 14:17:57 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:17:57 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_DXZD' in 'where clause'
+2016-12-13 14:17:58 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:17:58 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSDF' in 'where clause'
+2016-12-13 14:17:59 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:17:59 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_XYK' in 'where clause'
+2016-12-13 14:18:00 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:18:00 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_STTL' in 'where clause'
+2016-12-13 14:18:21 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:18:21 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_ATM' in 'where clause'
+2016-12-13 14:18:22 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:18:22 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSD' in 'where clause'
+2016-12-13 14:18:22 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:18:22 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_DXZD' in 'where clause'
+2016-12-13 14:18:23 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:18:23 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSDF' in 'where clause'
+2016-12-13 14:18:23 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:18:23 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_XYK' in 'where clause'
+2016-12-13 14:18:24 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:18:24 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_STTL' in 'where clause'
+2016-12-13 14:22:38 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-12-13 14:22:38 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-12-13 14:23:36 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:23:36 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_ATM' in 'where clause'
+2016-12-13 14:23:37 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:23:37 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSD' in 'where clause'
+2016-12-13 14:23:37 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:23:37 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_DXZD' in 'where clause'
+2016-12-13 14:23:37 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:23:37 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSDF' in 'where clause'
+2016-12-13 14:23:37 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:23:37 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_XYK' in 'where clause'
+2016-12-13 14:23:37 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:23:37 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_STTL' in 'where clause'
+2016-12-13 14:25:55 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:25:55 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_ATM' in 'where clause'
+2016-12-13 14:25:55 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:25:55 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSD' in 'where clause'
+2016-12-13 14:25:56 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:25:56 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_DXZD' in 'where clause'
+2016-12-13 14:25:56 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:25:56 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_BLSDF' in 'where clause'
+2016-12-13 14:25:56 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:25:56 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_XYK' in 'where clause'
+2016-12-13 14:25:56 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1054, SQLState: 42S22
+2016-12-13 14:25:56 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Unknown column 'zhiguan_STTL' in 'where clause'
+2016-12-13 14:31:51 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-12-13 14:31:51 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]

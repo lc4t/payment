@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="MobileOptimized" content="236">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Content-Type">
+<meta name="author" content="Web Layout:songyang;" />
+<title>王牌装甲师</title>
+<link href="http://paystage.ko.cn:6001/paymentsystem/pay/css/go.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="container">
+            <div id="weixin_show">
+                <div class="weixin_android">
+                    <img src="images/go_dl_android.png" />
+                    
+                </div>
+                <div class="weixin_ios">
+                    <img src="images/go_dl_android.png" />
+                </div>
+            </div>
+            <!--ios没有-->
+            <div id="main_no" class="ios_no">
+                <img src="images/go_dl_android.png " />
+                <!--<div class="time" id="ios_no_show"></div>-->
+            </div>
+           
+        </div>
+        
+        <span style="display:none;">
+            <script src="http://s4.cnzz.com/z_stat.php?id=1261327259&web_id=1261327259" language="JavaScript"></script>
+        </span>
+</body>
+</html>

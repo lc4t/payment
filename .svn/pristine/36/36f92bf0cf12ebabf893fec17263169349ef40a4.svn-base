@@ -1,0 +1,6 @@
+package noumena.payment.yandex;
+
+public class YandexParams
+{
+	public static String ACCESS_TOKEN="MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1+eaZwSyvdO5sj3rcUUXHjUvU73+D2yceiLUYzfK9610LnChE5pwNCs4ML4TzfznU9kXRSg8MZAWnss6lQgQZAdGvoHe2GEA6M57EAmnseZzOcW+HvcwJJdeP2TnZ2cn/iwz6m3s/W4H9s/fYdvrCbjgvRT2aqUyNQ0yM7GzolMeKtcWEzEpZliOeJtoEZpEoxiqhKAeXEjUNCdXLHTEG+KXrW6hnTIi5ZVn/Uz5tCXLdsKgJ/uM5POfDgPD48JtngGLw/TLwXmLJ2AvX7883/lDa9FnuMkCNgsrPNicNxmiGFTBJiWfP8Wu51x0P0E/28Tws3cMUmxU8vyXt/WzfwIDAQAB";
+}

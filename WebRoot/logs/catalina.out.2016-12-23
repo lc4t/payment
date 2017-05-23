@@ -1,0 +1,50 @@
+2016-12-23 15:35:08 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-12-23 15:35:08 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-12-23 15:59:11 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-12-23 15:59:11 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-12-23 15:59:11 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-12-23 15:59:11 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-12-23 15:59:11 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-23 15:59:11 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-12-23 15:59:11 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-12-23 15:59:11 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-12-23 15:59:11 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-23 15:59:11 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-23 15:59:14 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-12-23 15:59:14 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-12-23 15:59:35 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-12-23 15:59:35 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-12-23 15:59:35 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-12-23 15:59:35 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-12-23 15:59:35 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-23 15:59:35 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-12-23 15:59:35 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-12-23 15:59:35 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-12-23 15:59:35 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-23 15:59:35 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-23 15:59:38 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-12-23 15:59:38 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-12-23 15:59:49 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-12-23 15:59:49 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-12-23 15:59:49 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-12-23 15:59:49 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-12-23 15:59:49 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-23 15:59:49 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-12-23 15:59:49 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-12-23 15:59:49 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-12-23 15:59:49 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-23 15:59:49 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-23 15:59:51 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-12-23 15:59:51 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-12-23 16:00:12 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-12-23 16:00:12 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-12-23 16:00:12 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-12-23 16:00:12 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-12-23 16:00:12 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-23 16:00:12 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-12-23 16:00:12 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-12-23 16:00:12 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-12-23 16:00:12 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-23 16:00:12 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-12-23 16:00:15 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-12-23 16:00:15 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]

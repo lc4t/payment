@@ -1,0 +1,428 @@
+package noumena.payment.model;
+
+import noumena.payment.util.Constants;
+
+/**
+ * Orders entity. @author MyEclipse Persistence Tools
+ */
+
+public class Orders implements java.io.Serializable {
+
+	// Fields
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private String orderId;
+	private String productId;
+	private String imei;
+	private String UId;
+	private String appId;
+	private String channel;
+	private String deviceType;
+	private String deviceId;
+	private String gversion;
+	private String osversion;
+	private String screenSize;
+	private String sign;
+	private String itemId;
+	private Integer itemNum;
+	private String itemPrice;
+	private Float amount;
+	private String exInfo;
+	private Integer KStatus = Constants.K_STSTUS_DEFAULT;
+	private Integer CStatus = Constants.C_STSTUS_DEFAULT;
+	private Integer EStatus = Constants.E_STSTUS_DEFAULT;
+	private Integer iscallback = Constants.CALLBACK_OFF;
+	private String createTime;
+	private String updateTime;
+	private String completeTime;
+	private String payType;
+	private String callbackUrl;
+	private String subId;
+	private String payId;
+	private String money;
+	private String currency;
+	private String unit;
+
+	public String toString() {
+		String ret = "";
+		ret += "orderId:";
+		ret += this.orderId;
+		ret += "\n";
+		ret += "productId:";
+		ret += this.productId;
+		ret += "\n";
+		ret += "imei:";
+		ret += this.imei;
+		ret += "\n";
+		ret += "UId:";
+		ret += this.UId;
+		ret += "\n";
+		ret += "appId:";
+		ret += this.appId;
+		ret += "\n";
+		ret += "channel:";
+		ret += this.channel;
+		ret += "\n";
+		ret += "deviceType:";
+		ret += this.deviceType;
+		ret += "\n";
+		ret += "deviceId:";
+		ret += this.deviceId;
+		ret += "\n";
+		ret += "gversion:";
+		ret += this.gversion;
+		ret += "\n";
+		ret += "osversion:";
+		ret += this.osversion;
+		ret += "\n";
+		ret += "screenSize:";
+		ret += this.screenSize;
+		ret += "\n";
+		ret += "sign:";
+		ret += this.sign;
+		ret += "\n";
+		ret += "itemId:";
+		ret += this.itemId;
+		ret += "\n";
+		ret += "itemNum:";
+		ret += this.itemNum;
+		ret += "\n";
+		ret += "itemPrice:";
+		ret += this.itemPrice;
+		ret += "\n";
+		ret += "amount:";
+		ret += this.amount;
+		ret += "\n";
+		ret += "exInfo:";
+		ret += this.exInfo;
+		ret += "\n";
+		ret += "KStatus:";
+		ret += this.KStatus;
+		ret += "\n";
+		ret += "CStatus:";
+		ret += this.CStatus;
+		ret += "\n";
+		ret += "EStatus:";
+		ret += this.EStatus;
+		ret += "\n";
+		ret += "iscallback:";
+		ret += this.iscallback;
+		ret += "\n";
+		ret += "createTime:";
+		ret += this.createTime;
+		ret += "\n";
+		ret += "updateTime:";
+		ret += this.updateTime;
+		ret += "\n";
+		ret += "completeTime:";
+		ret += this.completeTime;
+		ret += "\n";
+		ret += "payType:";
+		ret += this.payType;
+		ret += "\n";
+		ret += "callbackUrl:";
+		ret += this.callbackUrl;
+		ret += "\n";
+		return ret;
+	}
+
+	// Constructors
+
+	/** default constructor */
+	public Orders() {
+	}
+
+	public String getSubId() {
+		return subId;
+	}
+
+	public String getMoney() {
+		return money;
+	}
+
+	public void setMoney(String money) {
+		this.money = money;
+	}
+
+	public String getPayId() {
+		return payId;
+	}
+
+	public void setPayId(String payId) {
+		this.payId = payId;
+	}
+
+	public void setSubId(String subId) {
+		this.subId = subId;
+	}
+
+	public String getCallbackUrl() {
+		return callbackUrl;
+	}
+
+	public void setCallbackUrl(String callbackUrl) {
+		this.callbackUrl = callbackUrl;
+	}
+
+	public String getProductId() {
+		return productId;
+	}
+
+	public void setProductId(String productId) {
+		this.productId = productId;
+	}
+
+	/** minimal constructor */
+	public Orders(String orderId) {
+		this.orderId = orderId;
+	}
+
+	/** full constructor */
+	public Orders(String orderId, String imei, String UId, String appId,
+			String channel, String deviceType, String deviceId,
+			String gversion, String osversion, String screenSize, String sign,
+			String itemId, Integer itemNum, String itemPrice, Float amount,
+			String exInfo, Integer KStatus, Integer CStatus, Integer EStatus,
+			Integer iscallback, String createTime, String updateTime,
+			String completeTime, String payType) {
+		this.orderId = orderId;
+		this.imei = imei;
+		this.UId = UId;
+		this.appId = appId;
+		this.channel = channel;
+		this.deviceType = deviceType;
+		this.deviceId = deviceId;
+		this.gversion = gversion;
+		this.osversion = osversion;
+		this.screenSize = screenSize;
+		this.sign = sign;
+		this.itemId = itemId;
+		this.itemNum = itemNum;
+		this.itemPrice = itemPrice;
+		this.amount = amount;
+		this.exInfo = exInfo;
+		this.KStatus = KStatus;
+		this.CStatus = CStatus;
+		this.EStatus = EStatus;
+		this.iscallback = iscallback;
+		this.createTime = createTime;
+		this.updateTime = updateTime;
+		this.completeTime = completeTime;
+		this.payType = payType;
+	}
+
+	// Property accessors
+
+	public String getOrderId() {
+		return this.orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+
+	public String getImei() {
+		return this.imei;
+	}
+
+	public void setImei(String imei) {
+		this.imei = imei;
+	}
+
+	public String getUId() {
+		return this.UId;
+	}
+
+	public void setUId(String UId) {
+		this.UId = UId;
+	}
+
+	public String getAppId() {
+		return this.appId;
+	}
+
+	public void setAppId(String appId) {
+		this.appId = appId;
+	}
+
+	public String getChannel() {
+		return this.channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
+	}
+
+	public String getDeviceType() {
+		return this.deviceType;
+	}
+
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
+	}
+
+	public String getDeviceId() {
+		return this.deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
+	}
+
+	public String getGversion() {
+		return this.gversion;
+	}
+
+	public void setGversion(String gversion) {
+		this.gversion = gversion;
+	}
+
+	public String getOsversion() {
+		return this.osversion;
+	}
+
+	public void setOsversion(String osversion) {
+		this.osversion = osversion;
+	}
+
+	public String getScreenSize() {
+		return this.screenSize;
+	}
+
+	public void setScreenSize(String screenSize) {
+		this.screenSize = screenSize;
+	}
+
+	public String getSign() {
+		return this.sign;
+	}
+
+	public void setSign(String sign) {
+		this.sign = sign;
+	}
+
+	public String getItemId() {
+		return this.itemId;
+	}
+
+	public void setItemId(String itemId) {
+		this.itemId = itemId;
+	}
+
+	public Integer getItemNum() {
+		return this.itemNum;
+	}
+
+	public void setItemNum(Integer itemNum) {
+		this.itemNum = itemNum;
+	}
+
+	public String getItemPrice() {
+		return this.itemPrice;
+	}
+
+	public void setItemPrice(String itemPrice) {
+		this.itemPrice = itemPrice;
+	}
+
+	public Float getAmount() {
+		return this.amount;
+	}
+
+	public void setAmount(Float amount) {
+		this.amount = amount;
+	}
+
+	public String getExInfo() {
+		return this.exInfo;
+	}
+
+	public void setExInfo(String exInfo) {
+		this.exInfo = exInfo;
+	}
+
+	public Integer getKStatus() {
+		return this.KStatus;
+	}
+
+	public void setKStatus(Integer KStatus) {
+		this.KStatus = KStatus;
+	}
+
+	public Integer getCStatus() {
+		return this.CStatus;
+	}
+
+	public void setCStatus(Integer CStatus) {
+		this.CStatus = CStatus;
+	}
+
+	public Integer getEStatus() {
+		return this.EStatus;
+	}
+
+	public void setEStatus(Integer EStatus) {
+		this.EStatus = EStatus;
+	}
+
+	public Integer getIscallback() {
+		return this.iscallback;
+	}
+
+	public void setIscallback(Integer iscallback) {
+		this.iscallback = iscallback;
+	}
+
+	public String getCreateTime() {
+		return this.createTime;
+	}
+
+	public void setCreateTime(String createTime) {
+		this.createTime = createTime;
+	}
+
+	public String getUpdateTime() {
+		return this.updateTime;
+	}
+
+	public void setUpdateTime(String updateTime) {
+		this.updateTime = updateTime;
+	}
+
+	public String getCompleteTime() {
+		return this.completeTime;
+	}
+
+	public void setCompleteTime(String completeTime) {
+		this.completeTime = completeTime;
+	}
+
+	public String getPayType() {
+		return this.payType;
+	}
+
+	public void setPayType(String payType) {
+		this.payType = payType;
+	}
+
+	public String getCurrency() {
+		return currency;
+	}
+
+	public void setCurrency(String currency) {
+		this.currency = currency;
+	}
+
+	public String getUnit() {
+		return unit;
+	}
+
+	public void setUnit(String unit) {
+		this.unit = unit;
+	}
+
+}

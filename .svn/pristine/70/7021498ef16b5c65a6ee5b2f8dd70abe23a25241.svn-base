@@ -1,0 +1,427 @@
+package noumena.payment.wandoujia;
+
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import noumena.payment.bean.OrdersBean;
+import noumena.payment.model.Orders;
+import noumena.payment.uc.JacksonUtil;
+import noumena.payment.uc.UCOrderVO;
+import noumena.payment.util.Constants;
+import noumena.payment.util.DateUtil;
+import noumena.payment.util.OSUtil;
+import noumena.payment.vo.OrderIdVO;
+import noumena.payment.vo.OrderStatusVO;
+
+import org.apache.commons.codec.binary.Hex;
+import org.codehaus.jackson.type.TypeReference;
+
+public class WandoujiaCharge
+{
+	private static WandoujiaParams params = new WandoujiaParams();
+	private static boolean testmode = false;
+	
+	public static boolean isTestmode()
+	{
+		return testmode;
+	}
+	public static void setTestmode(boolean testmode)
+	{
+		WandoujiaCharge.testmode = testmode;
+	}
+	
+	public static String getTransactionId(Orders order)
+	{
+		order.setCurrency(Constants.CURRENCY_RMB);
+		order.setUnit(Constants.CURRENCY_UNIT_FEN);
+		
+		OrdersBean bean = new OrdersBean();
+		String cburl = order.getCallbackUrl();
+		String payId;
+		if (cburl == null || cburl.equals(""))
+		{
+			payId = bean.CreateOrder(order);
+		}
+		else
+		{
+			if (cburl.indexOf("?") == -1)
+			{
+				cburl += "?pt=" + Constants.PAY_TYPE_WANDOUJIA;
+			}
+			else
+			{
+				cburl += "&pt=" + Constants.PAY_TYPE_WANDOUJIA;
+			}
+			cburl += "&currency=" + Constants.CURRENCY_RMB;
+			cburl += "&unit=" + Constants.CURRENCY_UNIT_FEN;
+			
+			payId = bean.CreateOrder(order, cburl);
+		}
+		order.setCallbackUrl(cburl);
+		String date = DateUtil.formatDate(order.getCreateTime());
+		OrderIdVO orderIdVO = new OrderIdVO(payId, date);
+		
+		JSONObject json = JSONObject.fromObject(orderIdVO);
+		return json.toString();
+	}
+	
+	public static String checkOrdersStatus(String payIds)
+	{
+		String[] orderIds = payIds.split(",");
+
+		OrdersBean bean = new OrdersBean();
+		List<Orders> orders = bean.qureyOrders(orderIds);
+		List<OrderStatusVO> statusret = new ArrayList<OrderStatusVO>();
+		for (int i = 0 ; i < orders.size() ; i++)
+		{
+			Orders order = orders.get(i);
+			int status = order.getKStatus();
+			OrderStatusVO st = new OrderStatusVO();
+			st.setPayId(order.getOrderId());
+			if (status == Constants.K_STSTUS_DEFAULT || status == Constants.K_CON_ERROR)
+			{
+				//如果订单状态是初始订单或者是网络连接有问题状态，返回不知道
+				st.setStatus(3);
+			}
+			else if (status == Constants.K_STSTUS_SUCCESS)
+			{
+				//如果订单已经成功，直接返回订单状态
+				st.setStatus(1);
+			}
+			else
+			{
+				//订单已经失败，直接返回订单状态
+				st.setStatus(2);
+			}
+			statusret.add(st);
+		}
+		JSONArray arr = JSONArray.fromObject(statusret);
+		
+		return arr.toString();
+	}
+
+	public static String getCallbackFromWandoujia(String transdata, String sign)
+	{
+		String ret = WandoujiaParams.SUCCESS;
+		try
+		{
+			if (transdata == null || "".equalsIgnoreCase(transdata))
+			{
+				return WandoujiaParams.FAILURE;
+			}
+			if (sign == null || "".equalsIgnoreCase(sign))
+			{
+				return WandoujiaParams.FAILURE;
+			}
+
+			OrdersBean bean = new OrdersBean();
+			JSONObject json = JSONObject.fromObject(transdata);
+			WandoujiaOrderVO ordervo = (WandoujiaOrderVO) JSONObject.toBean(json, WandoujiaOrderVO.class);
+			Orders order = bean.qureyOrder(ordervo.getOut_trade_no());
+			
+			if (order != null)
+			{
+				boolean isvlid = validMessage(transdata, sign, ordervo.getAppKeyId());
+	
+				if (!isvlid)
+				{
+					return WandoujiaParams.FAILURE;
+				}
+				else
+				{
+					if (order.getKStatus() != Constants.K_STSTUS_SUCCESS)
+					{
+						bean.updateOrderAmountPayId(ordervo.getOut_trade_no(), ordervo.getOrderId(), ordervo.getMoney());
+						
+						//支付成功
+						bean.updateOrderKStatus(ordervo.getOut_trade_no(), Constants.K_STSTUS_SUCCESS);
+					}
+					else
+					{
+						System.out.println("wandoujia order (" + order.getOrderId() + ")(" + order.getPayId() + ") had been succeed");
+					}
+				}
+				
+				String path = OSUtil.getRootPath() + "../../logs/wandoujiacb/" + DateUtil.getCurTimeStr().substring(0, 8);
+				OSUtil.makeDirs(path);
+				String filename = path + "/" + ordervo.getOut_trade_no() + "_" + ordervo.getOrderId();
+				
+				String res = "";
+				res += "transdata=" + transdata;
+				res += "&sign=" + sign;
+				OSUtil.saveFile(filename, res);
+			}
+			else
+			{
+				ret = "ILLEGAL ORDER";
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			ret = WandoujiaParams.FAILURE;
+		}
+		return ret;
+	}
+	
+	
+	/***
+	 * 验证订单
+	 * 
+	 * @param map
+	 * @throws Exception
+	 */
+	public static String updateOrderStatus(String res) throws Exception {
+		JSONObject json = JSONObject.fromObject(res);
+		UCOrderVO ordervo = (UCOrderVO) JSONObject
+				.toBean(json, UCOrderVO.class);
+		String exinfo = ordervo.getData().getPayWay() + "#"
+				+ ordervo.getData().getAccountId()
+				+ ordervo.getData().getFailedDesc();
+		String respSign = (String) json.getString("sign");
+		@SuppressWarnings("unchecked")
+		Map<String, Object> data = (Map<String, Object>) JacksonUtil.decode(
+				json.getString("data"),
+				new TypeReference<Map<String, Object>>() {
+				});
+		OrdersBean bean = new OrdersBean();
+		Orders orders = bean.qureyOrder(ordervo.getData().getCpOrderId());
+		if (orders == null) {
+			System.out.println(ordervo.getData().getCpOrderId()
+					+ "updateOrderStatus=================>order is not exist");
+			return "FAILURE";
+		}
+		System.out.println(ordervo.getData().getCpOrderId()
+				+ "updateOrderStatus=================>" + data.toString());
+		System.out.println(ordervo.getData().getCpOrderId()
+				+ "updateOrderStatus=================>" + orders.toString()
+				+ " " + orders.getSign());
+		String sign = createMD5Sign(data, "", orders.getSign());
+		System.out.println(ordervo.getData().getCpOrderId()
+				+ "updateOrderStatus sign =================>" + sign + " "
+				+ respSign);
+		if (!respSign.equals(sign)) {
+			System.out.println(ordervo.getData().getCpOrderId()
+					+ "updateOrderStatus=================>sign is serror"
+					+ sign);
+			return "FAILURE";
+		}
+
+		if (!orders.getAmount().equals(
+				Float.valueOf(ordervo.getData().getAmount()))) {
+			System.out.println(ordervo.getData().getCpOrderId()
+					+ "updateOrderStatus=================>amount is different"
+					+ orders.getAmount() + " "
+					+ Float.valueOf(ordervo.getData().getAmount()));
+			return "FAILURE";
+
+		}
+		System.out.println(ordervo.getData().getCpOrderId()
+				+ "updateOrderStatus=================>order"
+				+ orders.toString());
+		if (!ordervo.getData().getOrderStatus().toLowerCase().equals("s")) {
+			System.out.println(ordervo.getData().getCpOrderId()
+					+ "updateOrderStatus=================>order is fail"
+					+ ordervo.getData().getFailedDesc());
+			return "FAILURE";
+		}
+		if(orders.getKStatus().equals(Constants.K_STSTUS_SUCCESS)){
+			System.out.println(ordervo.getData().getCpOrderId()+"updateOrderStatus=================>order is already succeed");
+			return "SUCCESS";
+		}
+		if(!orders.getKStatus().equals(Constants.K_STSTUS_DEFAULT)){
+			System.out.println(ordervo.getData().getCpOrderId()+"updateOrderStatus=================>order is used");
+			return "FAILURE";
+		}
+		bean.updateOrderAmountPayIdExinfo(ordervo.getData().getCpOrderId(),
+				ordervo.getData().getOrderId(), ordervo.getData().getAmount(),
+				exinfo);
+		bean.updateOrderKStatus(ordervo.getData().getCpOrderId(),
+				Constants.K_STSTUS_SUCCESS);
+		String path = OSUtil.getRootPath() + "../../logs/uccb/"
+				+ DateUtil.getCurTimeStr().substring(0, 8);
+		OSUtil.makeDirs(path);
+		String filename = path + "/" + ordervo.getData().getCpOrderId();
+		OSUtil.saveFile(filename, json.toString());
+		System.out.println(ordervo.getData().getCpOrderId()
+				+ "updateOrderStatus=================>order is success");
+		return "SUCCESS";
+	}
+
+	
+	/***
+	 * 生成 加密串
+	 * 
+	 * @param map
+	 * @return
+	 * @throws Exception
+	 */
+	public static String getSign(Map<String, String> map,
+			HttpServletRequest request) throws Exception {
+		//Map<String, Object> resp = new HashMap<String, Object>();
+		map.remove("model");
+		map.remove("signType");
+		String appid = map.remove("appid");
+		JSONObject jsonObject = JSONObject.fromObject(map);
+		OrderStatusVO orderIdVO = new OrderStatusVO();
+		System.out.println("uc getkey================ jsonObject"
+				+ jsonObject.toString());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> data = (Map<String, Object>) JacksonUtil.decode(
+				jsonObject.toString(),
+				new TypeReference<Map<String, Object>>() {
+				});
+		System.out.println("uc getkey================ preSign"
+				+ data.toString());
+
+		String sign = createMD5Sign(data, "", params.getParams(appid)
+				.getAppkey());
+		orderIdVO.setTid(sign);
+		orderIdVO.setStatus(1);
+		orderIdVO.setPayId(map.get("cpOrderId"));
+		System.out.println("uc getkey================ sign" + sign);
+		return JSONObject.fromObject(orderIdVO).toString();
+
+	}
+	
+	
+	/**
+	 * 按照接口规范生成请求数据的MD5签名
+	 * 
+	 * @param params
+	 *            业务数据
+	 * @param caller
+	 *            客户端平台
+	 * @param secKey
+	 *            MD5签名用的密钥
+	 * @return MD5签名生成的字符串。如果传入的参数有一个为null，将返回null
+	 */
+	public static String createMD5Sign(Map<String, Object> params,
+			String caller, String secKey) {
+		if (null == params || null == caller || null == secKey) {
+			return null;
+		}
+
+		String temp = caller + createSignData(params, null) + secKey;
+		temp=temp.replace("&", "");
+		System.out.println("uc persign==" + temp);
+
+		return hexMD5(temp);
+	}
+	
+	/**
+	 * 将Map数据组装成待签名字符串
+	 * 
+	 * @param params
+	 *            待签名的参数列表
+	 * @param notIn
+	 *            不参与签名的参数名列表
+	 * @return 待签名字符串。如果参数params为null，将返回null
+	 */
+	public static String createSignData(Map<String, Object> params,
+			String[] notIn) {
+		if (null == params) {
+			return null;
+		}
+
+		StringBuilder content = new StringBuilder(200);
+
+		// 按照key排序
+		List<String> notInList = null;
+		if (null != notIn) {
+			notInList = Arrays.asList(notIn);
+		}
+		List<String> keys = new ArrayList<String>(params.keySet());
+		Collections.sort(keys);
+		for (int i = 0; i < keys.size(); i++) {
+			String key = (String) keys.get(i);
+
+			if (notIn != null && notInList.contains(key))
+				continue;
+
+			String value = params.get(key) == null ? "" : params.get(key)
+					.toString();
+			content.append(key).append("=").append(value);
+		}
+
+		String result = content.toString();
+		System.out.println("uc getkey  persignResult result" + result);
+
+		return result;
+	}
+	
+	/**
+	 * 对字符串进行MD5签名
+	 * 
+	 * @param value
+	 *            待MD5签名的字符串
+	 * @return 生成的MD5签名字符串。如果传入null，返回null；如果签名过程中抛出异常，将返回null
+	 */
+	public static String hexMD5(String value) {
+		if (null == value) {
+			return null;
+		}
+
+		MessageDigest messageDigest = null;
+		try {
+			messageDigest = MessageDigest.getInstance("MD5");
+			messageDigest.reset();
+			messageDigest.update(value.getBytes("utf8"));
+			byte[] digest = messageDigest.digest();
+			return byteToHexString(digest);
+		} catch (NoSuchAlgorithmException e) {
+			// ignore
+		} catch (UnsupportedEncodingException e) {
+			// ignore
+		}
+
+		return null;
+	}
+	
+	
+	/**
+	 * 将字节数组转换成十六进制字符串
+	 * 
+	 * @param bytes
+	 *            字节数组
+	 * @return 十六进制字符串
+	 */
+	public static String byteToHexString(byte[] bytes) {
+		if (null == bytes) {
+			return null;
+		}
+
+		return String.valueOf(Hex.encodeHex(bytes));
+	}
+	
+	private static boolean validMessage(String transdata, String sign, String appid) throws Exception
+	{
+		return WandouRsa.doCheck(transdata, sign);
+	}
+	
+	public static void init()
+	{
+		params.initParams(WandoujiaParams.CHANNEL_ID, new WandoujiaParamsVO());
+////		params.addApp("t6", "100000145", "5ebfe555197b0d79d5464a6917bd2bd3");
+//		params.addApp("t6", "100000159", "c0e8fa1663f879e3e269e2a627a3a919");
+////		params.addApp("hero", "100000403", "302fe748ea1a9a028ef3b841ef3dd4ac");
+////		params.addApp("hero", "100000429", "2b1c46d8af42a4adcf345776ec46608d");
+//		params.addApp("hero", "100000463", "d0fbe6b37574192391db4e41e35d8310");
+//		params.addApp("gaoguai", "100000529", "c0c71af5ef4666e492001861f4160bb5");
+//		params.addApp("m1", "100001127", "02082ec809a5d5814bb760db3f00bbca");
+//		params.addApp("m5", "100012879", "0b38503873a88c0a243a580ff3368f28");
+//		params.addApp("Qzhuan", "100017357", "6361c2d8c1e4a2ff32edde905af3a324");
+//		params.addApp("m3", "100018309", "2a2f758dfa8feb6461ed7c836d62e959");	//M3
+//		params.addApp("gongzhu", "100018901", "23e6679ab3aad58ad28ea307c452608e");	//小青蛙
+	}
+}

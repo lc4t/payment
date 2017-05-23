@@ -1,0 +1,255 @@
+2016-10-19 16:29:40 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 16:29:40 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 16:30:27 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2016-10-19.txt (系统找不到指定的路径。)
+2016-10-19 16:30:42 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2016-10-19.txt (系统找不到指定的路径。)
+2016-10-19 16:30:51 [org.hibernate.util.JDBCExceptionReporter]-[WARN] SQL Error: 1062, SQLState: 23000
+2016-10-19 16:30:51 [org.hibernate.util.JDBCExceptionReporter]-[ERROR] Duplicate entry '"}' for key 1
+2016-10-19 16:30:51 [org.hibernate.event.def.AbstractFlushingEventListener]-[ERROR] Could not synchronize database state with session
+org.hibernate.exception.ConstraintViolationException: Could not execute JDBC batch update
+	at org.hibernate.exception.SQLStateConverter.convert(SQLStateConverter.java:71)
+	at org.hibernate.exception.JDBCExceptionHelper.convert(JDBCExceptionHelper.java:43)
+	at org.hibernate.jdbc.AbstractBatcher.executeBatch(AbstractBatcher.java:253)
+	at org.hibernate.engine.ActionQueue.executeActions(ActionQueue.java:235)
+	at org.hibernate.engine.ActionQueue.executeActions(ActionQueue.java:139)
+	at org.hibernate.event.def.AbstractFlushingEventListener.performExecutions(AbstractFlushingEventListener.java:298)
+	at org.hibernate.event.def.DefaultFlushEventListener.onFlush(DefaultFlushEventListener.java:27)
+	at org.hibernate.impl.SessionImpl.flush(SessionImpl.java:1000)
+	at org.springframework.orm.hibernate3.HibernateAccessor.flushIfNecessary(HibernateAccessor.java:394)
+	at org.springframework.orm.hibernate3.HibernateTemplate.execute(HibernateTemplate.java:366)
+	at org.springframework.orm.hibernate3.HibernateTemplate.save(HibernateTemplate.java:612)
+	at noumena.payment.dao.impl.CallbackDAOImpl.Create(CallbackDAOImpl.java:13)
+	at noumena.payment.bean.CallbackBean.createCallback(CallbackBean.java:16)
+	at noumena.payment.bean.OrdersBean.CreateOrder(OrdersBean.java:137)
+	at noumena.payment.ios.IOSCharge.getTransactionIdVO(IOSCharge.java:72)
+	at noumena.payment.ios.IOSCharge.getTransactionId(IOSCharge.java:36)
+	at noumena.payment.dao.servlet.IOSServlet.doPost(IOSServlet.java:115)
+	at noumena.payment.dao.servlet.IOSServlet.doGet(IOSServlet.java:39)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:624)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:731)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:303)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:52)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:241)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:208)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:220)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:122)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:505)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:169)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)
+	at org.apache.catalina.valves.AccessLogValve.invoke(AccessLogValve.java:956)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:116)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:436)
+	at org.apache.coyote.http11.AbstractHttp11Processor.process(AbstractHttp11Processor.java:1078)
+	at org.apache.coyote.AbstractProtocol$AbstractConnectionHandler.process(AbstractProtocol.java:625)
+	at org.apache.tomcat.util.net.JIoEndpoint$SocketProcessor.run(JIoEndpoint.java:318)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1145)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:615)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:744)
+Caused by: java.sql.BatchUpdateException: Duplicate entry '"}' for key 1
+	at com.mysql.jdbc.PreparedStatement.executeBatchSerially(PreparedStatement.java:2007)
+	at com.mysql.jdbc.PreparedStatement.executeBatch(PreparedStatement.java:1443)
+	at org.apache.tomcat.dbcp.dbcp.DelegatingStatement.executeBatch(DelegatingStatement.java:297)
+	at org.apache.tomcat.dbcp.dbcp.DelegatingStatement.executeBatch(DelegatingStatement.java:297)
+	at org.hibernate.jdbc.BatchingBatcher.doExecuteBatch(BatchingBatcher.java:48)
+	at org.hibernate.jdbc.AbstractBatcher.executeBatch(AbstractBatcher.java:246)
+	... 37 more
+2016-10-19 16:34:59 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 16:34:59 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 16:36:11 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-10-19 16:36:11 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-10-19 16:36:11 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-10-19 16:36:11 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-10-19 16:36:11 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 16:36:11 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-10-19 16:36:11 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-10-19 16:36:11 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-10-19 16:36:11 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 16:36:11 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 16:36:14 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 16:36:14 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 16:37:46 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-10-19 16:37:46 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-10-19 16:37:46 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-10-19 16:37:46 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-10-19 16:37:46 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 16:37:46 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-10-19 16:37:46 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-10-19 16:37:46 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-10-19 16:37:46 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 16:37:46 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 16:37:49 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 16:37:49 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 16:54:18 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 16:54:18 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 16:58:41 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 16:58:41 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 17:01:48 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 17:01:48 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 17:03:41 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 17:03:41 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 17:06:11 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 17:06:11 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 17:06:47 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 17:06:47 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 17:16:36 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-10-19 17:16:36 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-10-19 17:16:36 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-10-19 17:16:36 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-10-19 17:16:36 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 17:16:36 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-10-19 17:16:36 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-10-19 17:16:36 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-10-19 17:16:36 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 17:16:36 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 17:16:39 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 17:16:39 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 17:39:28 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 17:39:28 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 17:42:01 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-10-19 17:42:01 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-10-19 17:42:01 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-10-19 17:42:01 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-10-19 17:42:01 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 17:42:01 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-10-19 17:42:01 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-10-19 17:42:01 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-10-19 17:42:01 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 17:42:01 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 17:42:04 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 17:42:04 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 17:42:15 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-10-19 17:42:15 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-10-19 17:42:15 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-10-19 17:42:15 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-10-19 17:42:15 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 17:42:15 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-10-19 17:42:15 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-10-19 17:42:15 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-10-19 17:42:15 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 17:42:15 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 17:42:17 [org.hibernate.cfg.HbmBinder]-[INFO] Mapping class: noumena.payment.model.CreateOrderId -> create_order_id
+2016-10-19 17:42:17 [org.hibernate.cfg.HbmBinder]-[INFO] Mapping class: noumena.payment.model.Orders -> orders
+2016-10-19 17:42:17 [org.hibernate.cfg.HbmBinder]-[INFO] Mapping class: noumena.payment.model.Callback -> callback
+2016-10-19 17:42:17 [org.hibernate.cfg.HbmBinder]-[INFO] Mapping class: noumena.payment.model.Payinfo -> payinfo
+2016-10-19 17:42:17 [org.hibernate.cfg.HbmBinder]-[INFO] Mapping class: noumena.payment.model.PayGame -> pay_game
+2016-10-19 17:42:17 [org.hibernate.cfg.HbmBinder]-[INFO] Mapping class: noumena.payment.model.PayServer -> pay_server
+2016-10-19 17:42:17 [org.hibernate.cfg.HbmBinder]-[INFO] Mapping class: noumena.payment.model.GashPayGame -> gash_pay_game
+2016-10-19 17:42:17 [org.hibernate.cfg.HbmBinder]-[INFO] Mapping class: noumena.payment.model.GashPayServer -> gash_pay_server
+2016-10-19 17:42:17 [org.hibernate.cfg.HbmBinder]-[INFO] Mapping class: noumena.payment.model.PayItems -> pay_items
+2016-10-19 17:42:17 [org.hibernate.cfg.HbmBinder]-[INFO] Mapping class: noumena.payment.model.Params -> params
+2016-10-19 17:42:17 [org.hibernate.cfg.HbmBinder]-[INFO] Mapping class: noumena.payment.model.Shielding -> channel_shielding
+2016-10-19 17:42:17 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Building new Hibernate SessionFactory
+2016-10-19 17:42:17 [org.hibernate.connection.ConnectionProviderFactory]-[INFO] Initializing connection provider: org.springframework.orm.hibernate3.LocalDataSourceConnectionProvider
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] RDBMS: MySQL, version: 5.0.24-community-nt
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] JDBC driver: MySQL-AB JDBC Driver, version: mysql-connector-java-5.1.10 ( Revision: ${svn.Revision} )
+2016-10-19 17:42:17 [org.hibernate.dialect.Dialect]-[INFO] Using dialect: org.hibernate.dialect.MySQLDialect
+2016-10-19 17:42:17 [org.hibernate.transaction.TransactionFactoryFactory]-[INFO] Using default transaction strategy (direct JDBC transactions)
+2016-10-19 17:42:17 [org.hibernate.transaction.TransactionManagerLookupFactory]-[INFO] No TransactionManagerLookup configured (in JTA environment, use of read-write or transactional second-level cache is not recommended)
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Automatic flush during beforeCompletion(): disabled
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Automatic session close at end of transaction: disabled
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] JDBC batch size: 20
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] JDBC batch updates for versioned data: disabled
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Scrollable result sets: enabled
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] JDBC3 getGeneratedKeys(): enabled
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Connection release mode: on_close
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Maximum outer join fetch depth: 2
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Default batch fetch size: 1
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Generate SQL with comments: disabled
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Order SQL updates by primary key: disabled
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Query translator: org.hibernate.hql.ast.ASTQueryTranslatorFactory
+2016-10-19 17:42:17 [org.hibernate.hql.ast.ASTQueryTranslatorFactory]-[INFO] Using ASTQueryTranslatorFactory
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Query language substitutions: {}
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] JPA-QL strict compliance: disabled
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Second-level cache: enabled
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Query cache: disabled
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Cache provider: org.hibernate.cache.NoCacheProvider
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Optimize cache for minimal puts: disabled
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Structured second-level cache entries: disabled
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Statistics: disabled
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Deleted entity synthetic identifier rollback: disabled
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Default entity-mode: pojo
+2016-10-19 17:42:17 [org.hibernate.cfg.SettingsFactory]-[INFO] Named query checking : enabled
+2016-10-19 17:42:17 [org.hibernate.impl.SessionFactoryImpl]-[INFO] building session factory
+2016-10-19 17:42:17 [org.hibernate.impl.SessionFactoryObjectFactory]-[INFO] Not binding factory to JNDI, no JNDI name configured
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.SchemaUpdate]-[INFO] Running hbm2ddl schema update
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.SchemaUpdate]-[INFO] fetching database metadata
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.SchemaUpdate]-[INFO] updating schema
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] table found: paymentsysdb.channel_shielding
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] columns: [channel]
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] foreign keys: []
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] indexes: [primary]
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] table found: paymentsysdb.gash_pay_game
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] columns: [website, game_id, create_time, game_name, info]
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] foreign keys: []
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] indexes: [primary]
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] table found: paymentsysdb.gash_pay_server
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] columns: [server_name, server_id, game_id, create_time, callback_url, pay_notify, check_url]
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] foreign keys: []
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] indexes: [primary]
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] table found: paymentsysdb.orders
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] columns: [ex_info, c_status, device_type, order_id, osversion, k_status, currency, amount, pay_type, money, pay_id, item_num, gversion, item_price, e_status, imei, screen_size, complete_time, device_id, u_id, sign, iscallback, unit, update_time, item_id, create_time, app_id, channel]
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] foreign keys: []
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] indexes: [primary]
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] table found: paymentsysdb.params
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] columns: [createtime, id, cburl, packagename, appid, params, payid, channel]
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] foreign keys: []
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] indexes: [primary]
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] table found: paymentsysdb.pay_game
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] columns: [website, game_id, create_time, game_name, info]
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] foreign keys: []
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] indexes: [primary]
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] table found: paymentsysdb.pay_server
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] columns: [server_name, server_id, taobao_id, game_id, create_time, callback_url, pay_notify, check_url]
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] foreign keys: []
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] indexes: [primary]
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] table found: paymentsysdb.payinfo
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] columns: [trade_no, pay_return_time, callback_k_status, area_id, imei, pay_type_id, pay_time, order_id, u_id, k_status, pay_status, ip, pay_account, iscallback, callback_status, cashier_code, game_id, create_time, card_sn, pay_wap_id, channel, callback_time, pay_price]
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] foreign keys: []
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] indexes: [primary]
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] table found: PaymentSysDb.callback
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] columns: [callback_status, create_time, callback_content, callback_url, order_id, callback_time, server_status, k_status]
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] foreign keys: []
+2016-10-19 17:42:17 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] indexes: [primary]
+2016-10-19 17:42:18 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] table found: PaymentSysDb.create_order_id
+2016-10-19 17:42:18 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] columns: [id, create_time]
+2016-10-19 17:42:18 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] foreign keys: []
+2016-10-19 17:42:18 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] indexes: [primary]
+2016-10-19 17:42:18 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] table found: PaymentSysDb.pay_items
+2016-10-19 17:42:18 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] columns: [createtime, itemdesc, id, serverid, itemprice, updatetime, itemid, gameid]
+2016-10-19 17:42:18 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] foreign keys: []
+2016-10-19 17:42:18 [org.hibernate.tool.hbm2ddl.TableMetadata]-[INFO] indexes: [primary]
+2016-10-19 17:42:18 [org.hibernate.tool.hbm2ddl.SchemaUpdate]-[INFO] schema update complete
+2016-10-19 17:42:18 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 17:42:18 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 17:45:36 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 17:45:36 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 17:46:58 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-10-19 17:46:58 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-10-19 17:46:58 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-10-19 17:46:58 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-10-19 17:46:58 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 17:46:58 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-10-19 17:46:58 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-10-19 17:46:58 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-10-19 17:46:58 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 17:46:58 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 17:47:01 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 17:47:01 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 17:47:13 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 17:47:13 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 17:54:10 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2016-10-19 17:54:10 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2016-10-19 17:54:10 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2016-10-19 17:54:10 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2016-10-19 17:54:10 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 17:54:10 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2016-10-19 17:54:10 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2016-10-19 17:54:10 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2016-10-19 17:54:10 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 17:54:10 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2016-10-19 17:54:13 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 17:54:13 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 18:14:38 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2016-10-19 18:14:38 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2016-10-19 18:15:07 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2016-10-19.txt (系统找不到指定的路径。)

@@ -1,0 +1,15 @@
+@charset "utf-8";
+/* CSS Document */
+html,body,div,span,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,a,code,em,img,q,small,strong,dd,dl,dt,li,ol,ul,fieldset,form,label,table,tbody,tr,th,td,input { margin: 0; padding: 0; border:none;}
+input { outline:none;}
+body { font-size: 12px; font-family:"宋体","Microsoft Yahei", "Helvetica Neue", "Hiragino Sans GB", "Segoe UI", "Microsoft Yahei", Tahoma, Arial, STHeiti, sans-serif; _font-family: Tahoma, Arial, Helvetica, STHeiti, sans-serif;cursor: default; color:#000;}
+html.hasFontSmoothing-false body { font-family: Tahoma,Arial,Helvetica,STHeiti;}
+a img,:link img,:visited img { border: 0;}
+table { border-collapse: collapse;}
+ul { list-style: none; }
+a { color:#5c5c5c; text-decoration:none;}
+a:hover { text-decoration:none;}
+.clearfix:after{ content:'';display:block;height:0;clear:both}
+.clearfix{ zoom:1}
+.fl { float:left; display:inline}
+.fr { float:right; display:inline;}

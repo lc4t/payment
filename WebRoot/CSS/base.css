@@ -1,0 +1,29 @@
+body { padding:0; margin:0; color:#333; font:12px arial,verdana,sans-serif;}
+
+div input { width: 90px;  background:#E8FDFF; border:1px solid #0A8FDA; padding: 1px; color: #333;}
+
+span input { width:50px; height:20px; margin:0 0 0 10px; border:1px solid #333; background:#555; color:#fff; }
+
+#container { width:1000px; margin:0 auto; }
+
+
+
+#condition { 
+	width:100%; height:25px; line-height:25px; margin:0 auto; padding:5px 0 3px 0; 
+	text-indent:10px; border:1px solid #d9da8f; border-top:none;
+	 //background:#fafbc5;
+}
+
+#condition label { margin:0 5px 0 8px; }
+
+#content { width:100%; margin:10px auto; }
+
+#content p { color:red; }
+
+#content table { width:100%; margin:0; border-collapse:separate; border-spacing:1px; background:#E5E5C9; }
+
+#content table thead { font-size:12px; height:25px; text-align:center; color:#65665E; background:#F6F6E9; font-weight:bold;}
+
+#content table tbody { font-size:12px; height:22px; text-align:center; color:#666; background:#FFF;}
+
+

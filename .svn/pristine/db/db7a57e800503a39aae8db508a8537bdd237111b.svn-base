@@ -1,0 +1,375 @@
+package noumena.payment.alipay;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import noumena.payment.bean.OrdersBean;
+import noumena.payment.model.Orders;
+import noumena.payment.userverify.util.StringEncrypt;
+import noumena.payment.util.Constants;
+import noumena.payment.util.DateUtil;
+import noumena.payment.vo.OrderIdVO;
+import noumena.payment.vo.OrderStatusVO;
+
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.request.AlipaySystemOauthTokenRequest;
+import com.alipay.api.response.AlipaySystemOauthTokenResponse;
+
+public class AlipayCharge {
+	private static boolean testmode = false;
+
+	public static boolean isTestmode() {
+		return testmode;
+	}
+
+	public static void setTestmode(boolean testmode) {
+		AlipayCharge.testmode = testmode;
+	}
+
+	public static String getTransactionId(Orders order, String body,
+			String authcode, String refreshtoken, String appid, String alipayid) {
+		order.setCurrency(Constants.CURRENCY_RMB);
+		order.setUnit(Constants.CURRENCY_UNIT_YUAN);
+
+		OrdersBean bean = new OrdersBean();
+		String cburl = order.getCallbackUrl();
+		String payId;
+		if (cburl == null || cburl.equals("")) {
+			payId = bean.CreateOrder(order);
+		} else {
+			if (cburl.indexOf("?") == -1) {
+				cburl += "?pt=" + Constants.PAY_TYPE_ALIPAY;
+			} else {
+				cburl += "&pt=" + Constants.PAY_TYPE_ALIPAY;
+			}
+			cburl += "&currency=" + Constants.CURRENCY_RMB;
+			cburl += "&unit=" + Constants.CURRENCY_UNIT_YUAN;
+
+			if (cburl != null && !cburl.equals("")) {
+				payId = bean.CreateOrder(order, cburl);
+			} else {
+				payId = bean.CreateOrder(order);
+			}
+		}
+
+		AlipayTokens tokens = null;
+		try {
+			tokens = getAlipayTokens(appid, authcode, refreshtoken);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		String date = DateUtil.formatDate(order.getCreateTime());
+		OrderIdVO orderIdVO = new OrderIdVO(payId, date);
+
+		orderIdVO.setMsg(getRequestParams(order, body, tokens));
+		if (tokens != null) {
+			orderIdVO.setToken(tokens.getRefreshToken());
+		}
+
+		JSONObject json = JSONObject.fromObject(orderIdVO);
+		return json.toString();
+	}
+
+	private static AlipayTokens getAlipayTokens(String appid, String authcode,
+			String refreshtoken) throws Exception {
+		String tokenurl = "";
+		// if (isTestmode() == true)
+		// {
+		// tokenurl = AlipayParams.ALIPAY_TOKEN_URL_TEST; //沙箱url不好使
+		// }
+		// else
+		{
+			tokenurl = AlipayParams.ALIPAY_TOKEN_URL_RELEASE;
+		}
+
+		AlipaySystemOauthTokenRequest request = new AlipaySystemOauthTokenRequest();
+
+		AlipayClient client = new DefaultAlipayClient(tokenurl, appid,
+				AlipayParams.KONG_PRIVATE_KEY_PKCS8, "json");
+
+		if (refreshtoken == null || refreshtoken.equals("")) {
+			// 用授权码获取token
+			request.setGrantType("authorization_code");
+			request.setCode(authcode);
+		} else {
+			// 用刷新token获取token
+			request.setGrantType("refresh_token");
+			request.setRefreshToken(refreshtoken);
+		}
+
+		AlipaySystemOauthTokenResponse res = client.execute(request);
+
+		AlipayTokens tokens = new AlipayTokens();
+		if (res != null) {
+			tokens.setAuthCode(authcode);
+			tokens.setAccessToken(res.getAccessToken());
+			tokens.setRefreshToken(res.getRefreshToken());
+		}
+
+		return tokens;
+	}
+
+	private static String getRequestParams(Orders order, String body,
+			AlipayTokens tokens) {
+		String params = "";
+		StringBuffer signbuf = new StringBuffer();
+		String notifyurl = "";
+		if (isTestmode() == true) {
+			notifyurl = AlipayParams.ALIPAY_NOTIFY_URL_TEST;
+		} else {
+			notifyurl = AlipayParams.ALIPAY_NOTIFY_URL_RELEASE;
+		}
+
+		try {
+			params += "_input_charset=\"";
+			params += AlipayParams.ALIPAY_CHARSET;
+			params += "\"";
+			signbuf.append("_input_charset=\"" + AlipayParams.ALIPAY_CHARSET
+					+ "\"");
+
+			params += "&body=\"";
+			params += body;
+			params += "\"";
+			signbuf.append("&body=\"" + body + "\"");
+
+			if (tokens.getAccessToken() != null
+					&& !tokens.getAccessToken().equals("")) {
+				params += "&extern_token=\"";
+				params += tokens.getAccessToken();
+				params += "\"";
+				signbuf.append("&extern_token=\"" + tokens.getAccessToken()
+						+ "\"");
+			}
+
+			params += "&notify_url=\"";
+			params += URLEncoder.encode(notifyurl, "utf-8");
+			params += "\"";
+			signbuf.append("&notify_url=\""
+					+ URLEncoder.encode(notifyurl, "utf-8") + "\"");
+
+			params += "&out_trade_no=\"";
+			params += order.getOrderId();
+			params += "\"";
+			signbuf.append("&out_trade_no=\"" + order.getOrderId() + "\"");
+
+			params += "&partner=\"";
+			params += AlipayParams.ALIPAY_PARTNER;
+			params += "\"";
+			signbuf.append("&partner=\"" + AlipayParams.ALIPAY_PARTNER + "\"");
+
+			params += "&payment_type=\"";
+			params += AlipayParams.ALIPAY_PAY_TYPE;
+			params += "\"";
+			signbuf.append("&payment_type=\"" + AlipayParams.ALIPAY_PAY_TYPE
+					+ "\"");
+
+			params += "&seller_id=\"";
+			params += AlipayParams.ALIPAY_SELLER_ID;
+			params += "\"";
+			signbuf.append("&seller_id=\"" + AlipayParams.ALIPAY_SELLER_ID
+					+ "\"");
+
+			params += "&service=\"";
+			params += AlipayParams.ALIPAY_SERVICE;
+			params += "\"";
+			signbuf.append("&service=\"" + AlipayParams.ALIPAY_SERVICE + "\"");
+
+			params += "&subject=\"";
+			params += order.getExInfo();
+			params += "\"";
+			signbuf.append("&subject=\"" + order.getExInfo() + "\"");
+
+			params += "&total_fee=\"";
+			params += order.getAmount();
+			params += "\"";
+			signbuf.append("&total_fee=\"" + order.getAmount() + "\"");
+
+			params += "&sign=\"";
+			params += getRequestSign(signbuf.toString());
+			params += "\"";
+			params += "&sign_type=\"";
+			params += AlipayParams.ALIPAY_SIGN_TYPE;
+			params += "\"";
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return params;
+	}
+
+	private static String getRequestSign(String signbuf) {
+		try {
+			String plainDataStr = RSA.sign(signbuf,
+					AlipayParams.KONG_PRIVATE_KEY_PKCS8, "UTF-8");
+
+			return URLEncoder.encode(plainDataStr, "utf-8");
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+		return "";
+	}
+
+	public static String checkOrdersStatus(String payIds) {
+		String[] orderIds = payIds.split(",");
+
+		OrdersBean bean = new OrdersBean();
+		List<Orders> orders = bean.qureyOrders(orderIds);
+		List<OrderStatusVO> statusret = new ArrayList<OrderStatusVO>();
+		for (int i = 0; i < orders.size(); i++) {
+			Orders order = orders.get(i);
+			order.setProductId(order.getItemId());
+			order.setSubId(order.getExInfo());
+			int status = order.getKStatus();
+			OrderStatusVO st = new OrderStatusVO();
+			st.setPayId(order.getOrderId());
+			if (status == Constants.K_STSTUS_DEFAULT
+					|| status == Constants.K_CON_ERROR) {
+				// 如果订单状态是初始订单或者是网络连接有问题状态，返回不知道
+				st.setStatus(3);
+			} else if (status == Constants.K_STSTUS_SUCCESS) {
+				// 如果订单已经成功，直接返回订单状态
+				st.setStatus(1);
+			} else {
+				// 订单已经失败，直接返回订单状态
+				st.setStatus(2);
+			}
+			statusret.add(st);
+		}
+		JSONArray arr = JSONArray.fromObject(statusret);
+
+		return arr.toString();
+	}
+
+	private static boolean validMessage(String sign, String signbuf)
+			throws Exception {
+		return RSA.verify(signbuf, sign, AlipayParams.ALIPAY_PUBLIC_KEY,
+				"UTF-8");
+	}
+
+	public static String getCallbackAlipay(AlipayOrderDataVO vo, String signbuf) {
+		OrdersBean bean = new OrdersBean();
+		String ret = "failed0";
+
+		try {
+			Orders order = bean.qureyOrder(vo.getOut_trade_no());
+			if (order != null) {
+				if (order.getKStatus() != Constants.K_STSTUS_SUCCESS) {
+					
+					 if (validMessage(vo.getSign(), signbuf)) {
+					 
+					String exinfo = vo.getSubject() + "#" + vo.getBuyer_id()
+							+ "#" + vo.getBuyer_email() + "#"
+							+ vo.getGmt_create() + "#" + vo.getGmt_payment()
+							+ "#" + vo.getDiscount();
+					bean.updateOrderAmountPayIdExinfo(vo.getOut_trade_no(),
+							vo.getTrade_no(), vo.getTotal_fee(), exinfo);
+					System.out.println("alipay cb status->"
+							+ vo.getTrade_status());
+					if (vo.getTrade_status().toUpperCase()
+							.equals("TRADE_FINISHED")
+							|| vo.getTrade_status().toUpperCase()
+									.equals("TRADE_SUCCESS")) {
+						// 成功
+						bean.updateOrderKStatus(vo.getOut_trade_no(),
+								Constants.K_STSTUS_SUCCESS);
+
+						notifyDaCheng(vo, order);
+					} else if (vo.getTrade_status().toUpperCase()
+							.equals("WAIT_BUYER_PAY")) {
+						// 等待付款，没有支付完成
+						bean.updateOrderCStatus(vo.getOut_trade_no(), "1");
+					} else {
+						bean.updateOrderKStatus(vo.getOut_trade_no(),
+								Constants.K_STSTUS_ERROR);
+					}
+					ret = "success";
+					
+					 } else { ret = "failed1";}
+					 
+				} else {
+					ret = "success";
+				}
+			} else {
+				ret = "failed2";
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			ret = "failed3";
+		}
+
+		return ret;
+	}
+
+	private static void notifyDaCheng(AlipayOrderDataVO vo, Orders order) {
+		try {
+			String gameid = "0";
+			if (order.getChannel() != null && order.getChannel().length() > 3) {
+				gameid = order.getChannel().substring(0, 3);
+			}
+
+			String minwen = "";
+			minwen = vo.getNotify_time();
+			minwen += vo.getTrade_no();
+			minwen += vo.getOut_trade_no();
+			minwen += vo.getPrice();
+			minwen += vo.getTrade_status();
+			minwen += order.getUId();
+			minwen += Constants.getAppIdByGameId(gameid);
+			String key;
+			if (isTestmode() == true) {
+				key = AlipayParams.DACHENG_NOTIFY_KEY_TEST;
+			} else {
+				key = AlipayParams.DACHENG_NOTIFY_KEY_RELEASE;
+			}
+			minwen += key;
+			String miwen = StringEncrypt.Encrypt(minwen);
+
+			String notifyurl = "";
+			if (isTestmode() == true) {
+				notifyurl = AlipayParams.DACHENG_NOTIFY_URL_TEST;
+			} else {
+				notifyurl = AlipayParams.DACHENG_NOTIFY_URL_RELEASE;
+			}
+			notifyurl += "?notify_time=" + URLEncoder.encode(vo.getNotify_time(), "UTF-8");
+			notifyurl += "&alipay_trade_no=" + vo.getTrade_no();
+			notifyurl += "&out_trade_no=" + vo.getOut_trade_no();
+			notifyurl += "&price=" + vo.getPrice();
+			notifyurl += "&tradestatus=" + vo.getTrade_status();
+			notifyurl += "&userid=" + order.getUId();
+			notifyurl += "&gameid=" + Constants.getAppIdByGameId(gameid);
+			notifyurl += "&sign=" + miwen;
+			System.out.println("alipay notify dacheng minwen->" + minwen);
+			System.out.println("alipay notify dacheng url->" + notifyurl);
+			URL url = new URL(notifyurl);
+			HttpURLConnection connection = (HttpURLConnection) url
+					.openConnection();
+			connection.setDoOutput(true);
+			OutputStreamWriter outs = new OutputStreamWriter(
+					connection.getOutputStream());
+
+			outs.flush();
+			outs.close();
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					connection.getInputStream()));
+			String res = "", line = null;
+			while ((line = in.readLine()) != null) {
+				res += line;
+			}
+
+			connection.disconnect();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+}

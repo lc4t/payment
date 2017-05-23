@@ -1,0 +1,40 @@
+﻿@charset "utf-8";
+/* CSS Document */
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, input, textarea, p, blockquote {margin:0;padding:0;}
+ul,ul li{ list-style:none}
+a {font-family: "宋体",Arial,Helvetica,sans-serif;outline: medium none;text-decoration: none;}
+table{border-collapse:collapse;}
+em{font-style:normal}
+.cl{clear:both;}
+a { color:#5C5C5C; text-decoration:none; }
+a:hover {color:#D15B14;}
+img{border:0}
+body {background:#fff;font-family:"宋体", Verdana, Arial, Helvetica, sans-serif;font-size:12px; color:#999}
+/*布局*/
+.main{ width:990px; height:1000px; margin:0 auto;}
+.pic_box{ width:988xp; height:198px; border:1px solid #d2d2d2; margin-top:10px;}
+.m_box{ width:988px; height:auto; border:1px solid #d2d2d2; border-top:none; margin-top:10px;}
+.m_box h2{ height:32px; line-height:32px; color:#000;border:1px solid #d2d2d2; border-left:none; border-right:none; background:#fef7eb; font-size:14px; padding-left:30px;}
+.m_box table.one{ width:700px; margin:20px 0 20px 200px;}
+.m_box table.one td{line-height:35px;}
+.m_box table.one td.forg{ color:#eb6000; text-align:right; font-weight:bold;}
+.m_box table.one input,.m_box table.one select.select{border:1px solid #eb6000;color:#999; margin-left:3px;}
+.m_box table.one select.select{width:165px;padding-top:2px;height:24px;}
+.m_box table.one input{padding-left:5px;width:160px;height:23px; line-height:23px; }
+.cuowu,.dui{background:url(../Images/cdui_ico.jpg) no-repeat;height:20px; line-height:20px; padding-left:25px; margin-left:3px;color:#999; }
+.cuowu{ background-position:0 0;}
+.dui{background-position:0 -20px;}
+.m_box table.two{ width:900px; margin:20px auto; color:#333}
+.m_box table.two td{line-height:25px;}
+.m_box table.two td strong.fred,.m_box table.two td strong span{color:#f00;}
+.m_box table.two td strong.fred{ padding:0 10px;}
+.m_box table.two td input.radio{ float:left; margin-top:5px;}
+.m_box table.two td label{ float:left; margin-left:3px; width:50px; display:inline}
+.m_box table.two td input.dy{ width:75px; padding-left:3px; border:1px solid #eb6000; height:17px; line-height:17px; margin:0 5px;}
+.m_box table.two td input.but{ background:url(../images/cdui_ico.jpg) 0 -39px repeat-x; height:22px; line-height:22px; width:50px; text-align:center; color:#eb6000; border:1px solid #eb6000; cursor:pointer; font-weight:bold; text-decoration:underline; margin:20px 0 0 150px;}
+.help{width:988px; height:auto; border:1px solid #d2d2d2; background:#e6e5e5; margin-top:10px; color:#000}
+.help dl{ line-height:24px; padding:15px 30px;}
+.help dl dt{ font-weight:bold; font-size:14px;}
+.zc{background: url("http://resource.kongzhong.com/jsImg/js_tBg.jpg") repeat-x scroll 0 0 transparent;}
+/*底部信息*/
+.foot{margin-top:30px;width:100%;}

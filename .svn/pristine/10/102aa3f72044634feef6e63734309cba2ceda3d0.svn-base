@@ -1,0 +1,256 @@
+package noumena.payment.onestore;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import noumena.payment.bean.OrdersBean;
+import noumena.payment.model.Orders;
+import noumena.payment.util.Constants;
+import noumena.payment.util.DateUtil;
+import noumena.payment.vo.OrderIdVO;
+import noumena.payment.vo.OrderStatusVO;
+
+import org.apache.wink.client.ClientResponse;
+import org.apache.wink.client.RestClient;
+
+public class OneStoreCharge {
+	//private static OneStoreParams params = new OneStoreParams();
+	private static String oneStoreCheckUrl = "https://iapdev.tstore.co.kr/digitalsignconfirm.iap";
+
+	public static String getTransactionId(Orders order) {
+		// order.setCurrency(Constants.CURRENCY_USD);
+		order.setUnit(Constants.CURRENCY_UNIT_YUAN);
+		OrdersBean bean = new OrdersBean();
+		String cburl = order.getCallbackUrl();
+		String payId;
+		if (cburl == null || cburl.equals("")) {
+			payId = bean.CreateOrder(order);
+		} else {
+			if (cburl.indexOf("?") == -1) {
+				cburl += "?pt=" + Constants.PAY_TYPE_ONESTORE;
+			} else {
+				cburl += "&pt=" + Constants.PAY_TYPE_ONESTORE;
+			}
+			cburl += "&currency=" + Constants.CURRENCY_KRW;
+			cburl += "&unit=" + Constants.CURRENCY_UNIT_YUAN;
+			payId = bean.CreateOrder(order, cburl);
+		}
+		order.setCallbackUrl(cburl);
+		String date = DateUtil.formatDate(order.getCreateTime());
+		OrderIdVO orderIdVO = new OrderIdVO(payId, date);
+		JSONObject json = JSONObject.fromObject(orderIdVO);
+		return json.toString();
+	}
+
+	/***
+	 * 检查订单状态
+	 * 
+	 * @param txid
+	 * @param appid
+	 * @param signdata
+	 * @return
+	 */
+	public static String checkOrdersStatus(String txid, String appid,
+			String signdata) {
+		OrderStatusVO st = new OrderStatusVO();
+		st.setPayId(txid);
+		st.setStatus(2);
+		;
+		System.out.println("OneStore check param =====("
+				+ DateUtil.getCurTimeStr() + ")============>txid" + txid
+				+ "===>appid" + appid + "===>signdata" + signdata);
+		OrdersBean bean = new OrdersBean();
+		// 从数据库中获取订单信息
+		Orders orders = bean.qureyOrder(txid);
+		st.setAmount(String.valueOf(orders.getAmount()));
+		System.out.println("OneStore orders =====(" + DateUtil.getCurTimeStr()
+				+ ")============>" + orders);
+		if (orders.getKStatus() == Constants.K_STSTUS_SUCCESS) {
+			// 如果订单已经成功，直接返回订单状态
+			st.setStatus(1);
+			System.out.println("OneStore check result  =====("
+					+ DateUtil.getCurTimeStr() + ")===========txid" + txid
+					+ "orders is already succeed");
+			return JSONObject.fromObject(st).toString();
+		}
+		// 去onestore提供的接口获取信息
+		String result = callOneStoreInterence(txid, appid, signdata);
+		System.out.println("OneStore callback  =====("
+				+ DateUtil.getCurTimeStr() + ")============txid" + txid + " "
+				+ result);
+		JSONObject obj = JSONObject.fromObject(result);
+		// 开始判断相关状态
+		String status = obj.getString("status");
+		// 请求返回的结果是不正常的
+		if ("9".equals(status)) {
+			System.out.println("OneStore check result  =====("
+					+ DateUtil.getCurTimeStr() + ")==========txid" + txid + " "
+					+ getFailInfo(obj));
+			st.setStatus(3);
+			return JSONObject.fromObject(st).toString();
+			// 请求成功的状态
+		} else if ("0".equals(status)) {
+
+			// 先判断一下金额产品是否对的上
+           return updateOrderStatus(st,orders,txid,bean,obj);
+		}
+		return JSONObject.fromObject(st).toString();
+	}
+    /***
+     * 判断订单信息并更新订单状态
+     * @param st
+     * @param order
+     * @param orderid
+     * @param bean
+     * @param obj
+     * @return
+     */
+	private static String updateOrderStatus(OrderStatusVO st, Orders order,
+			String orderid,  OrdersBean bean, JSONObject obj) {
+		JSONArray orderData = JSONArray.fromObject(obj.get("product"));
+		if (orderData != null && !orderData.isEmpty()) {
+			JSONObject producesInfo = JSONObject.fromObject(orderData.get(0));
+			if (!producesInfo.getString("product_id").equals(
+					order.getProductId())) {
+				System.out.println("OneStore check result  =====("
+						+ DateUtil.getCurTimeStr() + ")==========txid"
+						+ orderid + " "
+						+ "product_id is different====>product_id"
+						+ producesInfo.getString("product_id") + "order"
+						+ order.getProductId());
+				st.setStatus(2);
+				return JSONObject.fromObject(st).toString();
+			}
+			if (!producesInfo.getString("charge_amount").equals(
+					order.getAmount())) {
+				System.out.println("OneStore check result  =====("
+						+ DateUtil.getCurTimeStr() + ")==========txid"
+						+ orderid + " "
+						+ "charge_amount is different====>product_id"
+						+ producesInfo.getString("charge_amount") + "order"
+						+ order.getAmount());
+				st.setStatus(2);
+				return JSONObject.fromObject(st).toString();
+			}
+
+		}
+		// 更改订单状态到成功
+		if (order.getKStatus() != Constants.K_STSTUS_SUCCESS) {
+			bean.updateOrderAmountPayIdExinfo(orderid, orderid, String.valueOf(order.getAmount()), "");
+			bean.updateOrderKStatus(orderid, Constants.K_STSTUS_SUCCESS);
+			st.setStatus(1);
+			System.out.println("OneStore check result  =====("
+					+ DateUtil.getCurTimeStr() + ")==========txid" + orderid
+					+ " is ok");
+			return JSONObject.fromObject(st).toString();
+		}
+		System.out.println("OneStore check result  =====("
+				+ DateUtil.getCurTimeStr() + ")==========txid" + orderid
+				+ " is fail");
+		st.setStatus(2);
+		return JSONObject.fromObject(st).toString();
+	}
+
+	/***
+	 * 根据状态获取
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	private static String getFailInfo(JSONObject obj) {
+		String detail = obj.getString("detail");
+
+		if ("1000".equals(detail)) {
+			ResultBean resultBean = new ResultBean(
+					false,
+					"Required parameters insufficiency(Code that occurs when the parameters among TXId, APPID and signdata are insufficient when requesting the search",
+					"缺少必要的参数");
+			return JSONObject.fromObject(resultBean).toString();
+		}
+		if ("9100".equals(detail)) {
+			ResultBean resultBean = new ResultBean(
+					false,
+					"No Purchase History(In case of no purchase history through signdata)",
+					"没有该支付记录");
+			return JSONObject.fromObject(resultBean).toString();
+		}
+		if ("9113".equals(detail)) {
+			ResultBean resultBean = new ResultBean(false,
+					"E-Receipt Data Validity Verification Error",
+					"验证信息错误，应该是signdata 不正确");
+			return JSONObject.fromObject(resultBean).toString();
+		}
+		if ("9999".equals(detail)) {
+			ResultBean resultBean = new ResultBean(
+					false,
+					" SYSTEM ERROR(It is an internal error of IAP. In this case, it is required to ask for the Operation Team.)",
+					"棒槌的系统炸了");
+			return JSONObject.fromObject(resultBean).toString();
+		} else {
+			ResultBean resultBean = new ResultBean(false, "I don't know",
+					"未知的错误代码");
+			return JSONObject.fromObject(resultBean).toString();
+		}
+
+	}
+
+	/****
+	 * 请求oneStore提供的接口获得支付信息
+	 * 
+	 * @param txid
+	 * @param appid
+	 * @param signData
+	 */
+	private static String callOneStoreInterence(String txid, String appid,
+			String signData) {
+		OneStoreRequestData oneStoreRequestData = new OneStoreRequestData(txid,
+				appid, signData);
+		RestClient client = new RestClient();
+		org.apache.wink.client.Resource resource = client
+				.resource(oneStoreCheckUrl);
+		String jsonString = JSONObject.fromObject(oneStoreRequestData)
+				.toString();
+		ClientResponse response = (resource).post(jsonString);
+		// 接收返回响应体
+		String result = response.getEntity(String.class);
+		System.out.println("OneStore orders callback =====("
+				+ DateUtil.getCurTimeStr() + ")============>jsonString"
+				+ jsonString + "============>result");
+		return result;
+	}
+
+	public static void main(String args[]) {
+
+		String aString = callOneStoreInterence("asasasas", "ssasas", "appid");
+		System.out.println(aString);
+
+		// 0c8865930fc94d8d61b1bdcc8312a65d
+		/*
+		 * String res = ""; try { URL url = new URL(
+		 * "http://game.jinggle.net:8080/payment/kongzhong/notice?orderid=J201617370802000001&goodid=SHIPHUNTER_DIAMOND_01&goodname=花费6购买60钻石&serverid=200&userid=62733206723035136&pt=5049&currency=RMB&unit=100&status=1&payId=2016062217371432508Z&flowid=2016062221001004650271412320&payrealprice=6.00"
+		 * ); System.out.println(url); HttpURLConnection connection =
+		 * (HttpURLConnection) url .openConnection();
+		 * 
+		 * connection.setDoOutput(true); connection.setDoInput(true);
+		 * connection.setInstanceFollowRedirects(false);
+		 * connection.setUseCaches(false);
+		 * connection.setRequestProperty("Connection", "Keep-Alive");
+		 * connection.setRequestMethod("GET");
+		 * connection.setRequestProperty("Content-Type",
+		 * "application/x-www-form-urlencoded");
+		 * connection.setRequestProperty("charset", "utf-8");
+		 * 
+		 * connection.connect();
+		 * 
+		 * DataOutputStream wr = new DataOutputStream(
+		 * connection.getOutputStream()); wr.flush(); wr.close();
+		 * 
+		 * BufferedReader in = new BufferedReader(new InputStreamReader(
+		 * connection.getInputStream())); String line = null; while ((line =
+		 * in.readLine()) != null) { res += line; } connection.disconnect();
+		 * 
+		 * } catch (Exception e) { e.printStackTrace(); }
+		 * System.out.println(res);
+		 */
+	}
+
+}

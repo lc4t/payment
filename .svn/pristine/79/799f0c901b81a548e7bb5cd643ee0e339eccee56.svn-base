@@ -1,0 +1,314 @@
+package noumena.payment.card19;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import noumena.payment.bean.OrdersBean;
+import noumena.payment.model.Orders;
+import noumena.payment.util.Constants;
+import noumena.payment.util.DateUtil;
+import noumena.payment.util.OSUtil;
+import noumena.payment.util.StringEncrypt;
+import noumena.payment.vo.OrderIdVO;
+import noumena.payment.vo.OrderStatusVO;
+
+public class Card19Charge
+{
+	private static Card19Params params = new Card19Params();
+	private static boolean testmode = false;
+	
+	public static boolean isTestmode()
+	{
+		return testmode;
+	}
+	public static void setTestmode(boolean testmode)
+	{
+		Card19Charge.testmode = testmode;
+	}
+	
+	public static String getTransactionId(Orders order, String cardnum1, String cardnum2, String version_id, String merchant_id, String order_date, String currency)
+	{
+		order.setCurrency(Constants.CURRENCY_RMB);
+		order.setUnit(Constants.CURRENCY_UNIT_YUAN);
+		
+		OrdersBean bean = new OrdersBean();
+		String cburl = order.getCallbackUrl();
+		String payId;
+		if (cburl == null || cburl.equals(""))
+		{
+			payId = bean.CreateOrder(order);
+		}
+		else
+		{
+			if (cburl.indexOf("?") == -1)
+			{
+				cburl += "?pt=" + Constants.PAY_TYPE_CARD19;
+			}
+			else
+			{
+				cburl += "&pt=" + Constants.PAY_TYPE_CARD19;
+			}
+			cburl += "&currency=" + Constants.CURRENCY_RMB;
+			cburl += "&unit=" + Constants.CURRENCY_UNIT_YUAN;
+			
+			payId = bean.CreateOrder(order, cburl);
+		}
+		order.setCallbackUrl(cburl);
+		String date = DateUtil.formatDate(order.getCreateTime());
+		OrderIdVO orderIdVO = new OrderIdVO(payId, date);
+		
+		String msg = genCard19PayInfo(order, cardnum1, cardnum2, version_id, merchant_id, order_date, currency);
+		orderIdVO.setMsg(msg);
+		
+		JSONObject json = JSONObject.fromObject(orderIdVO);
+		return json.toString();
+	}
+	
+	//生成支付时的请求参数
+	private static String genCard19PayInfo(Orders order, String cardnum1, String cardnum2, String version_id, String merchant_id, String order_date, String currency)
+	{
+		//0、得到三大运营商的pcid和pmid
+		String pcid = getPcIdByCards(cardnum1, cardnum2).get("pcid");
+		String pmid = getPcIdByCards(cardnum1, cardnum2).get("pmid");
+		
+		//1、对卡、密进行DES加密
+		try
+		{
+			cardnum1 = CipherUtil.encryptData(cardnum1, Card19Params.MERCHANT_DES_KEY);
+			cardnum2 = CipherUtil.encryptData(cardnum2, Card19Params.MERCHANT_DES_KEY);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		
+		//2、生成verifystring
+		//version_id=%s&merchant_id=%s&order_date=%s&order_id=%s&amount=%s&currency=%s&cardnum1=%s&cardnum2=%s&pm_id=%s&pc_id=%s&merchant_key=%s
+		String minwen = "";
+		minwen += "version_id=" + version_id;
+		minwen += "&merchant_id=" + merchant_id;
+		minwen += "&order_date=" + order_date;
+		minwen += "&order_id=" + order.getOrderId();
+		String payprice = new DecimalFormat("0.00").format(new Float(order.getAmount()));
+		minwen += "&amount=" + payprice;
+		minwen += "&currency=" + currency;
+		minwen += "&cardnum1=" + cardnum1;
+		minwen += "&cardnum2=" + cardnum2;
+		minwen += "&pm_id=" + pmid;
+		minwen += "&pc_id=" + pcid;
+		minwen += "&merchant_key=" + Card19Params.MERCHANT_KEY;
+		System.out.println("miwen:"+minwen);
+		String miwen = StringEncrypt.Encrypt(minwen);
+		System.out.println(miwen);
+		//3、把所有需要返回给客户端的支付参数生成json串返回
+		Card19OrderInfoVO orderinfo = new Card19OrderInfoVO();
+		orderinfo.setCardnum1(cardnum1);
+		orderinfo.setCardnum2(cardnum2);
+		orderinfo.setPc_id(pcid);
+		orderinfo.setPm_id(pmid);
+		orderinfo.setVerifystring(miwen);
+		
+		JSONObject json = JSONObject.fromObject(orderinfo);
+		return json.toString();
+	}
+	
+	public static HashMap<String, String> getPcIdByCards(String card, String pwd)
+	{
+		HashMap<String, String> ret = new HashMap<String, String>();
+		
+		String pcid = "";
+		String pmid = "";
+
+		ret.put("pcid", pcid);
+		ret.put("pmid", pmid);
+		
+		if (card == null || pwd == null)
+		{
+			return ret;
+		}
+		if (card.length() == 17 && pwd.length() == 18)
+		{
+			pcid = "CMJFK00010001"; // 移动全国卡
+			pmid = "CMJFK";
+		}
+		else if (card.length() == 16 && pwd.length() == 21)
+		{
+			pcid = "CMJFK00010102"; // 移动辽宁本地卡
+			pcid = "CMJFK00010001"; // 移动全国卡
+			pmid = "CMJFK";
+		}
+		else if (card.length() == 10 && pwd.length() == 8)
+		{
+			pcid = "CMJFK00010112"; // 移动浙江本地卡
+			pcid = "CMJFK00010001"; // 移动全国卡
+			pmid = "CMJFK";
+		}
+		else if (card.length() == 16 && pwd.length() == 17)
+		{
+			if ((card.substring(0, 1).equals("2") || card.substring(0, 1).equals("3"))&& pwd.substring(0, 3).equals("110"))
+			{
+				pcid = "CMJFK00010111"; // 移动江苏本地卡
+				pcid = "CMJFK00010001"; // 移动全国卡
+				pmid = "CMJFK";
+			}
+			else
+			{
+				pcid = "CMJFK00010014"; // 移动福建本地卡
+				pcid = "CMJFK00010001"; // 移动全国卡
+				pmid = "CMJFK";
+			}
+		}
+		else if (card.length() == 15 && pwd.length() == 19)
+		{
+			pcid = "LTJFK00020000";// 全国联通一卡充
+			pmid = "LTJFK";
+		}
+		else if (card.length() == 19 && pwd.length() == 18)
+		{
+			pcid = "DXJFK00010001";// 中国电信充值付费卡
+			pmid = "DXJFK";
+		}
+
+		ret.put("pcid", pcid);
+		ret.put("pmid", pmid);
+		
+		return ret;
+	}
+	
+	public static String checkOrdersStatus(String payIds)
+	{
+		String[] orderIds = payIds.split(",");
+
+		OrdersBean bean = new OrdersBean();
+		List<Orders> orders = bean.qureyOrders(orderIds);
+		List<OrderStatusVO> statusret = new ArrayList<OrderStatusVO>();
+		for (int i = 0 ; i < orders.size() ; i++)
+		{
+			Orders order = orders.get(i);
+			int status = order.getKStatus();
+			OrderStatusVO st = new OrderStatusVO();
+			st.setPayId(order.getOrderId());
+			if (status == Constants.K_STSTUS_DEFAULT || status == Constants.K_CON_ERROR)
+			{
+				//如果订单状态是初始订单或者是网络连接有问题状态，返回不知道
+				Calendar cal1 = DateUtil.getCalendar(order.getCreateTime());
+				Calendar cal2 = Calendar.getInstance();
+				if ((cal2.getTimeInMillis() - cal1.getTimeInMillis()) >= Constants.ORDER_TIMEOUT)
+				{
+					st.setStatus(4);
+				}
+				else
+				{
+					st.setStatus(3);
+				}
+			}
+			else if (status == Constants.K_STSTUS_SUCCESS)
+			{
+				//如果订单已经成功，直接返回订单状态
+				st.setStatus(1);
+			}
+			else
+			{
+				//订单已经失败，直接返回订单状态
+				st.setStatus(2);
+			}
+			statusret.add(st);
+		}
+		JSONArray arr = JSONArray.fromObject(statusret);
+		
+		return arr.toString();
+	}
+	
+	public static String getCallbackFromCard19(Map<String,String> card19params)
+	{
+		//version_id=%s&merchant_id=%s&order_date=%s&order_id=%s&currency=%s&pay_sq=%s&pay_date=%s&card_num=%s&card_pwd=%s&pc_id=%s&card_status=%s&card_code=%s&card_amount=%s&merchant_key=%s
+    	String ret = "Y";
+    	String minwen = "";
+    	String miwen = "";
+    	String orderid = card19params.get("order_id");
+
+		minwen += "version_id=" + card19params.get("version_id");
+		minwen += "&merchant_id=" + card19params.get("merchant_id");
+		minwen += "&order_date=" + card19params.get("order_date");
+		minwen += "&order_id=" + card19params.get("order_id");
+		minwen += "&currency=" + card19params.get("currency");
+		minwen += "&pay_sq=" + card19params.get("pay_sq");
+		minwen += "&pay_date=" + card19params.get("pay_date");
+		minwen += "&card_num=" + card19params.get("card_num");
+		minwen += "&card_pwd=" + card19params.get("card_pwd");
+		minwen += "&pc_id=" + card19params.get("pc_id");
+		minwen += "&card_status=" + card19params.get("card_status");
+		minwen += "&card_code=" + card19params.get("card_code");
+		minwen += "&card_amount=" + card19params.get("card_amount");
+		minwen += "&merchant_key=" + Card19Params.MERCHANT_KEY;
+		
+		miwen = StringEncrypt.Encrypt(minwen);
+		
+    	if (miwen.equals(card19params.get("verifystring")))
+		{
+			//服务器签名验证成功
+			//请在这里加上游戏的业务逻辑程序代码
+			//获取通知返回参数，可参考接口文档中通知参数列表(以下仅供参考)
+    		// 交易处理成功
+			OrdersBean bean = new OrdersBean();
+			try
+			{
+				Orders order = bean.qureyOrder(orderid);
+				if (order != null)
+				{
+					String cardid = card19params.get("card_num");
+					cardid = CipherUtil.decryptData(cardid, Card19Params.MERCHANT_DES_KEY);
+					bean.updateOrderAmountPayIdExinfo(orderid, cardid, card19params.get("card_amount"), card19params.get("currency"));
+		    		if (card19params.get("card_status").equals("0") && !card19params.get("card_code").equals("00002"))
+		    		{
+						//支付成功
+						if (order.getKStatus() != Constants.K_STSTUS_SUCCESS)
+						{
+							bean.updateOrderKStatus(orderid, Constants.K_STSTUS_SUCCESS);
+						}
+						else
+						{
+							System.out.println("19pay order (" + order.getOrderId() + ") had been succeed");
+						}
+		    		}
+		    		else
+		    		{
+						//支付失败
+						bean.updateOrderKStatus(orderid, Constants.K_STSTUS_ERROR);
+		    		}
+				}
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		else
+		{
+			// 服务器签名验证失败
+			ret = "N";
+		}
+
+		System.out.println("19pay cb ->" + card19params.toString());
+		System.out.println("19pay cb ret->" + ret);
+		
+		String path = OSUtil.getRootPath() + "../../logs/19paycb/" + DateUtil.getCurTimeStr().substring(0, 8);
+		OSUtil.makeDirs(path);
+		String filename = path + "/" + orderid;
+		
+		OSUtil.saveFile(filename, card19params.toString());
+		
+		return ret;
+	}
+
+	public static void init()
+	{
+	params.addApp("xixuegui", "10012", "9023f6dff7a55a481e0266b8765e6d97");
+	}
+}

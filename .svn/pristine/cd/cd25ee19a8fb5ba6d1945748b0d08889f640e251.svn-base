@@ -1,0 +1,485 @@
+package noumena.payment.uc;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import noumena.payment.bean.OrdersBean;
+import noumena.payment.getorders.OrderUtil;
+import noumena.payment.model.Orders;
+import noumena.payment.userverify.ChannelVerify;
+import noumena.payment.userverify.util.StringEncrypt;
+import noumena.payment.util.Constants;
+import noumena.payment.util.DateUtil;
+import noumena.payment.util.OSUtil;
+import noumena.payment.vo.OrderIdVO;
+import noumena.payment.vo.OrderStatusVO;
+
+import org.apache.commons.codec.binary.Hex;
+import org.codehaus.jackson.type.TypeReference;
+
+public class UCCharge {
+	private static UCParams params = new UCParams();
+
+	public static void init() {
+		params.initParams(UCParams.CHANNEL_ID, new UCParamsVO());
+		// params.addApp("sss", "731592", "f8ff6a7f2fcd308005b6a0bd1542af20");
+	}
+
+	public static String getTransactionId(Orders order) {
+		order.setCurrency(Constants.CURRENCY_RMB);
+		order.setUnit(Constants.CURRENCY_UNIT_YUAN);
+
+		OrdersBean bean = new OrdersBean();
+		String cburl = order.getCallbackUrl();
+		String payId;
+		if (cburl == null || cburl.equals("")) {
+			payId = bean.CreateOrder(order);
+		} else {
+			if (cburl.indexOf("?") == -1) {
+				cburl += "?pt=" + Constants.PAY_TYPE_UC;
+			} else {
+				cburl += "&pt=" + Constants.PAY_TYPE_UC;
+			}
+			cburl += "&currency=" + Constants.CURRENCY_RMB;
+			cburl += "&unit=" + Constants.CURRENCY_UNIT_YUAN;
+			String sign = params.getParams(order.getExInfo()).getAppkey();
+			System.out.println("uckey"
+					+ params.getParams(order.getExInfo()).getAppkey());
+			order.setSign(sign);
+			order.setCallbackUrl(cburl);
+			payId = bean.CreateOrder(order, cburl);
+		}
+
+		String date = DateUtil.formatDate(order.getCreateTime());
+		OrderIdVO orderIdVO = new OrderIdVO(payId, date);
+		JSONObject json = JSONObject.fromObject(orderIdVO);
+		return json.toString();
+	}
+
+	public static String checkOrdersStatus(String payIds) {
+		String[] orderIds = payIds.split(",");
+
+		OrdersBean bean = new OrdersBean();
+		List<Orders> orders = bean.qureyOrders(orderIds);
+		List<OrderStatusVO> statusret = new ArrayList<OrderStatusVO>();
+		for (int i = 0; i < orders.size(); i++) {
+			Orders order = orders.get(i);
+			order.setProductId(order.getItemId());
+			order.setSubId(order.getExInfo());
+			int status = order.getKStatus();
+			OrderStatusVO st = new OrderStatusVO();
+			st.setPayId(order.getOrderId());
+			if (status == Constants.K_STSTUS_DEFAULT
+					|| status == Constants.K_CON_ERROR) {
+				Calendar cal1 = DateUtil.getCalendar(order.getCreateTime());
+				Calendar cal2 = Calendar.getInstance();
+				if ((cal2.getTimeInMillis() - cal1.getTimeInMillis()) >= Constants.ORDER_TIMEOUT) {
+					status = Constants.K_STSTUS_TIMEOUT;
+					st.setStatus(2);
+				} else {
+					st.setStatus(3);
+				}
+			} else if (status == Constants.K_STSTUS_SUCCESS) {
+				// 如果订单已经成功，直接返回订单状态
+				st.setStatus(1);
+			} else {
+				// 订单已经失败，直接返回订单状态
+				st.setStatus(2);
+			}
+			statusret.add(st);
+		}
+		JSONArray arr = JSONArray.fromObject(statusret);
+
+		return arr.toString();
+	}
+
+	public static void getCallbackFromUC(String res) {
+		try {
+			JSONObject json = JSONObject.fromObject(res);
+			UCOrderVO ordervo = (UCOrderVO) JSONObject.toBean(json,
+					UCOrderVO.class);
+			String orderid = "";
+			String payid = "";
+			String exinfo = "";
+
+			if (ordervo.getData().getTradeId() == null) {
+				// 网络游戏
+				orderid = ordervo.getData().getCallbackInfo();
+				payid = ordervo.getData().getOrderId();
+				exinfo = ordervo.getData().getPayWay() + "#"
+						+ ordervo.getData().getUcid();
+			} else {
+				// 单机游戏
+				orderid = ordervo.getData().getOrderId();
+				payid = ordervo.getData().getTradeId();
+				exinfo = ordervo.getData().getFailedDesc();
+			}
+
+			OrdersBean bean = new OrdersBean();
+			Orders order = bean.qureyOrder(orderid);
+
+			if (order.getAmount().equals(
+					Float.valueOf(ordervo.getData().getAmount()))) {
+				bean.updateOrderAmountPayIdExinfo(orderid, payid, ordervo
+						.getData().getAmount(), exinfo);
+				if (ordervo.getData().getOrderStatus().toLowerCase()
+						.equals("s")) {
+					// 支付成功
+					bean.updateOrderKStatus(orderid, Constants.K_STSTUS_SUCCESS);
+				} else {
+					// 支付失败
+					bean.updateOrderKStatusNoCB(orderid,
+							Constants.K_STSTUS_ERROR);
+				}
+			} else {
+				System.out.println("=====(" + DateUtil.getCurTimeStr()
+						+ ")=====channel(uc cb)->(order:" + order.getOrderId()
+						+ "),jin e bu pi pei");
+			}
+
+			String path = OSUtil.getRootPath() + "../../logs/uccb/"
+					+ DateUtil.getCurTimeStr().substring(0, 8);
+			OSUtil.makeDirs(path);
+			String filename = path + "/" + orderid;
+			OSUtil.saveFile(filename, res);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/***
+	 * 验证订单
+	 * 
+	 * @param map
+	 * @throws Exception
+	 */
+	public static String updateOrderStatus(String res) throws Exception {
+		JSONObject json = JSONObject.fromObject(res);
+		UCOrderVO ordervo = (UCOrderVO) JSONObject
+				.toBean(json, UCOrderVO.class);
+		String exinfo = ordervo.getData().getPayWay() + "#"
+				+ ordervo.getData().getAccountId()
+				+ ordervo.getData().getFailedDesc();
+		String respSign = (String) json.getString("sign");
+		@SuppressWarnings("unchecked")
+		Map<String, Object> data = (Map<String, Object>) JacksonUtil.decode(
+				json.getString("data"),
+				new TypeReference<Map<String, Object>>() {
+				});
+		OrdersBean bean = new OrdersBean();
+		Orders orders = bean.qureyOrder(ordervo.getData().getCpOrderId());
+		if (orders == null) {
+			System.out.println(ordervo.getData().getCpOrderId()
+					+ "updateOrderStatus=================>order is not exist");
+			return "FAILURE";
+		}
+		System.out.println(ordervo.getData().getCpOrderId()
+				+ "updateOrderStatus=================>" + data.toString());
+		System.out.println(ordervo.getData().getCpOrderId()
+				+ "updateOrderStatus=================>" + orders.toString()
+				+ " " + orders.getSign());
+		String sign = createMD5Sign(data, "", orders.getSign());
+		System.out.println(ordervo.getData().getCpOrderId()
+				+ "updateOrderStatus sign =================>" + sign + " "
+				+ respSign);
+		if (!respSign.equals(sign)) {
+			System.out.println(ordervo.getData().getCpOrderId()
+					+ "updateOrderStatus=================>sign is serror"
+					+ sign);
+			return "FAILURE";
+		}
+
+		if (!orders.getAmount().equals(
+				Float.valueOf(ordervo.getData().getAmount()))) {
+			System.out.println(ordervo.getData().getCpOrderId()
+					+ "updateOrderStatus=================>amount is different"
+					+ orders.getAmount() + " "
+					+ Float.valueOf(ordervo.getData().getAmount()));
+			return "FAILURE";
+
+		}
+		System.out.println(ordervo.getData().getCpOrderId()
+				+ "updateOrderStatus=================>order"
+				+ orders.toString());
+		if (!ordervo.getData().getOrderStatus().toLowerCase().equals("s")) {
+			System.out.println(ordervo.getData().getCpOrderId()
+					+ "updateOrderStatus=================>order is fail"
+					+ ordervo.getData().getFailedDesc());
+			return "FAILURE";
+		}
+		if(orders.getKStatus().equals(Constants.K_STSTUS_SUCCESS)){
+			System.out.println(ordervo.getData().getCpOrderId()+"updateOrderStatus=================>order is already succeed");
+			return "SUCCESS";
+		}
+		if(!orders.getKStatus().equals(Constants.K_STSTUS_DEFAULT)){
+			System.out.println(ordervo.getData().getCpOrderId()+"updateOrderStatus=================>order is used");
+			return "FAILURE";
+		}
+		bean.updateOrderAmountPayIdExinfo(ordervo.getData().getCpOrderId(),
+				ordervo.getData().getOrderId(), ordervo.getData().getAmount(),
+				exinfo);
+		bean.updateOrderKStatus(ordervo.getData().getCpOrderId(),
+				Constants.K_STSTUS_SUCCESS);
+		String path = OSUtil.getRootPath() + "../../logs/uccb/"
+				+ DateUtil.getCurTimeStr().substring(0, 8);
+		OSUtil.makeDirs(path);
+		String filename = path + "/" + ordervo.getData().getCpOrderId();
+		OSUtil.saveFile(filename, json.toString());
+		System.out.println(ordervo.getData().getCpOrderId()
+				+ "updateOrderStatus=================>order is success");
+		return "SUCCESS";
+	}
+
+	/***
+	 * 生成 加密串
+	 * 
+	 * @param map
+	 * @return
+	 * @throws Exception
+	 */
+	public static String getSign(Map<String, String> map,
+			HttpServletRequest request) throws Exception {
+		Map<String, Object> resp = new HashMap<String, Object>();
+		map.remove("model");
+		map.remove("signType");
+		String appid = map.remove("appid");
+		JSONObject jsonObject = JSONObject.fromObject(map);
+		OrderStatusVO orderIdVO = new OrderStatusVO();
+		System.out.println("uc getkey================ jsonObject"
+				+ jsonObject.toString());
+		@SuppressWarnings("unchecked")
+		Map<String, Object> data = (Map<String, Object>) JacksonUtil.decode(
+				jsonObject.toString(),
+				new TypeReference<Map<String, Object>>() {
+				});
+		System.out.println("uc getkey================ preSign"
+				+ data.toString());
+
+		String sign = createMD5Sign(data, "", params.getParams(appid)
+				.getAppkey());
+		orderIdVO.setTid(sign);
+		orderIdVO.setStatus(1);
+		orderIdVO.setPayId(map.get("cpOrderId"));
+		System.out.println("uc getkey================ sign" + sign);
+		return JSONObject.fromObject(orderIdVO).toString();
+
+	}
+
+	/**
+	 * 按照接口规范生成请求数据的MD5签名
+	 * 
+	 * @param params
+	 *            业务数据
+	 * @param caller
+	 *            客户端平台
+	 * @param secKey
+	 *            MD5签名用的密钥
+	 * @return MD5签名生成的字符串。如果传入的参数有一个为null，将返回null
+	 */
+	public static String createMD5Sign(Map<String, Object> params,
+			String caller, String secKey) {
+		if (null == params || null == caller || null == secKey) {
+			return null;
+		}
+
+		String temp = caller + createSignData(params, null) + secKey;
+		temp=temp.replace("&", "");
+		System.out.println("uc persign==" + temp);
+
+		return hexMD5(temp);
+	}
+
+	/**
+	 * 将Map数据组装成待签名字符串
+	 * 
+	 * @param params
+	 *            待签名的参数列表
+	 * @param notIn
+	 *            不参与签名的参数名列表
+	 * @return 待签名字符串。如果参数params为null，将返回null
+	 */
+	public static String createSignData(Map<String, Object> params,
+			String[] notIn) {
+		if (null == params) {
+			return null;
+		}
+
+		StringBuilder content = new StringBuilder(200);
+
+		// 按照key排序
+		List<String> notInList = null;
+		if (null != notIn) {
+			notInList = Arrays.asList(notIn);
+		}
+		List<String> keys = new ArrayList<String>(params.keySet());
+		Collections.sort(keys);
+		for (int i = 0; i < keys.size(); i++) {
+			String key = (String) keys.get(i);
+
+			if (notIn != null && notInList.contains(key))
+				continue;
+
+			String value = params.get(key) == null ? "" : params.get(key)
+					.toString();
+			content.append(key).append("=").append(value);
+		}
+
+		String result = content.toString();
+		System.out.println("uc getkey  persignResult result" + result);
+
+		return result;
+	}
+
+	/**
+	 * 对字符串进行MD5签名
+	 * 
+	 * @param value
+	 *            待MD5签名的字符串
+	 * @return 生成的MD5签名字符串。如果传入null，返回null；如果签名过程中抛出异常，将返回null
+	 */
+	public static String hexMD5(String value) {
+		if (null == value) {
+			return null;
+		}
+
+		MessageDigest messageDigest = null;
+		try {
+			messageDigest = MessageDigest.getInstance("MD5");
+			messageDigest.reset();
+			messageDigest.update(value.getBytes("utf8"));
+			byte[] digest = messageDigest.digest();
+			return byteToHexString(digest);
+		} catch (NoSuchAlgorithmException e) {
+			// ignore
+		} catch (UnsupportedEncodingException e) {
+			// ignore
+		}
+
+		return null;
+	}
+
+	/**
+	 * 将字节数组转换成十六进制字符串
+	 * 
+	 * @param bytes
+	 *            字节数组
+	 * @return 十六进制字符串
+	 */
+	public static String byteToHexString(byte[] bytes) {
+		if (null == bytes) {
+			return null;
+		}
+
+		return String.valueOf(Hex.encodeHex(bytes));
+	}
+
+	/****
+	 * 获取accountId
+	 * 
+	 * @return
+	 */
+	public static String getAccountId(String token, String appid) {
+		OrderStatusVO orderIdVO = new OrderStatusVO();
+		String uid = "";
+
+		// true - 新游戏调新接口， false - 旧游戏调旧接口
+		try {
+			String urlstr = "";
+			String id = System.currentTimeMillis() + "";
+			String data = "{\"sid\":\"" + token + "\"}";
+			String game = "";
+			String minwen = "";
+			urlstr = "http://sdk.9game.cn/cp/account.verifySession";
+			game = "{\"gameId\":\"" + appid + "\"}";
+			minwen = "sid=" + token + params.getParams(appid).getAppkey();
+			System.out.println("getAccountId" + minwen);
+			String miwen = StringEncrypt.Encrypt(minwen);
+			String body = "{";
+			body += "\"id\":" + id + ",";
+			body += "\"data\":" + data + ",";
+			body += "\"game\":" + game + ",";
+			body += "\"sign\":\"" + miwen + "\"";
+			body += "}";
+
+			ChannelVerify.GenerateLog("newuc get user info urlstr ->" + urlstr);
+			ChannelVerify.GenerateLog("newuc get user info body ->" + body);
+			URL url = new URL(urlstr);
+			HttpURLConnection connection = (HttpURLConnection) url
+					.openConnection();
+			connection.setDoOutput(true);
+			OutputStreamWriter outs = new OutputStreamWriter(
+					connection.getOutputStream());
+
+			outs.flush();
+			outs.write(body);
+			outs.close();
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					connection.getInputStream()));
+			String res = "", line = null;
+			while ((line = in.readLine()) != null) {
+				res += line;
+			}
+
+			connection.disconnect();
+
+			ChannelVerify.GenerateLog("newuc get user info ret ->" + res);
+
+			JSONObject json = JSONObject.fromObject(res);
+			String retstate = json.getString("state");
+			String retdata = json.getString("data");
+			json = JSONObject.fromObject(retstate);
+			String retcode = json.getString("code");
+			if (retcode.equals("1")) {
+				json = JSONObject.fromObject(retdata);
+
+				uid = json.getString("accountId");
+				orderIdVO.setStatus(1);
+				orderIdVO.setTid(uid);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			orderIdVO.setStatus(2);
+		}
+
+		return JSONObject.fromObject(orderIdVO).toString();
+	}
+
+	public static void main(String arg[]) throws Exception {
+
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder
+				.append("{\"ver\":\"2.0\",\"data\":{\"gameId\":\"731592\",\"accountId\":\"8247e3f4b3c7951d24fb688416cd3afb\",\"creator\":\"JY\",\"amount\":\"0.01\",\"orderId\":\"20161226145146001584\",\"failedDesc\":\"\",\"callbackInfo\":\"http://www.baidu.com\",\"payWay\":\"999\",\"orderStatus\":\"S\",\"cpOrderId\":\"201612261451479190GT\"},\"sign\":\"f9002b4318c208fce68178efdb307838\"}");
+		JSONObject json = JSONObject.fromObject(stringBuilder.toString());
+		OrderUtil.getHttpInterenceStream(
+				"http://paystage.ko.cn:6001/paymentsystem/ucnewcb", "post",
+				json.toString());
+
+		/*
+		 * Map<String, Object> resp = (Map<String, Object>) JacksonUtil.decode(
+		 * json.getString("data"), new TypeReference<Map<String, Object>>() {
+		 * }); String respSign = (String) json.get("sign");
+		 * System.out.println(json.get("data")); String sign =
+		 * createMD5Sign(resp, "", "f8ff6a7f2fcd308005b6a0bd1542af20");
+		 * System.out.println(sign);
+		 */
+	}
+
+}

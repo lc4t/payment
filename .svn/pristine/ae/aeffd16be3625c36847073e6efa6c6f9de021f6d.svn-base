@@ -1,0 +1,647 @@
+package noumena.payment.util;
+
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
+
+import noumena.payment.bean.ParamsBean;
+import noumena.payment.model.Params;
+
+public class Constants {
+
+	// 币种和货币单位
+	public static String CURRENCY_DIVERSE = "DIVERSE"; // 渠道无回调，未知货币，游戏自己处理
+	public static String CURRENCY_USD = "USD"; // 美币
+	public static String CURRENCY_RMB = "RMB"; // 人民币
+	public static String CURRENCY_IDR = "IDR"; // 印尼盾
+	public static String CURRENCY_KRW = "KRW"; // 韩币
+	public static String CURRENCY_TWD = "TWD"; // 新台币
+	public static String CURRENCY_THB = "THB"; // 泰铢
+	public static String CURRENCY_GFAN = "GFAN"; // 机锋券
+	public static String CURRENCY_QIDIAN = "QIDIAN"; // 起点币
+	public static String CURRENCY_SNAIL = "SNAIL"; // 蜗牛币
+	public static String CURRENCY_RENREN = "RENREN"; // 人人豆
+	public static String CURRENCY_TENCENT = "TENCENT"; // 腾讯游戏币
+
+	public static String CURRENCY_UNIT_YUAN = "100"; // 圆
+	public static String CURRENCY_UNIT_JIAO = "10"; // 角
+	public static String CURRENCY_UNIT_FEN = "1"; // 分
+
+	// 服务器是否启用丢单重发机制的标识，off-不启用、on-启用
+	public static String CALLBACK_MODE = "";
+
+	// 不同区域订单号前缀串，国服没有前缀、亚太服前缀jp、美服前缀usa
+	public static String ORDERID_PRE = "";
+
+	// 渠道方参数
+	public static Object paramsMutex = new Object();
+	public static Hashtable<String, List<Params>> channelParams = null;
+
+	// 数据源
+	public static final String DB_PATH = "java:comp/env/jdbc/PaymentSysDb";
+	// URL
+	// public static final String URL=
+	// "http://tmpay.kongzhong.com:8050/m/pay.do?m=getPayWapState";
+	// public static final String URL=
+	// "http://mpay.kongzhong.com/m/pay.do?m=getPayWapState";
+	public static final String URL = "http://passport.kongzhong.com/m/pay.do?m=getPayWapState";
+	// public static final String DETAILS_URL=
+	// "http://passport.kongzhong.com:8050/m/pay.do?m=queryPayInfo";
+	public static final String DETAILS_URL = "http://passport.kongzhong.com/m/pay.do?m=queryPayInfo";
+	public static final String PAY_WEB_URL = "http://passport.kongzhong.com/billing/pay/pay_wap_bank.jsp";
+	// public static final String PAY_WEB_URL=
+	// "http://newpassport.kongzhong.com/billing/pay/pay_wap_bank.jsp";
+	public static final String PAY_PHONE_URL = "http://passport.kongzhong.com/m/pay.do?m=toPay";
+	// public static final String DETAILS_URL=
+	// "http://mpay.kongzhong.com/m/pay.do?m=queryPayInfo";
+	// key
+	// 创建订单key
+	public static final String C_KEY = "jl&kk";
+	// 查询订单状态key
+	public static final String S_KEY = "ajljLB*";
+	// 空中通知我订单状态key
+	public static final String U_KEY = "jla(*(HJ";
+	// 查询详细订单key
+	public static final String Q_KEY = "ljJHKH^Kd";
+	// 查询详细订单key
+	public static final String WEB_KEY = "Jlj9(*)";
+	// 支付通知key
+	public static final String N_KEY = "Gkt6^[C";
+	// 支付结果key
+	public static final String P_KEY = "cIk[{>h";
+	// 测试用key
+	public static final String TMP_KEY = "123456";
+
+	// 订单主动验证间隔时间（毫秒）
+	public static final int ORDER_SEPERATE = 10 * 60 * 1000;
+	// 订单超时时间（毫秒）
+	public static final int ORDER_TIMEOUT = 24 * 60 * 60 * 1000;
+	// 客户端状态
+	// 0订单未完成
+	// 2订单完成
+	public static final int C_STSTUS_DEFAULT = 0;
+	public static final int C_STSTUS_COMPLETE = 2;
+	// 空中返回状态
+	// 0 表示等待付费中
+	// 1表示付费成功
+	// 2表示付费失败
+	// -1 订单ID没有传
+	// -2签名不正确
+	public static final int K_DEFAULT = 0;
+	public static final int K_SUCCESS = 1;
+	public static final int K_ERROR = 2;
+	public static final int K_PAYID_ERROR = -1;
+	public static final int K_SIGN_ERROR = -2;
+	// 空中调用Notify的返回值
+	// 0正常状态
+	// -1异常状态 参数不合法 等等!
+	public static final int BACK_K_DEFAULT = 0;
+	public static final int BACK_K_ERROR = -1;
+	// 付费服务器的状态
+	// 0 等待付费
+	// 1付费成功
+	// -1付费失败
+	// -2订单超时
+	// -3网络连接失败
+	// -4 无效订单
+	public static final int K_STSTUS_DEFAULT = 0;
+	public static final int K_STSTUS_SUCCESS = 1;
+	public static final int K_STSTUS_NOTENOUGH = 2;
+	public static final int K_STSTUS_ERROR = -1;
+	public static final int K_STSTUS_TIMEOUT = -2;
+	public static final int K_CON_ERROR = -3;
+	public static final int ORDER_ERROR = -4;
+	// MyCardTW失败状态
+	public static final int MYCARD_TW_CALLBACK_FAILED = -101;
+	public static final int MYCARD_TW_VERIFY_FAILED = -102;
+	public static final int MYCARD_TW_CONFIRM_FAILED = -103;
+
+	// 访问URL 状态
+	public static final int URL_SUCCESS = 1;
+	public static final int URL_ERROR = -1;
+
+	// 异常的状态
+	// 0正常状态
+	// 1订单完成后空中说付费成功
+	// -1空中没有返货状态前订单完成
+	// -2 空中说付费失败 完成订单
+	// -3重复完成订单
+	// -5订单完成后空中说付费失败
+	public static final int E_STSTUS_DEFAULT = 0;
+	public static final int E_STSTUS_C_COMPLETE_K_SUCCESS = 1;
+	public static final int E_STSTUS_K_DEFAULT_C_COMPLETE = -1;
+	public static final int E_STSTUS_K_ERROR_C_COMPLETE = -2;
+	public static final int E_STSTUS_C_COMPLETE_C_COMPLETE = -3;
+	public static final int E_STSTUS_C_COMPLETE_K_ERROR = -5;
+	public static final int E_STSTUS_C_COMPLETE_K_SUCCESS_DEFAULT = -6;
+	public static final int E_STSTUS_C_COMPLETE_K_ERROR_DEFAULT = -7;
+
+	// 是否需要回调
+	public static final int CALLBACK_OFF = 0;
+	public static final int CALLBACK_ON = 1;
+
+	// CALLBACK 的状态
+	// CALLBACK 未完成
+	// CALLBACK 已完成
+	// CALLBACK 出错
+	public static final int CALLBACK_STSTUS_DEFAULT = 0;
+	public static final int CALLBACK_STSTUS_COMPLETE = 1;
+	public static final int CALLBACK_STSTUS_ERROR = -1;
+
+	// CALLBACK 后server 返回的状态
+	public static final int CALLBACK_SERVER_STSTUS_DEFAULT = 0;
+
+	public static final String PAY_TYPE_SZX = "10030";
+	public static final String PAY_TYPE_ZFB = "10029";
+	public static final String PAY_TYPE_ZFB_BANK = "wapbank";
+	public static final String PAY_TYPE_ZFB_BANK_NEW = "newwapbank";
+	public static final String PAY_TYPE_SZX_NEW = "newmobilecard";
+	public static final String PAY_TYPE_WEB_YBWY = "10035";
+	public static final String PAY_TYPE_WEB_HX = "10034";
+	public static final String PAY_TYPE_WEB_CFT = "10033";
+	public static final String PAY_TYPE_WEB_ZFB = "10032";
+
+	// newMycard
+	public static final String ZHIGUAN_ATM = "zhiguan_ATM";
+	public static final String ZHIGUAN_BIANLI = "zhiguan_BLSD";
+	public static final String ZHIGUAN_FAMILY = "zhiguan_BLSDF";
+	public static final String ZHIGUAN_XINYONG = "zhiguan_XYK";
+	public static final String ZHIGUAN_SHITI = "zhiguan_STTL";
+	public static final String ZHIGUAN_DIANXIN = "zhiguan_DXZD";
+
+	// iOS
+	public static final String PAY_TYPE_IOS = "5000";
+	public static final String PAY_TYPE_IOS21 = "6000";
+	// web支付
+	// public static final String PAY_TYPE_WEB="00000";
+	public static final String PAY_TYPE_DACHENG_WEB = "5011";
+	// 大承支付宝支付
+	public static final String PAY_TYPE_DACHENG_ZFB = "5010";
+	// googleplay支付
+	public static final String PAY_TYPE_GOOGLEPLAY = "5007";
+	// 大承神州行支付
+	public static final String PAY_TYPE_DACHENG_SZX = "5009";
+	// TStore支付
+	public static final String PAY_TYPE_TSTORE = "5015";
+	// TCC支付
+	public static final String PAY_TYPE_TCC = "5016";
+	// 小米支付
+	public static final String PAY_TYPE_XIAOMI = "5017";
+	// 索乐支付
+	public static final String PAY_TYPE_SUOLE = "5019";
+	// UC支付
+	public static final String PAY_TYPE_UC = "5020";
+	// MyCardTW Billing支付
+	public static final String PAY_TYPE_MYCARD_TW_BILLING = "5021";
+	// MyCardTW Ingame TW支付
+	public static final String PAY_TYPE_MYCARD_TW_INGAME_TW = "5022";
+	// MyCardTW Ingame HK支付
+	public static final String PAY_TYPE_MYCARD_TW_INGAME_HK = "5023";
+	// MyCardTW Point支付
+	public static final String PAY_TYPE_MYCARD_TW_POINT = "5024";
+	// 移动游戏基地支付
+	public static final String PAY_TYPE_CMGC = "5025";
+	// 台湾中华电信
+	public static final String PAY_TYPE_CHT = "5026";
+	// GASH点卡类
+	public static final String PAY_TYPE_GASH_POINT = "5027";
+	// GASH电信类
+	public static final String PAY_TYPE_GASH_TEL = "5028";
+	// GASH金融类
+	public static final String PAY_TYPE_GASH_BANK = "5029";
+	// Mo9
+	public static final String PAY_TYPE_MO9 = "5030";
+	// Adways
+	public static final String PAY_TYPE_ADWAYS = "5031";
+	// TCC new
+	public static final String PAY_TYPE_TCC2 = "5032";
+	// 91 new
+	public static final String PAY_TYPE_NDPAY = "5033";
+	// 台湾远传FET
+	public static final String PAY_TYPE_FET = "5034";
+	// 360
+	public static final String PAY_TYPE_QIHU = "5035";
+	// 机锋
+	public static final String PAY_TYPE_GFAN = "5036";
+	// App01
+	public static final String PAY_TYPE_APP01 = "5037";
+	// 天翼支付 短代
+	public static final String PAY_TYPE_TIANYI = "5038";
+	// 联通WO短代
+	public static final String PAY_TYPE_WO = "5039";
+	// MOL
+	public static final String PAY_TYPE_MOL = "5040";
+	// 当乐
+	public static final String PAY_TYPE_DOWNJOY = "5041";
+	// amazon
+	public static final String PAY_TYPE_AMAZON = "5042";
+	// 联想
+	public static final String PAY_TYPE_LENOVO = "5043";
+	// 无线增值平台WVAS默认
+	public static final String PAY_TYPE_SMS = "5044";
+	// 豌豆荚
+	public static final String PAY_TYPE_WANDOUJIA = "5045";
+	// PP助手
+	public static final String PAY_TYPE_PP = "5046";
+	// 百度
+	public static final String PAY_TYPE_BAIDU = "5047";
+	// 电信
+	public static final String PAY_TYPE_TELCOM = "5048";
+	// 支付宝钱包
+	public static final String PAY_TYPE_ALIPAY = "5049";
+	// 天猫商城（空中）
+	public static final String PAY_TYPE_TMALL = "5050";
+	// 无线增值平台WVAS手游业务
+	public static final String PAY_TYPE_KONGWOB = "5051";
+	// 无线增值平台WVAS第三方SDK
+	public static final String PAY_TYPE_KONGW5GWAN = "5052";
+	// 越南soha
+	public static final String PAY_TYPE_VNSOHA = "5053";
+	// 越南appota
+	public static final String PAY_TYPE_APPOTA = "5054";
+	// Kingnet
+	public static final String PAY_TYPE_KINGNET = "5055";
+	// 触控
+	public static final String PAY_TYPE_COCO = "5056";
+	// 无线增值平台WVAS增值业务（包月）
+	public static final String PAY_TYPE_KONGMP = "5057";
+	// 无线增值平台短信获得电话号码
+	public static final String PAY_TYPE_KONGMPID = "5058";
+	// 无线增值平台WVAS第三方支付-支付宝
+	public static final String PAY_TYPE_KONGALIPAY = "5059";
+	// 无线增值平台WVAS第三方支付-银联
+	public static final String PAY_TYPE_KONGBANK = "5060";
+	// 无线增值平台WVAS第三方支付-神舟付
+	public static final String PAY_TYPE_KONGSZF = "5061";
+	// 安智
+	public static final String PAY_TYPE_ANZHI = "5062";
+	// 同步推
+	public static final String PAY_TYPE_TONGBU = "5063";
+	// 昆仑（搞怪在台湾的推广）
+	public static final String PAY_TYPE_KUNLUN = "5064";
+	// 百度移动钱包
+	public static final String PAY_TYPE_BAIDUQIANBAO = "5065";
+	// 兆荣接入
+	public static final String PAY_TYPE_ZHAORONG = "5066";
+	// 3G门户
+	public static final String PAY_TYPE_3GGATE = "5067";
+	// OPPO
+	public static final String PAY_TYPE_NEARME = "5068";
+	// 快用
+	public static final String PAY_TYPE_KUAIYONG = "5069";
+	// Naver(韩国)
+	public static final String PAY_TYPE_NAVER = "5070";
+	// IGS(台湾繁体)
+	public static final String PAY_TYPE_IGS = "5071";
+	// 迅雷(M1的支付接入)
+	public static final String PAY_TYPE_XUNLEI = "5072";
+	// KT(olleh)
+	public static final String PAY_TYPE_OLLEH = "5073";
+	// LGUplus
+	public static final String PAY_TYPE_LGUPLUS = "5074";
+	// 91海外
+	public static final String PAY_TYPE_MOBOJOY = "5075";
+	// 空中微信商城
+	public static final String PAY_TYPE_WEIMALL = "5076";
+	// EFUNFUN（群英自行接入）
+	public static final String PAY_TYPE_EFUNFUN = "5077";
+	// 银联
+	public static final String PAY_TYPE_UNIONPAY = "5078";
+	// PPS
+	public static final String PAY_TYPE_PPS = "5079";
+	// 爱思
+	public static final String PAY_TYPE_I4 = "5080";
+	// 多玩
+	public static final String PAY_TYPE_DUOWAN = "5081";
+	// 19PAY（充值卡充值）
+	public static final String PAY_TYPE_CARD19 = "5082";
+	// innova 4game（俄罗斯网页充值）
+	public static final String PAY_TYPE_INNOVA = "5083";
+	// 迅雷
+	public static final String PAY_TYPE_XUNLEI2 = "5084";
+	// 起点
+	public static final String PAY_TYPE_QIDIAN = "5085";
+	// XY助手
+	public static final String PAY_TYPE_XYZS = "5086";
+	// 百付宝
+	public static final String PAY_TYPE_BAIFUBAO = "5087";
+	// 37玩
+	public static final String PAY_TYPE_37WAN = "5088";
+	// iTools
+	public static final String PAY_TYPE_ITOOLS = "5089";
+	// 免商店（蜗牛）
+	public static final String PAY_TYPE_SNAIL = "5090";
+	// 百度云
+	public static final String PAY_TYPE_BAIDUYUN = "5091";
+	// vivo
+	public static final String PAY_TYPE_VIVO = "5092";
+	// 华为
+	public static final String PAY_TYPE_HUAWEI = "5093";
+	// 大领主泰国Winner联运，iOS支付
+	public static final String PAY_TYPE_WINNERIOS = "5094";
+	// 大领主泰国Winner联运，GooglePlay支付
+	public static final String PAY_TYPE_WINNERGP = "5095";
+	// pptv
+	public static final String PAY_TYPE_PPTV = "5096";
+	// 有信
+	public static final String PAY_TYPE_YOUXIN = "5097";
+	// 微信（app）
+	public static final String PAY_TYPE_WEIXIN = "5098";
+	// 酷动
+	public static final String PAY_TYPE_KUDONG = "5099";
+	// OPPO
+	public static final String PAY_TYPE_OPPO = "5100";
+	// bilibili
+	public static final String PAY_TYPE_BILIBILI = "5101";
+	// 飓风互动
+	public static final String PAY_TYPE_JUFENGHUDONG = "5102";
+	// Yandex
+	public static final String PAY_TYPE_YANDEX = "5103";
+	// 享有
+	public static final String PAY_TYPE_SHAREJOY = "5104";
+	// OMG（台湾繁体）
+	public static final String PAY_TYPE_OMG = "5105";
+	// webOMG(OMG的网页支付)
+	public static final String PAY_TYPE_WEBOMG = "5106";
+	// 百度多酷新版本
+	public static final String PAY_TYPE_DUOKU = "5107";
+	// 酷派
+	public static final String PAY_TYPE_COOLPAD = "5108";
+	// 金立
+	public static final String PAY_TYPE_GIONEE = "5109";
+	// 魅族
+	public static final String PAY_TYPE_MEIZU = "5110";
+	// 麟游
+	public static final String PAY_TYPE_LINYOU = "5111";
+	// 棱镜
+	public static final String PAY_TYPE_LENGJING = "5112";
+	// googleplay支付
+	public static final String PAY_TYPE_GOOGLE = "5113";
+	// 游戏群（熊猫玩）
+	public static final String PAY_TYPE_YOUXIQUN = "5114";
+	// 新浪
+	public static final String PAY_TYPE_SINA = "5115";
+	// TAG_cross（韩国）
+	public static final String PAY_TYPE_TAG = "5116";
+	// N多游戏
+	public static final String PAY_TYPE_NDUO = "5117";
+	// 星尚（口袋）
+	public static final String PAY_TYPE_XINGSHANG = "5118";
+	// 人人网
+	public static final String PAY_TYPE_RENREN = "5119";
+	// 4399
+	public static final String PAY_TYPE_4399 = "5120";
+	// 电信爱游戏
+	public static final String PAY_TYPE_IGAME = "5121";
+	// vivo新版本
+	public static final String PAY_TYPE_VIVONEW = "5122";
+	// 易接
+	public static final String PAY_TYPE_YIJIE = "5123";
+	// 汇付宝（骏卡）
+	public static final String PAY_TYPE_HEEPAY = "5124";
+	// 应用汇
+	public static final String PAY_TYPE_YINGYONGHUI = "6004";
+	// 应用宝_腾讯
+	public static final String PAY_TYPE_TENCENT = "6005";
+	// 斗鱼TV
+	public static final String PAY_TYPE_DOUYU = "6006";
+	// bluepay
+	public static final String PAY_TYPE_BLUEPAY = "6016";
+	// bluepay（短代）
+	public static final String PAY_TYPE_BLUEPAY_SMS = "6017";
+	// bluepay line支付
+	public static final String PAY_TYPE_BLUEPAY_LINE = "6043";
+	// bluepay银行卡
+	public static final String PAY_TYPE_BLUEPAY_BANK = "6042";
+	// bluepay（充值卡）
+	public static final String PAY_TYPE_BLUEPAY_CARD = "6018";
+	// 今日头条
+	public static final String PAY_TYPE_TOUTIAO = "5126";
+	// 海马助手
+	public static final String PAY_TYPE_HAIMA = "6001";
+	// MOL（充值卡）
+	public static final String PAY_TYPE_MOL_CARD = "6019";
+	// MOL（钱包或银行卡）
+	public static final String PAY_TYPE_MOL_POINT = "6020";
+	// 易幻网络
+	public static final String PAY_TYPE_EFUN = "6022";
+	// 快发助手（云游）
+	public static final String PAY_TYPE_KUAIFA = "6027";
+	// 叉叉助手
+	public static final String PAY_TYPE_XXZS = "6015";
+	// 猎宝
+	public static final String PAY_TYPE_LIEBAO = "6029";
+	// 有玩
+	public static final String PAY_TYPE_YOUWAN = "6028";
+	// 酷狗日爆
+	public static final String PAY_TYPE_RIBAO = "6031";
+	// 小财神
+	public static final String PAY_TYPE_CAISHEN = "6032";
+	// 印尼SDK
+	public static final String PAY_TYPE_YINNI = "6033";
+	// gmobi
+	public static final String PAY_TYPE_GMOBI = "6038";
+	// 搜狗
+	public static final String PAY_TYPE_SOUGOU = "6008";
+	// Fromest
+	public static final String PAY_TYPE_FROMEST = "6045";
+	// 安趣
+	public static final String PAY_TYPE_ANQU = "6046";
+	// 49游
+	public static final String PAY_TYPE_SIJIUYOU = "6037";
+	// 钱宝
+	public static final String PAY_TYPE_QIANBAO = "6048";
+	// apus
+	public static final String PAY_TYPE_APUS = "6049";
+	// 07073
+	public static final String PAY_TYPE_07073 = "6047";
+	// quick
+	public static final String PAY_TYPE_QUICK = "6050";
+	// 65游戏
+	public static final String PAY_TYPE_GAME65 = "6051";
+	// 现在支付
+	public static final String PAY_TYPE_NOW = "6052";
+	// JUSDK
+	public static final String PAY_TYPE_JUSDK = "6056";
+	// 即拓互动
+	public static final String PAY_TYPE_GNOTOP = "6058";
+	// One-Store支付
+	public static final String PAY_TYPE_ONESTORE = "6055";
+	public static final String PAY_TYPE_C921 = "6062";
+	//C185sy
+	public static final String PAY_TYPE_C185sy = "6063";
+	public static final String PAY_TYPE_C777hwansy = "6068";
+	// 沙箱测试
+	public static final String PAY_TYPE_SHAXIANG_TEST = "0000";
+
+	// 支付log文件路径
+	public static final String LOG_PATH = "logs/szxlog/";
+
+	public static final String[] PAY_TYPES = { "10029", "10030" };
+
+	public static String getGameIdByAppId(String appid) {
+		if (appid.equals("3000000")) {
+			return "100";
+		} else if (appid.equals("2400000")) {
+			return "102";
+		} else if (appid.equals("3600000")) {
+			return "108";
+		} else if (appid.equals("4600000")) {
+			return "112";
+		} else if (appid.equals("4000000")) {
+			return "113";
+		} else if (appid.equals("4300000")) {
+			return "118";
+		} else if (appid.equals("1800000")) {
+			return "200";
+		} else if (appid.equals("2300000")) {
+			return "210";
+		} else if (appid.equals("4400000")) {
+			return "503";
+		} else if (appid.equals("3900000")) {
+			return "602";
+		} else if (appid.equals("2800000")) {
+			return "801";
+		} else if (appid.equals("2700000")) {
+			return "802";
+		} else if (appid.equals("2600000")) {
+			return "803";
+		} else if (appid.equals("2900000")) {
+			return "804";
+		} else if (appid.equals("3300000")) {
+			return "807";
+		} else if (appid.equals("4200000")) {
+			return "810";
+		} else if (appid.equals("6000000")) {
+			return "126";
+		} else if (appid.equals("6500000")) {
+			return "605";
+		} else if (appid.equals("6600000")) {
+			return "151";
+		} else if (appid.equals("6400000")) {
+			return "606";
+		} else if (appid.equals("7900000")) {
+			return "168";
+		} else if (appid.equals("7300000")) {
+			return "324";
+		} else {
+			return "000";
+		}
+	}
+
+	public static String getAppIdByGameId(String gameid) {
+		if (gameid.equals("100")) {
+			return "3000000";
+		} else if (gameid.equals("102")) {
+			return "2400000";
+		} else if (gameid.equals("108")) {
+			return "3600000";
+		} else if (gameid.equals("112")) {
+			return "4600000";
+		} else if (gameid.equals("113")) {
+			return "4000000";
+		} else if (gameid.equals("118")) {
+			return "4300000";
+		} else if (gameid.equals("200")) {
+			return "1800000";
+		} else if (gameid.equals("210")) {
+			return "2300000";
+		} else if (gameid.equals("503")) {
+			return "4400000";
+		} else if (gameid.equals("602")) {
+			return "3900000";
+		} else if (gameid.equals("801")) {
+			return "2800000";
+		} else if (gameid.equals("802")) {
+			return "2700000";
+		} else if (gameid.equals("803")) {
+			return "2600000";
+		} else if (gameid.equals("804")) {
+			return "2900000";
+		} else if (gameid.equals("807")) {
+			return "3300000";
+		} else if (gameid.equals("810")) {
+			return "4200000";
+		} else if (gameid.equals("126")) {
+			return "6000000";
+		} else if (gameid.equals("605")) {
+			return "6500000";
+		} else if (gameid.equals("151")) {
+			return "6600000";
+		} else if (gameid.equals("606")) {
+			return "6400000";
+		} else if (gameid.equals("168")) {
+			return "7900000";
+		} else if (gameid.equals("324")) {
+			return "7300000";
+		} else {
+			return "0000000";
+		}
+	}
+
+	public static void addParam(Params param) {
+		ParamsBean bean = new ParamsBean();
+		bean.CreateParam(param);
+		initParams(true);
+	}
+
+	public static void initParams(boolean forceinit) {
+		ParamsBean bean = new ParamsBean();
+
+		synchronized (paramsMutex) {
+			if (channelParams == null) {
+				channelParams = new Hashtable<String, List<Params>>();
+				forceinit = true;
+			} else {
+				if (forceinit == true) {
+					channelParams.clear();
+				}
+			}
+
+			if (forceinit == true) {
+				List<Params> allparams = bean.getParams();
+				for (int i = 0; i < allparams.size(); i++) {
+					Params param = allparams.get(i);
+					List<Params> cparams = channelParams
+							.get(param.getChannel());
+					if (cparams == null) {
+						cparams = new ArrayList<Params>();
+					}
+					cparams.add(param);
+
+					channelParams.put(param.getChannel(), cparams);
+				}
+
+				for (Enumeration<String> e = channelParams.keys(); e
+						.hasMoreElements();) {
+					String key = e.nextElement();
+					List<Params> ps = channelParams.get(key);
+					System.out.println("=====(" + DateUtil.getCurTimeStr()
+							+ ")=====init channel (" + key + ") params size ("
+							+ ps.size() + ")");
+				}
+			}
+		}
+	}
+
+	public static List<Params> getChannelParams(String channel) {
+		List<Params> retparams = new ArrayList<Params>();
+		synchronized (paramsMutex) {
+			initParams(false);
+			List<Params> channelparams = channelParams.get(channel);
+			if (channelparams == null) {
+				System.out.println("$$$$$(" + DateUtil.getCurTimeStr()
+						+ ")$$$$$getChannelParams invalid. channel(" + channel
+						+ ")");
+			} else {
+				for (int i = 0; i < channelparams.size(); i++) {
+					Params p = new Params(channelparams.get(i));
+					retparams.add(p);
+				}
+			}
+		}
+
+		return retparams;
+	}
+}

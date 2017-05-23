@@ -1,0 +1,303 @@
+package noumena.payment.gionee;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import noumena.payment.bean.OrdersBean;
+import noumena.payment.model.Orders;
+import noumena.payment.util.Constants;
+import noumena.payment.util.DateUtil;
+import noumena.payment.util.OSUtil;
+import noumena.payment.vo.OrderIdVO;
+import noumena.payment.vo.OrderStatusVO;
+
+import org.apache.commons.lang.CharEncoding;
+
+public class GioneeCharge
+{
+	private static GioneeParams params = new GioneeParams();
+	private static boolean testmode = false;
+	
+	public static boolean isTestmode()
+	{
+		return testmode;
+	}
+	public static void setTestmode(boolean testmode)
+	{
+		GioneeCharge.testmode = testmode;
+	}
+	
+	public static String getTransactionId(Orders order,String itemname)
+	{
+		order.setCurrency(Constants.CURRENCY_RMB);
+		order.setUnit(Constants.CURRENCY_UNIT_YUAN);
+		
+		OrdersBean bean = new OrdersBean();
+		String cburl = order.getCallbackUrl();
+		String payId;
+		if (cburl == null || cburl.equals(""))
+		{
+			payId = bean.CreateOrder(order);
+		}
+		else
+		{
+			if (cburl.indexOf("?") == -1)
+			{
+				cburl += "?pt=" + Constants.PAY_TYPE_GIONEE;
+			}
+			else
+			{
+				cburl += "&pt=" + Constants.PAY_TYPE_GIONEE;
+			}
+			cburl += "&currency=" + Constants.CURRENCY_RMB;
+			cburl += "&unit=" + Constants.CURRENCY_UNIT_YUAN;
+			
+			payId = bean.CreateOrder(order, cburl);
+		}
+		order.setCallbackUrl(cburl);
+		String date = DateUtil.formatDate(order.getCreateTime());
+		OrderIdVO orderIdVO = new OrderIdVO(payId, date);
+		System.out.println(payId+"==========================="+order);
+		String prepayid = getPrepayID(order,itemname);
+		orderIdVO.setMsg(prepayid);
+		
+		JSONObject json = JSONObject.fromObject(orderIdVO);
+		return json.toString();
+	}
+	
+	private static String getPrepayID(Orders order, String itemname)
+	{
+		String prepayid = "";
+		String urlParameters = "";
+		String content = "";
+		GioneeCBOrderVO vo = null;
+		String appid = order.getSign();
+		if (isTestmode() == true)
+		{
+			appid = appid + "_test";
+		}
+		
+		try {
+			
+			SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
+			String ts = format.format(new Date());
+			
+			content += order.getSign();
+			content += order.getAmount();
+			content += params.getParams(appid).getDeliver_type();
+			content += params.getParams(appid).getCallback_url();
+			content += order.getOrderId();
+			content += itemname;
+			content += ts;
+			content += order.getAmount();
+			System.out.println("================"+content+" "+params.getParams(appid).getAppkey() );
+			String sign = RSASignature.sign(content, params.getParams(appid).getAppkey(), CharEncoding.UTF_8);
+			
+			
+			vo = new GioneeCBOrderVO();
+			vo.setPlayer_id(order.getUId());
+			vo.setApi_key(order.getSign());
+			vo.setDeal_price(order.getAmount()+"");
+			vo.setDeliver_type(params.getParams(appid).getDeliver_type());
+			vo.setNotify_url(params.getParams(appid).getCallback_url());
+			vo.setOut_order_no(order.getOrderId());
+			vo.setSubject(itemname);
+			vo.setSubmit_time(ts);
+			vo.setTotal_fee(order.getAmount()+"");
+			vo.setSign(sign.replaceAll("\n", ""));
+			
+			JSONObject jsob = JSONObject.fromObject(vo);
+			urlParameters = jsob.toString();
+
+			String urlstr = params.getParams(appid).getCreate_order_url();
+			System.out.println("gionee create order urlParameters--------->"+ urlParameters);
+			URL url = new URL(urlstr);
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			
+			connection.setDoOutput(true);
+			connection.setDoInput(true);
+			connection.setInstanceFollowRedirects(false);
+			connection.setUseCaches(false);
+			connection.setRequestMethod("POST");
+			connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded"); 
+			connection.setRequestProperty("charset", "utf-8");
+			
+			connection.connect();
+			
+			DataOutputStream wr = new DataOutputStream(connection.getOutputStream ());
+			wr.write(urlParameters.getBytes(CharEncoding.UTF_8));
+			wr.flush();
+			wr.close();
+			
+			BufferedReader in = new BufferedReader
+				(
+					new InputStreamReader(connection.getInputStream(),CharEncoding.UTF_8)
+				);
+			String res = "", line = null;
+			while ((line = in.readLine()) != null)
+			{
+				res += line;
+			}
+			connection.disconnect();
+			
+			System.out.println("gionee create order ret-->"+res);
+			
+			JSONObject json = JSONObject.fromObject(res);			
+			prepayid = json.getString("submit_time");
+			
+			OrdersBean bean = new OrdersBean();
+			bean.updateOrderAmountPayIdExinfo(json.getString("out_order_no"), json.getString("order_no"), order.getMoney(), "");
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} 
+		return prepayid;
+	}
+	
+	
+	public static String checkOrdersStatus(String payIds)
+	{
+		String[] orderIds = payIds.split(",");
+
+		OrdersBean bean = new OrdersBean();
+		List<Orders> orders = bean.qureyOrders(orderIds);
+		List<OrderStatusVO> statusret = new ArrayList<OrderStatusVO>();
+		for (int i = 0 ; i < orders.size() ; i++)
+		{
+			Orders order = orders.get(i);
+			int status = order.getKStatus();
+			OrderStatusVO st = new OrderStatusVO();
+			st.setPayId(order.getOrderId());
+			if (status == Constants.K_STSTUS_DEFAULT || status == Constants.K_CON_ERROR)
+			{
+				//如果订单状态是初始订单或者是网络连接有问题状态，返回不知道
+				Calendar cal1 = DateUtil.getCalendar(order.getCreateTime());
+				Calendar cal2 = Calendar.getInstance();
+				if ((cal2.getTimeInMillis() - cal1.getTimeInMillis()) >= Constants.ORDER_TIMEOUT)
+				{
+					st.setStatus(4);
+				}
+				else
+				{
+					st.setStatus(3);
+				}
+			}
+			else if (status == Constants.K_STSTUS_SUCCESS)
+			{
+				//如果订单已经成功，直接返回订单状态
+				st.setStatus(1);
+			}
+			else
+			{
+				//订单已经失败，直接返回订单状态
+				st.setStatus(2);
+			}
+			statusret.add(st);
+		}
+		JSONArray arr = JSONArray.fromObject(statusret);
+		
+		return arr.toString();
+	}
+	
+	public static String getCallbackFromGionee(Map<String,String> gioneeparams)
+	{
+		System.out.println("gionee cb info ->" + gioneeparams.toString());
+		
+    	String ret = "success";
+    	
+    	try {
+    		JSONObject json = JSONObject.fromObject(gioneeparams);
+        	GioneeOrderVO ordervo = (GioneeOrderVO)JSONObject.toBean(json,GioneeOrderVO.class);
+        	String orderid = ordervo.getOut_order_no();
+        	
+			String content = "";
+			content = "api_key=";
+			content += ordervo.getApi_key();
+			content += "&close_time=";
+			content += ordervo.getClose_time();
+			content += "&create_time=";
+			content += ordervo.getCreate_time();
+			content += "&deal_price=";
+			content += ordervo.getDeal_price();
+			content += "&out_order_no=";
+			content += orderid;
+			content += "&pay_channel=";
+			content += ordervo.getPay_channel();
+			content += "&submit_time=";
+			content += ordervo.getSubmit_time();
+			content += "&user_id=";
+			content += ordervo.getUser_id();
+			
+			OrdersBean bean = new OrdersBean();
+			Orders order = bean.qureyOrder(orderid);
+			
+			String pubkey = "";
+			String appid = ordervo.getApi_key();
+			if (isTestmode() == true)
+			{
+				appid = appid + "_test";
+			}
+			pubkey = params.getParams(appid).getPublic_key();
+			
+			if (order != null) 
+			{
+				boolean flag = RSASignature.doCheck(content, ordervo.getSign(), pubkey, CharEncoding.UTF_8);
+				
+				if (!flag) 
+				{
+					//验签失败
+					ret = "fail";
+				}
+				else
+				{
+					if (order.getKStatus() != Constants.K_STSTUS_SUCCESS)
+					{
+						bean.updateOrderAmountPayIdExinfo(orderid, order.getPayId(), ordervo.getDeal_price(), ordervo.getPay_channel());
+						bean.updateOrderKStatus(orderid, Constants.K_STSTUS_SUCCESS);
+					}
+					else
+					{
+						System.out.println("gionee order (" + order.getOrderId() + ") had been succeed");
+					}
+				}
+				
+				String path = OSUtil.getRootPath() + "../../logs/gioneecb/" + DateUtil.getCurTimeStr().substring(0, 8);
+				OSUtil.makeDirs(path);
+				String filename = path + "/" + orderid;
+				
+				OSUtil.saveFile(filename, gioneeparams.toString());
+			}
+			else
+			{//无效订单
+				ret = "fail";
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("gionee cb ret->" + ret);
+
+		return ret;
+	}
+
+	public static void init()
+	{
+		params.initParams(GioneeParams.CHANNEL_ID, new GioneeParamsVO());
+//		params.addApp("M5","BA709067496A4060A517FE43451C9738","MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAIyM8RwxCs9A1ZMS4AOb9EJLKMgSUgIR8G7Do+wB0UhjQFXeaOAW7VqsE3OSrRxcBnRwJQiZWzwIrtuz1T0UyUeVXhIS5cQwqUke6wlpp1vZs/jfZ3yhvtxdAW6PUszYt+UkWK5YCsIH6ZXbN66cN+GUHmZ7R3A9nbuICVmb5ymfAgMBAAECgYBBAULWvhv4xUzCbB1trein7Kkc99Q0HuXr5NJg6mpIJ5du36Hz2sbGhAWvE2y7TBi0K9YFByC6QG3XMXJzgLSilltgKWR4dUPBPlVXKuGpMcLdtoePXWZ4HNs9A+/elAhn9mYQyV1EyQwj+YTfdDe2TJH0b9nBLkM46QBJnyUGuQJBAMbWOfuVU8Qe57IWpNxjJNVkR8JZucL/355cZ8Ie6CbpzLBKFdFjGp3yRoWZCc34lpKWIuMQMEQitk+q0Yj9JuUCQQC09QbZTvQ20tdPgEBvkGl+YtWc4NjynKaezz1Z89yNu7exE9j2sjW9UW0ZqhaJJqKpjxRo4Cghx8hZfe+mNiIzAkEAtjd+fZNUZ6eW13qu7JUjHTfAF1iYxx4sNPkj0R73yyl5fpj2M6QpsVNk02vzM0G742wZXpLoWJijEJFPYsX0DQJATOJSj5/5KRX5/0BJoF0mRVmu0uHBq4sdTBpXQdHX4qxgRq9dHqvnI1HmXeIjgxBUSmCNVmXvBzNAD63vVZpoewJAbvUxW/OgfQoxQ0F5quPdDk8HQ1Tk13CuOSm8TUGYY8EeaBQevNUlhxZrTDfecFoLFM+2514FW62E+maXK0ADJg==","MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCh8lUJ8etsvGAcYLRoEqhk63YRPiSvEqyr1HSJaiAmTk/BbIoLMYGOPRViO1yjG1pQ4mVCcAsTrdJZ3V/CEHchNG3E9wxfMl5VqH+/eheNyEdniS4IDW/Qapacj8/K3Iw+Tf8D9nc0cWztMTTbP6KMGVsCgk8mzVPN+GaDFF2GYwIDAQAB");
+////		params.addApp("M5", "BA709067496A4060A517FE43451C9738", "CC458CF220194170BC88963E9527B135"); //真！吞食天地
+////		params.addApp("gongzhu", "625B383D190C4594BB67A4DB1CB18FCF", "A6E4B6BC71F24368958B6CAF277CFA4F");//我家公主最可爱
+//		params.addApp("gongzhu","625B383D190C4594BB67A4DB1CB18FCF","MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAIcnm61EVOMV4koBxQEfmOieoNnx28D+2LpN1aXmaelQAJCnKW9seGEvvLdzvH2mFN/fARQb6fCd76vcHygeHaCVSBGI+JjHKZd/bO+XJjmZNHWQCgRHMYqxuF5GDhD3FvYRY0li+fx8XckSZnbQ7p8mvDoQhQgP9tSeSZRS1MRNAgMBAAECgYAZ9S5+IbCYCLz0b9CRfasVilnkYgJN1+RyK77L5SwURmxFXAWmQ9P+/nclWNIr47kAokkHvrC4qOy+OkG1p8sSoduExVz0Q5CVrDwuEJt0MMO9qrp5WM10zGopqSUXrpPVsDdNYJ99yuxvAiKPyjHM8xUMz3goSYf8fOhRNbwg4QJBAO3IuNgHTwA/ye4qZP0gJ9uR0eRJh8yvgmY7HYZmL25FLrMUax8h4FmnK0fE5JMvLnw9Fpflbi85OzULfFX9DqkCQQCRgi5ZVIG3rtERvaoMmZaREz6ZgWUVbgw+P+5Uvdmb8oniXaRnVmICkvGyRkDPn5uFgEJlOKHq/FKYRN0wK4MFAkBIyx0DTWF7AwwvdB0MfK6XAlIOIBCJseUqpMhKH7g/esBsJEES+8zxxUJzqywKfvQtJopnH96WaF/ewlBjBqBZAkBP+uVtFqVCiKXEgaMRz+5SCejzyYr9b4LtSIjBLaWKMZOWyHAQmQvAbHLL0g/Xz9xVUj2sk6d0mYLwzZFi49fdAkBJoR8IvkJppdFW5ZAx7u3Aud58hKtOIfND8AvKKE6b1DewzzDy7mJRStGk2pl8mX7ZnmKH+c/c57/8M1MPOa1x","MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCKh5YX3EraSQFe5B5K1BZ3IEkLCgyrwH2xL3lmIrWsn2CT2qYvKKUg4cX3m4A+2yeA2DNgqD9SGfBBk4aXBO4hyB1xycaQVLCr1XYFBorHNKl4uYuPm4ylme5h6DqiwONEZXknE/3K27FwtW0aYvUhz4KrThOtkBjrO29clUJq3wIDAQAB");
+	}
+}

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="com.genuitec.eclipse.j2eedt.core.J2EE14_CONTAINER"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/antlr-2.7.6.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/bcmail-jdk14-128.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/bcprov-jdk14-128.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/cglib-nodep-2.1_3.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-attributes-api.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-attributes-compiler.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-beanutils-1.8.0-BETA.jar"/>
+	<classpathentry kind="lib" path="D:/mywork/payment/WebRoot/WEB-INF/lib/commons-codec-1.10.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-dbcp.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-discovery-0.2.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-fileupload.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-httpclient-3.0.1.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-io.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/dwr_noumena.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/ezmorph-1.0.4.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/hibernate3.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jdom.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/json-lib-2.2.1-jdk15.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jstl-1.2.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jta.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/log4j-1.2.14.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/mail-1.3.3.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/mysql-connector-java-5.1.10-bin.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/paypal_wpstoolkit.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/quartz-all-1.5.2.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/receipt.jar"/>
+	<classpathentry kind="lib" path="D:/mywork/payment/WebRoot/WEB-INF/lib/spring-1.2.6.jar" sourcepath="C:/Documents and Settings/Administrator/.m2/repository/org/springframework/spring/2.0/spring-2.0-sources.jar"/>
+	<classpathentry kind="con" path="melibrary.com.genuitec.eclipse.springframework.MYECLIPSE_SPRING12_CORE"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/mgsplus-log2.4.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/mokredit.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/GashPlus.Platform.GPS.Security.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jaxws-api-2.1.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/wsdl4j-1.5.3.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/alipay-sdk.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/innova-api-1.0.3-sources.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/innova-api-1.0.3.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/innova-api-services-1.0.3-sources.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/innova-api-services-1.0.3.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jackson-core-asl-1.9.13.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jackson-mapper-asl-1.9.13.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/netty-all-4.0.18.Final.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/slf4j-api-1.6.6.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/slf4j-log4j12-1.6.6.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/oauth_1.0.jar"/>
+	<classpathentry kind="lib" path="D:/mywork/payment/WebRoot/WEB-INF/lib/httpclient-4.1.2.jar"/>
+	<classpathentry kind="lib" path="D:/mywork/payment/WebRoot/WEB-INF/lib/httpcore-4.1.2.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/xfire-all-1.2.6.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/XmlSchema-1.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="con" path="com.genuitec.runtime.library/com.genuitec.spring_1.0">
+		<attributes>
+			<attribute name="owner.project.facets" value="me.spring"/>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v7.0">
+		<attributes>
+			<attribute name="owner.project.facets" value="jst.web"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="com.genuitec.runtime.library/com.genuitec.hibernate_3.1">
+		<attributes>
+			<attribute name="owner.project.facets" value="me.hibernate"/>
+			<attribute name="org.eclipse.jst.component.dependency" value="/WEB-INF/lib"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="com.genuitec.runtime.library/com.genuitec.generic_1.4"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="D:/mywork/payment/WebRoot/WEB-INF/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="D:/mywork/payment/WebRoot/WEB-INF/lib/wink-1.4.jar"/>
+	<classpathentry kind="lib" path="D:/mywork/payment/WebRoot/WEB-INF/lib/wink-client-1.4.jar"/>
+	<classpathentry kind="lib" path="D:/mywork/payment/WebRoot/WEB-INF/lib/wink-common-1.4.jar"/>
+	<classpathentry kind="lib" path="D:/mywork/payment/WebRoot/WEB-INF/lib/wink-server-1.4.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/alml.jar"/>
+	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
+</classpath>

@@ -1,0 +1,31 @@
+td {
+    color: #333333;
+    font-family: "宋体";
+    font-size: 12px;
+    vertical-align:middle;
+}
+.black12 {
+    color: #000000;
+    font-size: 12px;
+    text-decoration: none;
+}
+.black12:hover {
+    color: #F37021;
+    font-size: 12px;
+    text-decoration: none;
+}
+.orange12 {
+    color: #F37021;
+    font-size: 12px;
+    text-decoration: none;
+}
+.orange12:hover {
+    color: #F37021;
+    font-size: 12px;
+    text-decoration: underline;
+}
+.orangexw {
+    color: #F46722;
+    font-size: 12px;
+    text-decoration: none;
+}

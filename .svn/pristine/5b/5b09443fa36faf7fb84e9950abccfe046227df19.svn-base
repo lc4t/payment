@@ -1,0 +1,11 @@
+{
+"connection" : {
+	"server_url" : "wss://api.4game.com/game",
+	"connection_timeout" : 15000,
+	"request_timeout" : 10000
+	},
+"auth" : {
+	"login" : "PocketFort",
+	"password" : "OxvQ8y5mdd0P5uvGirsd"
+	}
+}

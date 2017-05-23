@@ -1,0 +1,343 @@
+package noumena.payment.coolpad;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import noumena.payment.bean.OrdersBean;
+import noumena.payment.model.Orders;
+import noumena.payment.util.Constants;
+import noumena.payment.util.DateUtil;
+import noumena.payment.util.OSUtil;
+import noumena.payment.util.TrustAnyTrustManager;
+import noumena.payment.vo.OrderIdVO;
+import noumena.payment.vo.OrderStatusVO;
+
+public class CoolpadCharge {
+	private static CoolpadParams params = new CoolpadParams();
+	private static boolean testmode = false;
+
+	public static boolean isTestmode() {
+		return testmode;
+	}
+
+	public static void setTestmode(boolean testmode) {
+		CoolpadCharge.testmode = testmode;
+	}
+
+	public static String getTransactionId(Orders order) {
+		order.setCurrency(Constants.CURRENCY_RMB);
+		order.setUnit(Constants.CURRENCY_UNIT_YUAN);
+
+		OrdersBean bean = new OrdersBean();
+		String cburl = order.getCallbackUrl();
+		String payId;
+		if (cburl == null || cburl.equals("")) {
+			payId = bean.CreateOrder(order);
+		} else {
+			if (cburl.indexOf("?") == -1) {
+				cburl += "?pt=" + Constants.PAY_TYPE_COOLPAD;
+			} else {
+				cburl += "&pt=" + Constants.PAY_TYPE_COOLPAD;
+			}
+			cburl += "&currency=" + Constants.CURRENCY_RMB;
+			cburl += "&unit=" + Constants.CURRENCY_UNIT_YUAN;
+
+			payId = bean.CreateOrder(order, cburl);
+		}
+		order.setCallbackUrl(cburl);
+		String date = DateUtil.formatDate(order.getCreateTime());
+		OrderIdVO orderIdVO = new OrderIdVO(payId, date);
+
+		String prepayid = getPrepayID(order);
+		orderIdVO.setMsg(prepayid);
+
+		JSONObject json = JSONObject.fromObject(orderIdVO);
+		return json.toString();
+	}
+
+	private static String getPrepayID(Orders order) {
+		String appid = order.getSign();
+		String prepayid = "";
+		String transdata = "";
+		String urlParameters = "";
+
+		try {
+			transdata += "{\"appid\":\"" + order.getSign();
+			transdata += "\",\"waresid\":" + order.getItemId();
+			transdata += ",\"cporderid\":\"" + order.getOrderId();
+			transdata += "\",\"price\":" + order.getAmount();
+			transdata += ",\"appuserid\":\"" + order.getUId();
+			transdata += "\",\"currency\":\"RMB";
+			transdata += "\",\"notifyurl\":\""
+					+ params.getParams(appid).getCallback_url();
+			transdata += "\"}";
+			String secretkey = params.getParams(appid).getSecretkey();
+			System.out.println(transdata
+					+ "================secretkey================" + secretkey);
+			String sign = SignHelper.sign(transdata, secretkey);
+
+			urlParameters += "transdata="
+					+ URLEncoder.encode(transdata, "utf-8");
+			urlParameters += "&sign=" + URLEncoder.encode(sign, "utf-8");
+			urlParameters += "&signtype=RSA";
+			String urlstr = params.getParams(appid).getCreate_order_url();
+			System.out.println("coolpad create order urlParameters--------->"
+					+ urlParameters);
+			URL url = new URL(urlstr);
+			HttpURLConnection connection = (HttpURLConnection) url
+					.openConnection();
+
+			connection.setDoOutput(true);
+			connection.setDoInput(true);
+			connection.setInstanceFollowRedirects(false);
+			connection.setUseCaches(false);
+			connection.setRequestProperty("Connection", "Keep-Alive");
+			connection.setRequestMethod("POST");
+			connection.setRequestProperty("Content-Type",
+					"application/x-www-form-urlencoded");
+			connection.setRequestProperty("charset", "utf-8");
+			connection.setRequestProperty("Content-Length",
+					"" + Integer.toString(urlParameters.getBytes().length));
+
+			connection.connect();
+
+			DataOutputStream wr = new DataOutputStream(
+					connection.getOutputStream());
+			wr.writeBytes(urlParameters);
+			wr.flush();
+			wr.close();
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					connection.getInputStream()));
+			String res = "", line = null;
+			while ((line = in.readLine()) != null) {
+				res += line;
+			}
+			connection.disconnect();
+			System.out.println("coolpad create order ret-->" + res);
+
+			String[] info = res.split("&");
+			for (int i = 0; i < info.length; i++) {
+				String[] js = info[i].split("=");
+				if (js[0].equals("transdata")) {
+					JSONObject json = JSONObject.fromObject(URLDecoder.decode(
+							js[1], "utf-8"));
+					prepayid = json.getString("transid");
+				}
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return prepayid;
+	}
+
+	public static String checkOrdersStatus(String payIds) {
+		String[] orderIds = payIds.split(",");
+
+		OrdersBean bean = new OrdersBean();
+		List<Orders> orders = bean.qureyOrders(orderIds);
+		List<OrderStatusVO> statusret = new ArrayList<OrderStatusVO>();
+		for (int i = 0; i < orders.size(); i++) {
+			Orders order = orders.get(i);
+			int status = order.getKStatus();
+			OrderStatusVO st = new OrderStatusVO();
+			st.setPayId(order.getOrderId());
+			if (status == Constants.K_STSTUS_DEFAULT
+					|| status == Constants.K_CON_ERROR) {
+				// 如果订单状态是初始订单或者是网络连接有问题状态，返回不知道
+				Calendar cal1 = DateUtil.getCalendar(order.getCreateTime());
+				Calendar cal2 = Calendar.getInstance();
+				if ((cal2.getTimeInMillis() - cal1.getTimeInMillis()) >= Constants.ORDER_TIMEOUT) {
+					st.setStatus(4);
+				} else {
+					st.setStatus(3);
+				}
+			} else if (status == Constants.K_STSTUS_SUCCESS) {
+				// 如果订单已经成功，直接返回订单状态
+				st.setStatus(1);
+			} else {
+				// 订单已经失败，直接返回订单状态
+				st.setStatus(2);
+			}
+			statusret.add(st);
+		}
+		JSONArray arr = JSONArray.fromObject(statusret);
+
+		return arr.toString();
+	}
+
+	public static String getCallbackFromCoolpad(String transdata, String sign,
+			String signtype) {
+		System.out.println("coolpad cb info ---->" + transdata + "&sign="
+				+ sign + "&signtype=" + signtype);
+		String ret = CoolpadParams.SUCCESS;
+		try {
+			if (transdata == null || "".equalsIgnoreCase(transdata)) {
+				System.out.println("coolpad cb ret->" + CoolpadParams.FAILURE);
+				return CoolpadParams.FAILURE;
+			}
+			if (sign == null || "".equalsIgnoreCase(sign)) {
+				System.out.println("coolpad cb ret->" + CoolpadParams.FAILURE);
+				return CoolpadParams.FAILURE;
+			}
+
+			OrdersBean bean = new OrdersBean();
+			JSONObject json = JSONObject.fromObject(transdata);
+			CoolpadOrderVO ordervo = (CoolpadOrderVO) JSONObject.toBean(json,
+					CoolpadOrderVO.class);
+			String orderid = ordervo.getCporderid();
+			Orders order = bean.qureyOrder(orderid);
+
+			if (order != null) {
+				boolean isvlid = validMessage(transdata, sign,
+						ordervo.getAppid());
+
+				if (!isvlid) {
+					System.out.println("coolpad cb ret->"
+							+ CoolpadParams.FAILURE);
+					return CoolpadParams.FAILURE;
+				} else {
+					if (order.getKStatus() != Constants.K_STSTUS_SUCCESS) {
+						bean.updateOrderAmountPayIdExinfo(
+								orderid,
+								ordervo.getTransid(),
+								ordervo.getMoney(),
+								ordervo.getPaytype() + "|"
+										+ ordervo.getFeetype());
+
+						if (ordervo.getResult().equals("0")) {
+							// 支付成功
+							bean.updateOrderKStatus(orderid,
+									Constants.K_STSTUS_SUCCESS);
+						} else {
+							// 支付失败
+							bean.updateOrderKStatus(orderid,
+									Constants.K_STSTUS_ERROR);
+						}
+					} else {
+						System.out.println("coolpad order ("
+								+ order.getOrderId() + ")(" + order.getPayId()
+								+ ") had been succeed");
+					}
+
+				}
+
+				String path = OSUtil.getRootPath() + "../../logs/coolpadcb/"
+						+ DateUtil.getCurTimeStr().substring(0, 8);
+				OSUtil.makeDirs(path);
+				String filename = path + "/" + orderid;
+
+				OSUtil.saveFile(filename, "transdata=" + transdata + "&sign="
+						+ sign + "&signtype=" + signtype);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("coolpad cb ret->" + ret);
+
+		return ret;
+	}
+
+	private static boolean validMessage(String content, String sign,
+			String appid) throws Exception {
+		String key = params.getParams(appid).getPublic_key();
+		return SignHelper.verify(content, sign, key);
+	}
+
+	public static String getTransactionInfo(String code, String appid) {
+		String ret = "";
+		String urlstr = params.getParams(appid).getGet_token_url();
+		// String secretkey = params.getParams(appid).getSecretkey();
+		String secretkey = params.getParams(appid).getAppkey();
+		if (appid == null || appid.equals("")) {
+			return ret;
+		}
+		urlstr = String.format(urlstr, appid, secretkey, code);
+
+		System.out.println("coolpad get token url ->" + urlstr);
+		try {
+			SSLContext context = SSLContext.getInstance("SSL");
+			context.init(null,
+					new TrustManager[] { new TrustAnyTrustManager() },
+					new java.security.SecureRandom());
+			HttpsURLConnection connection = (HttpsURLConnection) new URL(urlstr)
+					.openConnection();
+			connection.setSSLSocketFactory(context.getSocketFactory());
+			connection.setHostnameVerifier(new HostnameVerifier() {
+				@Override
+				public boolean verify(String arg0, SSLSession arg1) {
+					// return true; //不验证
+					return false; // 验证
+				}
+			});
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					connection.getInputStream()));
+			String res = "", line = null;
+			while ((line = in.readLine()) != null) {
+				res += line;
+			}
+
+			connection.disconnect();
+
+			System.out.println("coolpad get token ret ->" + res);
+
+			JSONObject json = JSONObject.fromObject(res);
+			ret = "{\"token\":\"" + json.getString("access_token")
+					+ "\",\"openid\":\"" + json.getString("openid") + "\"}";
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ret;
+	}
+
+	public static void init() {
+		params.initParams(CoolpadParams.CHANNEL_ID, new CoolpadParamsVO());
+		// params.addApp("M5","3000831318","MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAICH93kj267Bfk8Mld6Ap56hkVeHmEC0BGqlevQU7dTPdG51YUNpWXOvzMyC/SEw0K8hX2PnYpNWcovgd+BSgF72BDeqAxloBpPSs7C4EzsXAhDSnRYou7EQmkDPKx+5Xs03h/CGOREgPRpDjmVsSy5UP1O5TWPe2qOZXp2mrGqHAgMBAAECgYAePd+ghStfRu+tMczheWv3CxTjf2f3cWPIo/72Byaed+FxS/UCo3sEmUyaogdlE9NGIZgMLZkoCaMR/lK2WTMSzkHSciOlpMjHybWlR7ogRh6jNYK7dpjHe/c0GaJ7VcuBm1XW0wXLlT9OgbxZ6ydqIK1gHB/lfKtQuwfHL7PpIQJBANbXf29TLbzhIO2YByh/cS1IXUfh2lNyIsI6fNFOPLjwrPG1WzVde7ux/umrHwf7Sg1LzqD01LjB3MrGj6pCx5MCQQCZJ4c4qQSQaQq6Hmbde53QgjqtoR6Xhkiy77xGRTJJkFXy9J1FOeev7x7JeJBxtEc48pO/By77UTMUDCoEuoG9AkEA0RNSfuIxpphoVRAYFz8+wtSjgqq2r3JphR8qDP7YdRozE95r7pkVKunjqz7OqhPQUvQtF9JrmYl/9w4ZDZaDZQJAEqc70uzS/3ursMtvH96kc/bIiskq3q2eQRztw2k+HLOVpEeiuAG7dDQdfdBPV2nrmsYAtK19TWKwY+qvW3ATyQJBAL5AwY6hgyRKSIvNJHwXlANE1QSiZmgDa5RT0z33OvoggSDQXiociy2buwM2F0W3HcxoGVL4I+uPZtvX4z7q/vM=","MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDPP1Nu/qICzGQNTpxZPkcOZVq2RfQ0hXK+M3fMoYWMX2J5r017jalmT8otSPpKlk+LCA0pCROCJSNaq8xZiasnFroiogdaBQSA//989uujQz4CSK76VnF7Ck4aAdNVBOsEJ4Szpvi/9breQ0xARpx1+ulYX/I1ZFbsCM+I36qQ8wIDAQAB");
+		// params.addApp("M5", "5110147",
+		// "777e53b866761f62312b0e07cfed1f49",""); //真！吞食天地
+		// params.addApp("gongzhu","5110146","2bfd4d3cfbe4a01f2328b79365728ff5","");//小青蛙
+		// params.addApp("gongzhu","3000833141","MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAIzQ9v+GO5DHnvZ0i/oq9xCIzfYno2BhcSOXVFcJ0vrD64CgVI7tADYNWkdWaYH7B8Qn/Jz9fvX9xNrvixOcUuet6RRTYFRrSZA8smE6zmEi/JSynT9ojfonC4XgziN0YKYkciYQoH21Y0J+rg/mUzbuJTSZrJ3GzzmeR4GRA6ShAgMBAAECgYAX1/ZK1BbX8AUppBhjlszY3uFJEfMnCbjXlvMv/bjcvznsQLmwrc7AWEh2FdqtqKzq+P5cMsxBqOOhUrhQ7MJYt+4Qu5/NV3MhbHPNMUAzw+DWrFyMRjNYNFMMxAdgm3XBN55WUx1SiHfJYbFcP209Thnvj+tZ4k2BtUFtWmMDsQJBAPYteLr8sjy195bTNepNQXOSpzhjshWx/5tvVuDXRkt/ZhDMZx03x0j7b4anJVKZuANZqYnvmwN4QrTzFISxzV0CQQCSb01lw0eVP0ICX9uhxLdo/gr6fClY3bj9c4KltsNBsbBYrlogp/Qjf8vr8dUU1Qv0eogWwN4u4TfzBAnavDwVAkEAvZDyYPrpvXpaN5hY8h2fgwGxJukOX0p8DBNGkUj0Znqp+9GKraMgIIENtmDLirm4S0wmE4OgmKForLJqYGwSOQJAKXYSOAn+rqdmjT2O9lK4i6XCfgHBw0OkKT8Xcsw4pNUm1TUol652VcbNelTSvD9GT0aSWb7qKePi74/pKmG5sQJAGRbfcwQHV0iyBlCcIQSmowpvPvoXAECnRdze4iUAudmpq8K0ayDMBPpC0K96hdkS64ZFNffi9grLaZUoAYLT0w==","MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCjsRxSVcSl3FkKPk1kmLdeUVZwvDpEa6AaZ+YtnZEZw6FypwSMwsVX7nVUIVGkY6x5s3m5U/tsM8Vaf/IV6c3M2FLXQldkq5BFbXkg6y5pOluMYwsj6OUrVPgO/LYTsdMV4mXJQrH/gRr9H+vxaXm4TMwBzetXbLVphRaeQ94M2wIDAQAB");
+		// params.addApp("M3", "5110171",
+		// "b3b23bde4eb8ef11f7d531dde12c0144","");//正义红师
+		// params.addApp("M3","3000846685","MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAMLq0Q15OID+w1oqxUjbctdCS6e/spQuOqbYMLHHNQwpiQDLQvyhT8rCyVBU29fjEASYcrl9y01awc3QGTxyRtQCaf9JzI20dl1ZdfX3UT+yTtpjKgz5DpPLmrIHkwuznG5Fav4smgAF3+hRV3qOZXrELZfE83GkDRo2gq8lPCfrAgMBAAECgYEAr0FOwlySL3nh0DrQtBeMhHu5ZpT4Tj/awJV2AwLocY0PAEXCbz/jbJ4DQFVsbgpdJqSj0qCGoYDO7O0FI9JkVzyJDz6jQFmVlA2uy4VJx4T+23mf3WisJGwqEFc0PV4AuvzzC6A7pMSYErRzjOKrLcXfN8ySNpZQGptqJaxUG2ECQQD00W7/bET+OI/2vFiyBdJFYmk5TAox9QqpdtaZCAyxivw8U38lpXi/hXdjgP1hZxQaSqov7qVFEzrEc8d7ZanzAkEAy9HpPWAbIGBOrdzXqw2PKTWrdH10qQwC1AikNWTOW6rTXpuA7Kp1zyWoyZhx1fl492vrCYTbw/AKrvSHjchQKQJAdDxrwwIYz8rzL2bFheCVsTPEWdvsi0OYyFUQFqBnxnQCxnGuUKV76xLnWGsJ4pEaTlFc9F0OQvmaUWPXNpNSWQJBAKS1aHf5z1IVod9spTiNB5D01y6XJ4xosWxp41FmukBnxtIgdkpK4lNZCpKHSA7zwKapplGV9QbdV7TU1SploykCQEf1aqbjcEZ9u650kKqlk0Cr3CmEP6smaHTmVNu7lw7sUIkM4jKeXVilwYQr2M7ycOTqGYUw9kj+I5ybVyiLuk8=","MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCwoZ9NKbvlNx41klWRmyL/7kMljAf1xLELYMYMRmJip1AXWAHEkKzVmWqiv/8HzU7xgW6NNfX+SarckJdPCiWrxkDGsccCvxEuZiFAV3okkZRTM2TnRvo2mPylX3qxRKGRJgOnyZTtUpqB3iz94xmkovxPxdZRPSQKzH8hZom0vwIDAQAB");
+	}
+
+	public static void main(String args[]) {
+
+		try {
+			// String aaa =
+			// URLDecoder.decode(">transdata=%7B%22appid%22%3A%225000003329%22%2C%22waresid%22%3A7%2C%22cporderid%22%3A%2220160530142852781XqE%22%2C%22price%22%3A30.0%2C%22appuserid%22%3A%2297%22%2C%22currency%22%3A%22RMB%22%2C%22notifyurl%22%3A%22http%3A%2F%2Fp.ko.cn%2Fpay%2Fcoolpadcb%22%7D&sign=mDsMdb3q2q3bUVJ%2FjegBDJiqL7wmrO%2Bnaez8BlvvZ9DrgWhV5quS9HWYFMGYHxTzznaaSt7RROWbFxBlCSP1zuR7GFPVbDZo2ldP0nFiboI2rkIzXQ7DWWoxcKnQdPSX8PPZsI1uwbXsXnzrHcVWv5vAIxoAX6%2By6MGAa1dFC1o%3D&signtype=RSA",
+			// "utf-8");
+			// SignHelper.verify("{\"appid\":\"5000003085\",\"appuserid\":\"20010781\",\"cporderid\":\"2016031805443911804Q\",\"cpprivate\":\"\",\"currency\":\"RMB\",\"feetype\":2,\"money\":6.00,\"paytype\":401,\"result\":0,\"transid\":\"32031603180544396056\",\"transtime\":\"2016-03-18 05:44:56\",\"transtype\":0,\"waresid\":1}","Sa8sZcb20PhN0hGyrKrYVxQo++cZRffBjuun6KtR2IoTebYtTW7CEC8/w4GjvIiqBdfK/Z2sKnnpUuSvervLrqrRuDYlYGTbMIdzk+F1+tmhg3+PidN9SxGtVl6s/kltPrRF2cKkEIwAkpKJ2mV6WF1/GWX7/Ls56gm2NWes9qc=",
+			// "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC5waVWQjzez0aJkb5e46LkqiwP2RlIcwIzpu7wWo7hwrA15PpBIIkMXP4s84kqJptX8dulYAiJqojGP68GoTaDiIRJwLtS7Gkv2yLhXs+kq2YuAe8eYO25DuNo4Yi0mOiTsZYEsAqOCzVJvcB5ts4dBdZUfu4q3bUoJMYtThBLSQIDAQAB");
+			String sign = SignHelper
+					.sign("{\"appid\":\"5000003329\",\"waresid\":2,\"cporderid\":\"20160822170653077nF5\",\"price\":6.0,\"appuserid\":\"2011846\",\"currency\":\"RMB\",\"notifyurl\":\"http://p.ko.cn/pay/coolpadcb\"}",
+							"MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBALNnznRY1ZJTnc1I0tqGSuxEt+taEKuYNr/6i0PAjqzRU4fQdYrMNx1ZK06oBkklRLx+WhLGi2+sWr1dXlN0bzVDut/myx0ar0Tf/gpM9tOXJ85bE94IXW7TNT/tSZesQqJKavV2XjOtVvNcDkyoU+sGc77gGzY8+6d/yth7KogLAgMBAAECgYArpW2M0K/k0YLqlnT1xQYlRPKZx2eW14k6W3HWIdqUILj5qbVu9w/RjAgFMsuUsARw9yxitPrnSD8rIrP4CbOkETbTIEwExYB3xxvEm7JVVF1Q4+ifNk+ai0j+HTmITM+qqwexoE6gJFuY66PMZvyxSBUbUVLZ/Sf2TwWHyGK3wQJBAOXCDYVokB9LJqTWJTAJLxKsTcR9Vjh7qy3scz7jwrC3NPZDRP/AbhA4HxoPc7UyAws9kpqg+HnSK54QaKe8LAUCQQDH5XwTjumyu6LMPzaPAi2YF72158n7D1mg3Dy3x8ASaMEI2H1XJGE/KetkFlph1qFixJGksCMLcqUAfpk4WjDPAkBG1Y3vnG4ah8PRPAhZB+vQWPjc5DtpzI7Y6LYbJIMIkmMsrU6ffscwDu1fznXA3jtcAs6pB4mznR0/bRWm6Pe1AkEAlAXZdVo0sAfGK9z7d7azMJcUAmnb5a+ePUIZLDYcgwVTPEujtS3ZXT6bcogi8aRP6aWJ/Bv6N3XzvYQBzfrrfQJBAINW0lZpLbFuAY8stDTMHab4d5iGVe/XgENjze6Rtt9QbR1Va56P/Y45+X1wwGs1DIBH8yGTZ6lQ1WzX1VRb64E=");
+			// m10//MIICdQIBADANBgkqhkiG9w0BAQEFAASCAl8wggJbAgEAAoGBAKCx5Cnp2N1o5Oh5xBCzlx9mvA4TdJiVejgXDP6z9WeSm4OqPwZ117zYxq/b0jgxe2olS3yROBliTSGOppsFF3so0s3yDNPvaZTGpL9ozp3KCSslTvJzDP+QsIRdHcroeT6iZCx/MUym2JOcDk0q0Sxvb7k6a+qYrcjWjCUEs9HLAgMBAAECgYAwe5uIXcqVerldvqc+FsEoszlX0dzi0G6Qj7vW+Pq4pg4PmoTrcRCHJKxFkMALPjqrGtd8nN/dIMB+uGhh6xZbEuEYyvbUqUkEDLwgYGH874A4H5dlJXPYJjwC5uoyiWzYPREYfZPy+A6dJOT5uqzJ86vjQJ0kj8wQvH+dQw7MQQJBAMuyTjIdu4rRNOmu+m6XAgHkKqXivEk4Vddwl8f2mGznr//1+K3CbyPqFMpYRnPrbfIBSopvfnW5+AfsJF3O/msCQQDJ9O/RVuv1IEzVl0f7Iblb+IVmjs8o0itcQzyfIkjSMRFjCbN0DdIhiYGv08vPc3qq+xbIvEfsuPOxHUfCxJIhAkB26QYA955tsSdEa6NCP+EqHXpQEIZ97+cct1vDnc7pdG8n6v1a4jBjNNkiLloifYNXTS2oluGp9AA5D79DC/01AkAmlMxbyac6JPmItGXj7AVlNI0HkrCws7Xk4lNqczpGLWmM6gWGXj2Oep5z4JpG/2Cn2V/46T80UgD8DQPwiW0BAkANbD+R7TEWw0UBD/zC9ho6lFHbUTYbFclpzmAKM/dEDJwqhiq6N3MtXKAqeV2vqBHG6l4P8x0Wzqf7yr2HbK1P
+			System.out.println(sign);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+}

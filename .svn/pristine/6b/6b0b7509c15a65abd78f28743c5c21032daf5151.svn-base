@@ -1,0 +1,195 @@
+package noumena.payment.huawei;
+
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import noumena.payment.bean.OrdersBean;
+import noumena.payment.model.Orders;
+import noumena.payment.util.Constants;
+import noumena.payment.util.DateUtil;
+import noumena.payment.util.OSUtil;
+import noumena.payment.vo.OrderIdVO;
+import noumena.payment.vo.OrderStatusVO;
+
+public class HuaweiCharge
+{
+	private static HuaweiParams params = new HuaweiParams();
+	private static boolean testmode = false;
+	
+	public static boolean isTestmode()
+	{
+		return testmode;
+	}
+	public static void setTestmode(boolean testmode)
+	{
+		HuaweiCharge.testmode = testmode;
+	}
+	
+	public static String getTransactionId(Orders order, String orderTitle, String orderDesc)
+	{
+		order.setCurrency(Constants.CURRENCY_RMB);
+		order.setUnit(Constants.CURRENCY_UNIT_YUAN);
+		
+		OrdersBean bean = new OrdersBean();
+		String cburl = order.getCallbackUrl();
+		String payId;
+		if (cburl == null || cburl.equals(""))
+		{
+			payId = bean.CreateOrder(order);
+		}
+		else
+		{
+			if (cburl.indexOf("?") == -1)
+			{
+				cburl += "?pt=" + Constants.PAY_TYPE_HUAWEI;
+			}
+			else
+			{
+				cburl += "&pt=" + Constants.PAY_TYPE_HUAWEI;
+			}
+			cburl += "&currency=" + Constants.CURRENCY_RMB;
+			cburl += "&unit=" + Constants.CURRENCY_UNIT_YUAN;
+			
+			payId = bean.CreateOrder(order, cburl);
+		}
+		System.out.println("huaweikey"+params.getParams(order.getSign()).getAppkey());
+		order.setCallbackUrl(cburl);
+		String date = DateUtil.formatDate(order.getCreateTime());
+		OrderIdVO orderIdVO = new OrderIdVO(payId, date);
+		
+		JSONObject json = JSONObject.fromObject(orderIdVO);
+		return json.toString();
+	}
+	
+	public static String checkOrdersStatus(String payIds)
+	{
+		String[] orderIds = payIds.split(",");
+
+		OrdersBean bean = new OrdersBean();
+		List<Orders> orders = bean.qureyOrders(orderIds);
+		List<OrderStatusVO> statusret = new ArrayList<OrderStatusVO>();
+		for (int i = 0 ; i < orders.size() ; i++)
+		{
+			Orders order = orders.get(i);
+			int status = order.getKStatus();
+			OrderStatusVO st = new OrderStatusVO();
+			st.setPayId(order.getOrderId());
+			if (status == Constants.K_STSTUS_DEFAULT || status == Constants.K_CON_ERROR)
+			{
+				//如果订单状态是初始订单或者是网络连接有问题状态，返回不知道
+				Calendar cal1 = DateUtil.getCalendar(order.getCreateTime());
+				Calendar cal2 = Calendar.getInstance();
+				if ((cal2.getTimeInMillis() - cal1.getTimeInMillis()) >= Constants.ORDER_TIMEOUT)
+				{
+					st.setStatus(4);
+				}
+				else
+				{
+					st.setStatus(3);
+				}
+			}
+			else if (status == Constants.K_STSTUS_SUCCESS)
+			{
+				//如果订单已经成功，直接返回订单状态
+				st.setStatus(1);
+			}
+			else
+			{
+				//订单已经失败，直接返回订单状态
+				st.setStatus(2);
+			}
+			statusret.add(st);
+		}
+		JSONArray arr = JSONArray.fromObject(statusret);
+		
+		return arr.toString();
+	}
+	
+	public static String getCallbackFromHuawei(Map<String,Object> huaweiparams)
+	{
+		System.out.println("huawei cb info -->"+huaweiparams.toString());
+		String ret = "{\"result\":0}";
+		String orderid = "";
+		String sporderid = "";
+		String orderAmount = "";
+		String result = "";
+		String appid = "";
+		
+		try
+		{
+			orderid = (String) huaweiparams.get("requestId");
+			sporderid = (String) huaweiparams.get("orderId");
+			orderAmount = (String) huaweiparams.get("amount");
+			result = (String) huaweiparams.get("result");
+
+			OrdersBean bean = new OrdersBean();
+			Orders order = bean.qureyOrder(orderid);
+
+			if (order != null)
+			{
+				appid = order.getSign();
+				String content = RSA.getSignData(huaweiparams);
+		        boolean check = RSA.doCheck(content, (String) huaweiparams.get("sign"), params.getParams(appid).getAppkey());
+		    	
+				if (check == true && result.equals("0"))
+				{
+					//支付成功
+					if (order.getKStatus() != Constants.K_STSTUS_SUCCESS)
+					{
+						bean.updateOrderAmountPayIdExinfo(orderid, sporderid, orderAmount, (String) huaweiparams.get("payType") + "|" + (String) huaweiparams.get("bankId") + "|" + (String) huaweiparams.get("spending"));
+						bean.updateOrderKStatus(orderid, Constants.K_STSTUS_SUCCESS);
+					}
+					else
+					{
+						System.out.println("huawei order (" + order.getOrderId() + ") had been succeed");
+						ret = "{\"result\":0}";
+					}
+				}else {
+					ret = "{\"result\":3}";
+				}
+			}else {
+				ret = "{\"result\":1}";
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			ret = "{\"result\":99}";
+		}
+		System.out.println("huawei cb ret-->"+ret);
+		String path = OSUtil.getRootPath() + "../../logs/huaweicb/" + DateUtil.getCurTimeStr().substring(0, 8);
+		OSUtil.makeDirs(path);
+		String filename = path + "/" + orderid;
+		
+		OSUtil.saveFile(filename, huaweiparams.toString());
+		
+		return ret;
+	}
+	
+	public static String getParamsjson(String appid)
+	{
+		String paramsjson = "";
+		try {
+			paramsjson = "{\"privatekey\":\"%s\",\"buoykey\":\"%s\"}";
+			String privatekey = URLEncoder.encode(params.getParams(appid).getPrivatekey(),"utf-8");
+			String buoykey = URLEncoder.encode(params.getParams(appid).getBuoykey(),"utf-8");
+			paramsjson = String.format(paramsjson, privatekey, buoykey);
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+		return paramsjson;
+	}
+
+	public static void init()
+	{
+		params.initParams(HuaweiParams.CHANNEL_ID, new HuaweiParamsVO());
+//		params.addApp("M3","10215916","9vqsxiuyirsjvm0vt9pfzmqk20r2gmes"); //正义红师
+//		params.addApp("M5","10215522","am5kwtyfusr1e5jirbnqyih49lpjfr1m"); //真!吞食天地
+	}
+}

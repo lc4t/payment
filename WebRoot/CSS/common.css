@@ -1,0 +1,38 @@
+body{
+	 background-image:url(../Images/back_load.gif);
+}
+
+A{
+	font-size: 12px;
+	color:#416aa3;
+	text-decoration: none;
+	height: 18px;
+	line-height: 18px;
+	padding: 0 4px;
+
+}
+
+A:hover{
+	color: #000;
+	background: #d9e8fb;
+}
+
+TABLE#dataTable tHead {
+	PADDING-RIGHT: 5px; PADDING-LEFT: 5px; FONT-SIZE: 11px; font-weight:bold; BACKGROUND: #dce5ea; PADDING-BOTTOM: 2px; COLOR: #14426b; PADDING-TOP: 2px; BORDER-BOTTOM: #ffffff 1px solid; FONT-FAMILY: verdana
+}
+
+TABLE#dataTable tBody {
+	PADDING-RIGHT: 5px; PADDING-LEFT: 5px; FONT-SIZE: 11px; BACKGROUND: #dce5ea; PADDING-BOTTOM: 2px; COLOR: #002d45; PADDING-TOP: 2px; BORDER-BOTTOM: #ffffff 1px solid; FONT-FAMILY: verdana
+}
+
+.group_title {
+	PADDING-RIGHT: 5px; PADDING-LEFT: 5px; FONT-WEIGHT: bold; FONT-SIZE: 12px; PADDING-BOTTOM: 2px; COLOR: #14426b; PADDING-TOP: 2px; FONT-FAMILY: arial
+}
+
+.form_bgcolor {
+	BACKGROUND: #f4f4f4
+}
+
+.desc_cell {
+	PADDING-RIGHT: 5px; PADDING-LEFT: 5px; FONT-SIZE: 11px; BACKGROUND: #dce5ea; PADDING-BOTTOM: 2px; COLOR: #002d45; PADDING-TOP: 2px; BORDER-BOTTOM: #ffffff 1px solid; FONT-FAMILY: verdana
+}

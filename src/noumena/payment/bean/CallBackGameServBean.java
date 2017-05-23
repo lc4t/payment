@@ -1,0 +1,143 @@
+package noumena.payment.bean;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
+
+import noumena.pay.SendOrderInfo;
+import noumena.payment.model.Callback;
+import noumena.payment.model.Orders;
+import noumena.payment.util.Constants;
+import noumena.payment.util.DateUtil;
+
+public class CallBackGameServBean {
+	public String doGet(String url) {
+		String res = null;
+		try {
+			URL u = new URL(url);
+			HttpURLConnection uc = (HttpURLConnection) u.openConnection();
+			BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
+			res = in.readLine();
+			in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return res;
+	}
+	
+	public String doPost(String url, String content)
+	{
+		String res = "";
+		try
+		{
+			URL u = new URL(url);
+			HttpURLConnection uc = (HttpURLConnection) u.openConnection();
+			uc.setRequestMethod("POST");
+			uc.setReadTimeout(60000);
+			uc.setRequestProperty("Content-type", "text/xml");
+			uc.setDoInput(true);
+			uc.setDoOutput(true);
+			OutputStreamWriter outs = new OutputStreamWriter(uc.getOutputStream(), "UTF-8");
+			outs.write(content);
+			outs.flush();
+			outs.close();
+			BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
+			String line = null;
+			while ((line = in.readLine()) != null)
+			{
+				res += line;
+			}
+			in.close();
+			uc.disconnect();
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		return res;
+	}
+
+	public void toCallback(Callback vo, int callbackStatus) {
+		if (vo.getCallbackStatus() == callbackStatus) {
+			String url = vo.getCallbackUrl();
+			String content = vo.getCallbackContent();
+			if (url == null || url.equals("") || vo.getKStatus() == Constants.K_STSTUS_ERROR) {
+				return;
+			}
+			String payid = "";
+			try
+			{
+				OrdersBean ordersbean = new OrdersBean();
+				Orders order = ordersbean.qureyOrder(vo.getOrderId());
+				if (order != null)
+				{
+					payid = order.getPayId();
+				}
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				payid = "";
+			}
+			
+			if (url.indexOf("?") == -1) {
+				url += "?status=" + vo.getKStatus() + "&payId=" + Constants.ORDERID_PRE + vo.getOrderId() + "&flowid=" + payid;
+			} else {
+				url += "&status=" + vo.getKStatus() + "&payId=" + Constants.ORDERID_PRE + vo.getOrderId() + "&flowid=" + payid;
+			}
+			if (vo.getPayRealPrice() != null && !vo.getPayRealPrice().equals("0") && !vo.getPayRealPrice().equals("0.0")  && !vo.getPayRealPrice().equals("0.00"))
+			{
+				url += "&payrealprice=" + vo.getPayRealPrice();
+			}
+			System.out.println("====================callback url:" + url);
+			String serverMessage = "";
+			if (content == null || content.equals(""))
+			{
+				serverMessage = doGet(url);
+			}
+			else
+			{
+				serverMessage = doPost(url, content);
+			}
+			System.out.println("====================callback result:" + serverMessage);
+			if (serverMessage == null) {
+				vo.setCallbackStatus(Constants.CALLBACK_STSTUS_ERROR);
+			} else {
+
+				vo.setCallbackStatus(Constants.CALLBACK_STSTUS_COMPLETE);
+				if (serverMessage == "ok") {
+					vo.setServerStatus(Constants.CALLBACK_SERVER_STSTUS_DEFAULT);
+				} else {
+					// vo.setServerStatus(Integer.parseInt(serverMessage));
+				}
+			}
+			vo.setCallbackTime(DateUtil.getCurrentTime());
+			CallbackBean bean = new CallbackBean();
+			bean.updateCallback(vo);
+		}
+	}
+
+	public void toCallbacks() {
+		if (Constants.CALLBACK_MODE.equals("off"))
+		{
+			return;
+		}
+		
+		CallbackBean CallbackBean = new CallbackBean();
+
+		List list = CallbackBean.qureyCallbacks(Constants.CALLBACK_STSTUS_ERROR);
+		for (int i = 0; i < list.size(); i++)
+		{
+			Callback vo = (Callback) list.get(i);
+			OrdersBean bean = new OrdersBean();
+			Orders order = bean.qureyOrder(vo.getOrderId());
+			if (order != null)
+			{
+				vo.setPayRealPrice(order.getMoney());
+			}
+			toCallback(vo, Constants.CALLBACK_STSTUS_ERROR);
+		}
+	}
+}

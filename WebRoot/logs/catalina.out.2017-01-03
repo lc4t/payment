@@ -1,0 +1,120 @@
+2017-01-03 11:17:33 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 11:17:33 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 11:42:11 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 11:42:11 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 11:44:04 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2017-01-03 11:44:04 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2017-01-03 11:44:04 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2017-01-03 11:44:04 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2017-01-03 11:44:04 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-01-03 11:44:04 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2017-01-03 11:44:04 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2017-01-03 11:44:04 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2017-01-03 11:44:04 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-01-03 11:44:04 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-01-03 11:44:07 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 11:44:07 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 11:44:16 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 11:46:09 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2017-01-03 11:46:09 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2017-01-03 11:46:09 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2017-01-03 11:46:09 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2017-01-03 11:46:09 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-01-03 11:46:09 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2017-01-03 11:46:09 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2017-01-03 11:46:09 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2017-01-03 11:46:09 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-01-03 11:46:09 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-01-03 11:46:12 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 11:46:12 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 11:48:22 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 12:00:53 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 14:35:42 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2017-01-03 14:35:42 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2017-01-03 14:35:42 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2017-01-03 14:35:42 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2017-01-03 14:35:42 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-01-03 14:35:42 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2017-01-03 14:35:42 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2017-01-03 14:35:42 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2017-01-03 14:35:42 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-01-03 14:35:42 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-01-03 14:35:53 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 14:35:53 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 14:36:14 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2017-01-03 14:36:14 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2017-01-03 14:36:14 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2017-01-03 14:36:14 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2017-01-03 14:36:14 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-01-03 14:36:14 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2017-01-03 14:36:14 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2017-01-03 14:36:14 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2017-01-03 14:36:14 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-01-03 14:36:14 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-01-03 14:37:21 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 14:37:21 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 14:40:57 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 14:40:57 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 14:41:27 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 14:53:19 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 14:53:19 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 15:00:55 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 15:02:53 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 15:04:16 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 15:05:09 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 15:41:54 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 16:05:57 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 16:07:33 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 16:08:42 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 16:09:17 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 16:09:52 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 16:09:52 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 16:10:07 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 16:11:01 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 16:11:01 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 16:11:32 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 16:12:03 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 16:12:03 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 16:12:20 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 16:13:26 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 16:13:26 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 16:13:39 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 16:15:02 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 16:15:02 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 16:15:10 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 16:28:17 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 16:28:17 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 16:28:31 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 17:37:50 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2017-01-03 17:37:50 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2017-01-03 17:37:50 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2017-01-03 17:37:50 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2017-01-03 17:37:50 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-01-03 17:37:50 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2017-01-03 17:37:50 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2017-01-03 17:37:50 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2017-01-03 17:37:50 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-01-03 17:37:50 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-01-03 17:37:59 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 17:37:59 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 17:38:44 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2017-01-03 17:38:44 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2017-01-03 17:38:44 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2017-01-03 17:38:44 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2017-01-03 17:38:44 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-01-03 17:38:44 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2017-01-03 17:38:44 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2017-01-03 17:38:44 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2017-01-03 17:38:44 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-01-03 17:38:44 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-01-03 17:40:09 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 17:40:09 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 17:40:45 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 17:46:34 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 17:46:34 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 17:47:34 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 17:47:34 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 17:48:19 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)
+2017-01-03 18:05:17 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-01-03 18:05:17 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-01-03 18:26:15 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-01-03.txt (系统找不到指定的路径。)

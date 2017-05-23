@@ -1,0 +1,49 @@
+@charset "utf-8";
+html,body,div,span,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,section,summary,time,audio,video {padding:0;margin:0;border:0;border-collapse:collapse;}
+html,body{height:100%}
+html{ font-size:20px;}
+ul,ol,li{list-style:none}
+em{font-style:normal}
+body{font-family:Helvetica,STHeiti,Droid Sans Fallback;-webkit-user-select:none;-webkit-text-size-adjust:none;-webkit-text-size-adjust:100%;-ms-text-size-adjust: 100%;min-width:320px;_width:expression(document.body.clientWidth < 320 ? "320px" : "auto");overflow-x:auto;background:#0c0c0c;}
+img{border:0 none}
+a {text-decoration:none;-webkit-tap-highlight-color:rgba(0,0,0,.5);-webkit-user-select:none}
+a {-webkit-touch-callout:none}
+* {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+*:before,
+*:after {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+#weixin_show,.android,.ios_no,.container{width:100%; height:100%;}
+#weixin_show{background:#0c0c0c;}
+#main_no{display: none;height: 100%;}
+.ios_no{}
+.android_no{}
+/*#weixin_show,.ios_no{display: none;}*/
+.weixin_android,.weixin_ios,.ios_no{position:relative;}
+/*.weixin_android,.weixin_ios{ display:none}*/
+.weixin_android img,.weixin_ios img,.weixin_android div,.ios_no img{width:100%; height:100%; line-height:0; font-size:0}
+.weixin_android div,.weixin_ios div,.ios_no div{position:absolute;}
+.weixin_android .text,.weixin_ios .text{top:10%;}
+.weixin_android .ren,.weixin_ios .ren{bottom:0;}
+/*go*/
+.container{overflow-y:hidden}
+.ios_no .text{top:30%}
+.time_bg,.time,.time_num{ height:2.7rem;line-height:2.7rem; width:100%;}
+.time{font-size:0.8rem;color:#fff; text-align:center; position:absolute;bottom:15%;display:table-cell}
+.time_bg{background:url(../images/timebg.png) no-repeat; position:absolute;top:0}
+.time img{ width:auto; height:auto; display:inline; vertical-align:middle; margin-left:0.5rem;}
+.container:after{clear: both;content: "";display: block;height: 0;visibility: hidden;}
+@media screen and (max-width:320px) {
+   .android .text{top:30%;}
+  .ios_no .text{top:35%;}
+}
+@media screen and (min-height:568px) {
+   .android .text{top:30%;}
+  .ios_no .text{top:35%;}
+}

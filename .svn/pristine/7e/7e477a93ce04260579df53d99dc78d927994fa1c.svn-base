@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<!-- <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd"> -->
+<beans>
+	<!-- JNDI -->
+	<bean id="dataSourcetarget" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/jdbc/PaymentSysDb"></property>
+	</bean>
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.UserCredentialsDataSourceAdapter">
+		<property name="targetDataSource">
+			<ref bean="dataSourcetarget" />
+		</property>
+	</bean>
+
+	<!-- SESSIONFACTORY -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="show_sql">false</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.jdbc.batch_size">20</prop>
+			</props>
+		</property>
+		<property name="mappingResources">
+			<list>
+				<value>config/hibernate/CreateOrderId.hbm.xml</value>
+				<value>config/hibernate/Orders.hbm.xml</value>
+				<value>config/hibernate/Callback.hbm.xml</value>
+				<value>config/hibernate/Payinfo.hbm.xml</value>
+				<value>config/hibernate/PayGame.hbm.xml</value>
+				<value>config/hibernate/PayServer.hbm.xml</value>
+				<value>config/hibernate/GashPayGame.hbm.xml</value>
+				<value>config/hibernate/GashPayServer.hbm.xml</value>
+				<value>config/hibernate/PayItems.hbm.xml</value>
+				<value>config/hibernate/Params.hbm.xml</value>
+				<value>config/hibernate/Shielding.hbm.xml</value>
+			    <value>config/hibernate/SendGame.hbm.xml</value>
+			</list>
+		</property>
+	</bean>
+	<bean id="CreateOrderIdDao" class="noumena.payment.dao.impl.CreateOrderIdDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="OrdersDAO" class="noumena.payment.dao.impl.OrdersDAOImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="CallbackDAO" class="noumena.payment.dao.impl.CallbackDAOImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="PayinfoDao" class="noumena.payment.dao.impl.PayinfoDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="PayGameDao" class="noumena.payment.dao.impl.PayGameDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="PayServerDao" class="noumena.payment.dao.impl.PayServerDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="GashPayGameDao" class="noumena.payment.dao.impl.GashPayGameDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="GashPayServerDao" class="noumena.payment.dao.impl.GashPayServerDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="PayItemsDao" class="noumena.payment.dao.impl.PayItemsDAOImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="ParamsDao" class="noumena.payment.dao.impl.ParamsDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="ShieldingDao" class="noumena.payment.dao.impl.ShieldingDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="SendGameDao" class="noumena.payment.dao.impl.SendGameDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="SpringContextUtil" class="noumena.payment.util.SpringContextUtil"
+		singleton="true" />
+
+	<!-- 逻辑bean -->
+	<bean id="CronBean" class="noumena.payment.bean.CronBean" />
+	<bean id="ConDB" class="noumena.payment.bean.ConDB" />
+	<bean id="CallBackGameServBean" class="noumena.payment.bean.CallBackGameServBean" />
+	<bean id="OrdersBean" class="noumena.payment.bean.OrdersBean" />
+	<bean id="PayinfoBean" class="noumena.payment.bean.PayinfoBean" />
+	<bean id="TaskBean" class="noumena.payment.bean.TaskBean" />
+	<!--<bean id="ShieldingBean" class="noumena.payment.bean.ShieldingBean" />-->
+
+
+
+
+
+
+	<!-- 定时任务： -->
+
+	<bean id="tesk1"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="ConDB" />
+		<property name="targetMethod" value="con" />
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="tesk1" />
+		<property name="cronExpression" value="0 0 * ? * * " />
+	</bean>
+
+	<bean autowire="no"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="cronTrigger" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- 定时任务： -->
+	<bean id="tesk2"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="CallBackGameServBean" />
+		<property name="targetMethod" value="toCallbacks" />
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="cronTrigger2" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="tesk2" />
+		<property name="cronExpression" value="0 0/5 * ? * * " />
+	</bean>
+	<bean autowire="no"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="cronTrigger2" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- 定时任务： -->
+	<bean id="tesk3"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="OrdersBean" />
+		<property name="targetMethod" value="qureyOrdersByGASHFailed" />
+		<property name="concurrent" value="false" />
+	</bean>
+	<bean id="cronTrigger3" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="tesk3" />
+		<property name="cronExpression" value="10 0/5 * ? * * " />
+	</bean>
+	<bean autowire="no"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="cronTrigger3" />
+			</list>
+		</property>
+	</bean>
+
+	<!-- 定时任务： -->
+	<!-- <bean id="tesk4" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean"> 
+		<property name="targetObject" ref="TaskBean" /> <property name="targetMethod" 
+		value="updateMOLHeartbeat" /> <property name="concurrent" value="false" /> 
+		</bean> <bean id="cronTrigger4" class="org.springframework.scheduling.quartz.CronTriggerBean"> 
+		<property name="jobDetail" ref="tesk4" /> <property name="cronExpression" 
+		value="20 0/5 * ? * * " /> </bean> <bean autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"> 
+		<property name="triggers"> <list> <ref local="cronTrigger4"/> </list> </property> 
+		</bean> -->
+</beans>

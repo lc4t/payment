@@ -1,0 +1,29 @@
+package noumena.payment.alipay;
+
+
+public class AlipayParams
+{
+	public static String KONG_PRIVATE_KEY_PKCS8	= "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAMIB6c02Ssj6c4xdUkongvsLCt9tDYbAXWinU1UInOHJEY/ddOAr3cr+ZX876jmoAi1CqkTytn2h4MTPOa3hJRj4gFMkBHuyaPRd/VF9HlZnTlZovlZ3vQAxrLuRP9YknUsgqpSi1aFy06IO4sOD88M1iUvLVPc+nMhhROTxYmmnAgMBAAECgYAb3XR8UhD5vuc7wOeh2Pz6G8LrBlnMAfMopefVLdCCqYOJO1CfJg3MKy/ez3c74sK1R373Ojk14DtNaUoqjEzsggqXbfKGAqFHWXX3COF3I1TwNugIQl07zt4ueCqr0Ucgo8bsPmofBd/Av6FvVz6EREVkz4PSG4pw9cBCRwi+iQJBAPAR1CwS+DcAcIcbdkokJHfAIfKAbYAEVJAJGcmksZBlwKd0T8XAZj+hPEW4tyNo5FhamIl+EL+rgWFcckj3PwUCQQDO4ZsMO7Tk0FMHZGK5H6vV7zMiK8P4QHwW2yhrdfBIGHwdyhu0y4tSIBPVIC1ELjLMRoWmuJYsy1oWGCZPPa27AkBnQJPLvQDqzxKW2XXf33mb05QGM7xk0ff41yEzO9Vu8ISSwRDKUbzoYxWEOzTxUtzbL2PpxsG3XjFQSa2Rul1tAkEAgwDhydFVLz+sFBZBXbDsg0BBRPYp1l4fNen5onLAgSbgEY0WFlp+Erc1V9RUVcRbbneJ0pU4o4zxsuP//lW0WQJAOgUqgXp3uL4Krus/Es2hNUuDdNOILBI6gh5AjUR2jHPZwZ3nOmU6DcQOsUW+xDHaY3dOhZidoDIjSHaV0ilaeQ==";
+	public static String KONG_PRIVATE_KEY		= "MIICXAIBAAKBgQDCAenNNkrI+nOMXVJKJ4L7CwrfbQ2GwF1op1NVCJzhyRGP3XTgK93K/mV/O+o5qAItQqpE8rZ9oeDEzzmt4SUY+IBTJAR7smj0Xf1RfR5WZ05WaL5Wd70AMay7kT/WJJ1LIKqUotWhctOiDuLDg/PDNYlLy1T3PpzIYUTk8WJppwIDAQABAoGAG910fFIQ+b7nO8Dnodj8+hvC6wZZzAHzKKXn1S3QgqmDiTtQnyYNzCsv3s93O+LCtUd+9zo5NeA7TWlKKoxM7IIKl23yhgKhR1l19wjhdyNU8DboCEJdO87eLngqq9FHIKPG7D5qHwXfwL+hb1c+hERFZM+D0huKcPXAQkcIvokCQQDwEdQsEvg3AHCHG3ZKJCR3wCHygG2ABFSQCRnJpLGQZcCndE/FwGY/oTxFuLcjaORYWpiJfhC/q4FhXHJI9z8FAkEAzuGbDDu05NBTB2RiuR+r1e8zIivD+EB8Ftsoa3XwSBh8HcobtMuLUiAT1SAtRC4yzEaFpriWLMtaFhgmTz2tuwJAZ0CTy70A6s8Sltl13995m9OUBjO8ZNH3+NchMzvVbvCEksEQylG86GMVhDs08VLc2y9j6cbBt14xUEmtkbpdbQJBAIMA4cnRVS8/rBQWQV2w7INAQUT2KdZeHzXp+aJywIEm4BGNFhZafhK3NVfUVFXEW253idKVOKOM8bLj//5VtFkCQDoFKoF6d7i+Cq7rPxLNoTVLg3TTiCwSOoIeQI1Edoxz2cGd5zplOg3EDrFFvsQx2mN3ToWYnaAyI0h2ldIpWnk=";
+	public static String KONG_PUBLIC_KEY		= "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDCAenNNkrI+nOMXVJKJ4L7CwrfbQ2GwF1op1NVCJzhyRGP3XTgK93K/mV/O+o5qAItQqpE8rZ9oeDEzzmt4SUY+IBTJAR7smj0Xf1RfR5WZ05WaL5Wd70AMay7kT/WJJ1LIKqUotWhctOiDuLDg/PDNYlLy1T3PpzIYUTk8WJppwIDAQAB";
+	public static String ALIPAY_PUBLIC_KEY		= "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCnxj/9qwVfgoUh/y2W89L6BkRAFljhNhgPdyPuBV64bfQNN1PjbCzkIM6qRdKBoLPXmKKMiFYnkd6rAoprih3/PrQEB/VsW8OoM8fxn67UDYuyBTqA23MML9q1+ilIZwBC2AQ2UBVOrFXfFl75p6/B5KsiNG9zpgmLCUYuLkxpLQIDAQAB";
+	
+	
+	public static String ALIPAY_SERVICE		= "mobile.securitypay.pay";
+	public static String ALIPAY_CHARSET		= "UTF-8";
+	public static String ALIPAY_PARTNER		= "2088701535333835";
+	public static String ALIPAY_SIGN_TYPE	= "RSA";
+	public static String ALIPAY_PAY_TYPE	= "1";
+	public static String ALIPAY_SELLER_ID	= "2088701535333835";
+	
+	public static String ALIPAY_NOTIFY_URL_RELEASE	= "http://p.ko.cn/pay/alipaycb";
+	public static String ALIPAY_NOTIFY_URL_TEST		= "http://paystage.ko.cn:6001/paymentsystem/alipaycb";
+	
+	public static String ALIPAY_TOKEN_URL_RELEASE	= "https://openapi.alipay.com/gateway.do";
+	public static String ALIPAY_TOKEN_URL_TEST		= "http://openapi.alipaydev.com/gateway.do";
+	
+	public static String DACHENG_NOTIFY_URL_RELEASE	= "http://passport.kongzhong.com/billing/pay/safealipay";
+	public static String DACHENG_NOTIFY_URL_TEST	= "http://passport.neibu.kongzhong.com/billing/pay/safealipay";
+	public static String DACHENG_NOTIFY_KEY_RELEASE	= "6Kej575X3poYW";
+	public static String DACHENG_NOTIFY_KEY_TEST	= "6Kej575X3poYW";
+}

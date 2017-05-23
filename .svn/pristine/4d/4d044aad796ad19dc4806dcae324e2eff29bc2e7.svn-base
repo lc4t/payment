@@ -1,0 +1,199 @@
+package noumena.payment.quick;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import net.sf.json.xml.XMLSerializer;
+import noumena.payment.bean.CallbackBean;
+import noumena.payment.bean.OrdersBean;
+import noumena.payment.model.Callback;
+import noumena.payment.model.Orders;
+import noumena.payment.util.Constants;
+import noumena.payment.util.DateUtil;
+import noumena.payment.util.OSUtil;
+import noumena.payment.util.StringEncrypt;
+import noumena.payment.vo.OrderIdVO;
+import noumena.payment.vo.OrderStatusVO;
+
+public class QuickCharge
+{
+	private static QuickParams params = new QuickParams();
+	private static boolean testmode = false;
+	
+	public static boolean isTestmode()
+	{
+		return testmode;
+	}
+	public static void setTestmode(boolean testmode)
+	{
+		QuickCharge.testmode = testmode;
+	}
+	
+	public static String getTransactionId(Orders order)
+	{
+		order.setCurrency(Constants.CURRENCY_RMB);
+		order.setUnit(Constants.CURRENCY_UNIT_YUAN);
+		
+		OrdersBean bean = new OrdersBean();
+		String cburl = order.getCallbackUrl();
+		String payId;
+		if (cburl == null || cburl.equals(""))
+		{
+			payId = bean.CreateOrder(order);
+		}
+		else
+		{
+			/*if (cburl.indexOf("?") == -1)
+			{
+				cburl += "?pt=" + paytype;
+			}
+			else
+			{
+				cburl += "&pt=" + paytype;
+			}*/
+			cburl += "&currency=" + Constants.CURRENCY_RMB;
+			cburl += "&unit=" + Constants.CURRENCY_UNIT_YUAN;
+			
+			payId = bean.CreateOrder(order, cburl);
+		}
+		order.setCallbackUrl(cburl);
+		String date = DateUtil.formatDate(order.getCreateTime());
+		OrderIdVO orderIdVO = new OrderIdVO(payId, date);
+		
+		JSONObject json = JSONObject.fromObject(orderIdVO);
+		return json.toString();
+	}
+
+	public static String checkOrdersStatus(String payIds)
+	{
+		String[] orderIds = payIds.split(",");
+
+		OrdersBean bean = new OrdersBean();
+		List<Orders> orders = bean.qureyOrders(orderIds);
+		List<OrderStatusVO> statusret = new ArrayList<OrderStatusVO>();
+		for (int i = 0 ; i < orders.size() ; i++)
+		{
+			Orders order = orders.get(i);
+			int status = order.getKStatus();
+			OrderStatusVO st = new OrderStatusVO();
+			st.setPayId(order.getOrderId());
+			if (status == Constants.K_STSTUS_DEFAULT || status == Constants.K_CON_ERROR)
+			{
+				//如果订单状态是初始订单或者是网络连接有问题状态，返回不知道
+				Calendar cal1 = DateUtil.getCalendar(order.getCreateTime());
+				Calendar cal2 = Calendar.getInstance();
+				if ((cal2.getTimeInMillis() - cal1.getTimeInMillis()) >= Constants.ORDER_TIMEOUT)
+				{
+					st.setStatus(4);
+				}
+				else
+				{
+					st.setStatus(3);
+				}
+			}
+			else if (status == Constants.K_STSTUS_SUCCESS)
+			{
+				//如果订单已经成功，直接返回订单状态
+				st.setStatus(1);
+			}
+			else
+			{
+				//订单已经失败，直接返回订单状态
+				st.setStatus(2);
+			}
+			statusret.add(st);
+		}
+		JSONArray arr = JSONArray.fromObject(statusret);
+		
+		return arr.toString();
+	}
+	
+	/**
+	 * @param appid
+	 * @param nt_data
+	 * @param sign
+	 * @param md5Sign
+	 * @return
+	 */
+	public static String getCallbackFromQuick(String appid,String nt_data,String sign,String md5Sign)
+	{
+		//
+		System.out.println("=====(" + DateUtil.getCurTimeStr() + ")=====channel(quickcbparams)->"+appid+"-----"+nt_data+"-----"+sign+"-----"+md5Sign);
+    	
+		String ret = "SUCCESS";   
+    	String qianming = StringEncrypt.Encrypt(nt_data+sign+params.getParams(appid).getAppkey());
+		if(qianming.equals(md5Sign)){
+			String result = QuickDesUtil.decode(nt_data, params.getParams(appid).getAppkey());
+			XMLSerializer xmlSerializer = new XMLSerializer();
+			JSONObject jsonObj = JSONObject.fromObject(xmlSerializer.read(result).toString());
+			JSONObject jb = JSONObject.fromObject(jsonObj.getString("message"));
+			String orderid = jb.getString("game_order");
+			OrdersBean bean = new OrdersBean();
+			Orders order = bean.qureyOrder(orderid);
+			if (order != null){
+				if(order.getAmount().equals(Float.valueOf(jb.getString("amount")))){
+					if("0".equals(jb.getString("status"))){
+		        		if (order.getIscallback() == Constants.CALLBACK_ON){
+							CallbackBean callbackBean = new CallbackBean();
+							Callback callbackvo = callbackBean.qureyCallback(orderid);
+							String cburl = callbackvo.getCallbackUrl();
+							if (cburl != null && !cburl.equals("")){
+								if (cburl.indexOf("?") == -1){
+									cburl += "?pt=quick_" + jb.getString("channel");
+								}else{
+									cburl += "&pt=quick_" + jb.getString("channel");
+								}
+								callbackvo.setCallbackUrl(cburl);
+								callbackBean.updateCallback(callbackvo);
+							}
+						}
+		        		order.setPayId(jb.getString("order_no"));
+		        		order.setMoney(jb.getString("amount"));
+		        		order.setUpdateTime(DateUtil.getCurrentTime());
+		        		order.setExInfo(jb.getString("is_test"));
+		        		order.setPayType("quick_"+jb.getString("channel"));
+		        		bean.updateOrder(orderid, order);
+		        		bean.updateOrderKStatus(orderid,Constants.K_STSTUS_SUCCESS);
+					}else{
+						bean.updateOrderAmountPayIdExinfo(orderid, jb.getString("order_no"), jb.getString("amount"), jb.getString("is_test"));
+						bean.updateOrderKStatus(orderid,Constants.K_STSTUS_ERROR);
+						ret = "FAILED";
+					}
+				}else{
+					System.out.println(jb.getString("game_order")+"：jine_is_diff");
+					ret = "FAILED";
+				}
+				
+			}
+			String path = OSUtil.getRootPath() + "../../logs/quickcb/"
+					+ DateUtil.getCurTimeStr().substring(0, 8);
+			OSUtil.makeDirs(path);
+			String filename = path + "/" + orderid;
+
+			OSUtil.saveFile(filename, appid+"-----"+nt_data+"-----"+sign+"-----"+md5Sign);
+		}else{
+			System.out.println("===="+ DateUtil.getCurTimeStr() +"====appid:"+appid+" sign is fail");
+			ret = "SignError";
+		}
+		System.out.println("quick cb ret->" + ret);
+		return ret;
+	}
+
+	public static void init()
+	{
+		params.initParams(QuickParams.CHANNEL_ID, new QuickParamsVO());
+	}
+	
+	public static void main(String args[]){
+		String ntdata="@112@112@171@165@165@88@168@153@165@168@153@168@161@116@91@99@95@98@85@89@158@167@148@163@148@153@158@156@111@91@142@138@122@94@107@90@89@171@166@149@161@153@145@165@162@165@158@111@83@160@162@91@120@119@109@165@165@153@147@160@165@157@164@149@161@150@166@171@154@159@151@114@111@162@149@172@166@152@160@151@111@110@156@172@152@173@150@167@164@110@97@113@97@162@172@149@168@150@166@172@119@116@149@156@148@163@158@158@159@117@105@110@96@149@155@154@167@167@150@160@110@108@147@157@147@167@167@155@160@144@161@153@166@157@112@112@98@152@152@154@161@165@158@158@144@160@148@166@158@119@109@151@152@145@158@163@151@165@152@171@157@149@113@105@111@108@106@101@101@102@99@112@106@115@104@149@153@147@161@167@158@165@144@169@153@148@110@113@153@154@166@155@147@160@165@156@158@170@112@102@99@102@102@105@105@105@109@99@101@99@101@105@110@111@100@101@104@102@97@113@97@160@154@163@153@144@162@170@157@157@164@114@111@164@162@157@152@169@152@160@160@112@99@105@105@107@97@101@102@96@102@103@102@106@109@103@102@98@100@108@106@104@100@108@104@107@96@105@111@102@168@164@149@151@165@152@167@168@111@112@160@145@169@148@166@162@166@155@114@99@99@105@111@101@98@106@96@103@100@89@100@107@115@99@99@108@100@106@117@104@161@149@169@143@164@158@159@158@119@114@149@158@162@173@167@172@112@101@97@101@96@117@98@152@166@161@166@160@167@119@117@172@165@149@164@165@163@115@98@117@104@169@168@146@167@173@172@118@110@153@171@169@162@154@166@150@169@147@163@147@160@172@119@169@146@166@145@157@108@100@151@177@173@168@149@164@146@168@154@170@147@161@166@115@108@104@160@156@172@165@146@153@152@119@117@104@162@169@153@147@155@168@150@164@152@163@153@164@166@153@160@157@112";
+		String xml = QuickDesUtil.decode(ntdata, "41389824350937921239991400052996");
+		System.out.println(xml);
+		XMLSerializer xmlSerializer = new XMLSerializer();
+		JSONObject jsonObj = JSONObject.fromObject(xmlSerializer.read(xml).toString());
+		JSONObject jb = JSONObject.fromObject(jsonObj.getString("message"));
+		System.out.println(Float.parseFloat(jb.getString("amount")));
+	}
+}

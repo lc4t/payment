@@ -1,0 +1,41 @@
+@charset "utf-8";
+/* CSS Document */
+
+.container { width:990px; margin:0 auto;}
+.top { width:100%; height:80px; position:relative; padding-top:10px; z-index:100;}
+.top .logo { width:131px; height:55px; background:url(../images/icon.gif) no-repeat; float:left; margin-right:30px;}
+.top .logo a {width:131px; height:55px; display:block;}
+.top h2 { font-size:16px; color:#b9bcbf; font-family:"Microsoft Yahei"; font-weight:normal; float:left; line-height:60px; height:60px;}
+.select { position:relative; z-index:100;}
+.selected span {display: inline-block; width: 105px;height: 25px; border: 1px solid #D7D7D7;  padding-left: 20px;line-height: 25px;cursor: pointer; font-size:12px;  background-image:url(../images/icon.gif); background-repeat: no-repeat; background-position: 0px -100px;}
+.option {border: 1px solid #D7D7D7; border-top:1px solid #fff;width: 125px; position:absolute; top:26px; right:0px; background:#e7e5e5; z-index:100;}
+.option li { font-size:12px; text-indent:20px; line-height:25px; cursor:pointer;}
+.option li:hover { background:#cccbcb;}
+.game { position:absolute; right:0px; bottom:10px;}
+.fwq { width:127px; margin:0px; }
+
+/*************表单信息***********/
+.form { width:968px; border:1px solid #d7d7d7; padding:10px;}
+.form table td { padding:4px 0px;}
+.left { width:680px; float:left; padding:0px 10px;}
+.left .title1 { width:670px; border-bottom:1px dashed #9fa3a7; line-height:30px; text-indent:10px; font-size:14px; margin-bottom:10px; font-weight:bold; color:#262626;}
+.info { line-height:30px; padding:0px 10px;}
+.info input { border:1px solid #d7d7d7;padding:4px;}
+.huodong { color:#fe6f00; padding-left:20px;}
+.tips {width:670px; border-top:1px dashed #9fa3a7; margin-top:20px;}
+.tips .title2 { font-size:14px; color:#6fbc00; text-indent:10px; line-height:30px;}
+.tips p { line-height:1.6em; color:#9fa3a7; padding-left:10px;}
+.tips p.red { color:#fe6f00;}
+.icon1 { width:20px; height:30px; background:url(../images/icon.gif) no-repeat 6px -52px; display:block; float:left;}
+.icon2 { width:26px; height:30px; background:url(../images/icon.gif) no-repeat 0px -126px; display:block; float:left;}
+.icon3 { width:26px; height:30px; background:url(../images/icon.gif) no-repeat 0px -150px; display:block; float:left;}
+.warning { float:left;}
+.form label { margin-left:4px;}
+.charge {padding-top:4px;}
+.charge input{border:0;}
+
+.ad { float:right; position:relative;}
+.ad img { border:1px solid #d7d7d7; width:219px; height:469px;}
+.ad .href { width:105px; height:33px; position:absolute; background:url(../images/icon.gif) no-repeat -26px -138px; top:208px; left:55px;}
+
+.btnnext { width:88px; height:40px;  background:url(../images/chargenext.png) no-repeat; display:block;  margin-left:20px; text-indent:-999em; cursor:pointer;}

@@ -1,0 +1,90 @@
+package noumena.payment.c777hwan;
+
+import java.util.Map;
+
+import noumena.pay.util.MD5;
+import noumena.payment.bean.OrdersBean;
+import noumena.payment.model.Orders;
+import noumena.payment.util.Constants;
+
+public class C777hwanSDKCharge {
+	private static C777hwanParams params = new C777hwanParams();
+
+	public static String getCallbackFromC777hwan(
+			Map<String, String> c777hwannparams) {
+		System.out.println("C777hwanSDKCharge====================param "
+				+ c777hwannparams.toString());
+		String cporderid = c777hwannparams.get("cporderid");
+		String orderid = c777hwannparams.get("orderid");
+		String appid = c777hwannparams.get("appid");
+		String uid = c777hwannparams.get("uid");
+		String time = c777hwannparams.get("time");
+		String extinfo = c777hwannparams.get("extinfo");
+		String amount = c777hwannparams.get("amount");
+		String serverid = c777hwannparams.get("serverid");
+		String charid = c777hwannparams.get("charid");
+		String gold = c777hwannparams.get("gold");
+		String sign = c777hwannparams.get("sign");
+		try {
+			String preSign = "appid=" + "appid" + "&amount=" + amount
+					+ "&charid=" + charid + "&cporderid=" + cporderid
+					+ "&extinfo=" + extinfo + "&gold=" + gold + "&orderid="
+					+ orderid + "&serverid=" + serverid + "&time=" + time
+					+ "&uid=" + uid + params.getParams(appid).getSecretkey();
+			System.out
+					.println(cporderid
+							+ "C777hwanSDKCharge====================perSign "
+							+ preSign);
+			String endsignmd5 = MD5.md5(preSign, "UTF-8");
+			System.out.println(cporderid
+					+ "C777hwanSDKCharge====================endsignmd5 "
+					+ endsignmd5);
+			if (!sign.equals(endsignmd5)) {
+				System.out.println(cporderid
+						+ "C777hwanSDKCharge====================sign is error "
+						+ endsignmd5 + " param sign==" + sign);
+				return "ERROR";
+			}
+			OrdersBean bean = new OrdersBean();
+			Orders order = bean.qureyOrder(cporderid);
+			if (order == null) {
+				System.out
+						.println(cporderid
+								+ "C777hwanSDKCharge====================order is not exist ");
+				return "ERROR";
+			}
+			if (order.getKStatus() != Constants.K_STSTUS_DEFAULT) {
+				System.out
+						.println(cporderid
+								+ "C777hwanSDKCharge====================order is repeated ");
+				return "ERROR";
+			}
+			if (!order.getAmount().equals(Float.parseFloat(amount))) {
+				System.out
+						.println(cporderid
+								+ "C777hwanSDKCharge====================order amount is different "
+								+ order.getAmount() + " " + amount);
+				return "ERROR";
+			}
+			bean.updateOrderAmountPayIdExinfo(cporderid, orderid, amount,
+					extinfo);
+			bean.updateOrderKStatus(cporderid, Constants.K_STSTUS_SUCCESS);
+			return "SUCCESS";
+		} catch (Exception e) {
+			System.out.println(cporderid
+					+ "C777hwanSDKCharge====================system error ");
+			e.printStackTrace();
+			return "ERROR";
+		}
+
+	}
+
+	public static void main(String arg[]) {
+
+	}
+
+	public static void init() {
+		params.initParams(C777hwanParams.CHANNEL_ID, new C777hwanVO());
+	}
+
+}

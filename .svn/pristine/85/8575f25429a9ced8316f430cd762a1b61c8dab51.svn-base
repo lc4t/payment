@@ -1,0 +1,35 @@
+body{ margin: 0; font-family: Arial, Tahoma, Courier; font-size: 12px; }
+
+/* query page base layout */
+#container{ width: 100%; margin:0 auto;  }
+
+#header{ color: #fff; }
+
+#header #top{ height: 30px; line-height: 30px; border-bottom:2px solid #FF9900; }
+
+#header #top a { display:block; float:left; padding: 0 5px; height:30px; color:#000099; text-decoration:none; text-align:center;}
+#header #top a:hover { color:#FFF; background:#FF9900;}
+#header #top #current{ color:#FFF; background:#FF9900;}
+
+#header #header_nav{ width:100%; height: 30px; padding:10px 0 5px 0; text-indent:10px; border-bottom: 5px solid #EAEAEA; color: #333; }
+
+#header #header_nav label{ margin:auto 10px; }
+#header #header_nav input,select{ width:120px; height:20px; line-height:20px; background:#E8FDFF; border:1px solid #0A8FDA; font-size:13px; font-family:"Courier New", Courier, monospace;}
+#header #header_nav input#btn{ width:65px; height:25px; line-height:25px; background:url(../image/login_btn03.png); text-align:center; border:none; font-size:12px; margin-left:10px; font-weight:normal; }
+
+#header #header_nav #nav_left{ width:800px; height:100%; float: left; }
+
+#header #header_nav #nav_right{ width:202px; height:100%; float: left; background: #8D4807; }
+
+#header #header_bottom{ height: 20px; background: #E5E5C9;}
+
+
+
+#main{ margin-top:10px; }
+
+#main table.t30{ width: 30%; }
+#main table.t20{ width: 20%; }
+
+#main table.title{ width: 100%; height: 20px; text-indent: 10px; text-align: left; background:#0b4fab; color:#FFF;  }
+
+#footer{}

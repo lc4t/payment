@@ -1,0 +1,171 @@
+package noumena.payment.fromest;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import noumena.payment.bean.OrdersBean;
+import noumena.payment.model.Orders;
+import noumena.payment.util.Constants;
+import noumena.payment.util.DateUtil;
+import noumena.payment.util.OSUtil;
+import noumena.payment.vo.OrderIdVO;
+import noumena.payment.vo.OrderStatusVO;
+
+public class FromestCharge
+{
+	private static FromestParams params = new FromestParams();
+	
+	public static String getTransactionId(Orders order)
+	{
+		OrderIdVO orderIdVO = getTransactionIdVO(order);
+		
+		JSONObject json = JSONObject.fromObject(orderIdVO);
+		return json.toString();
+	}
+	
+	public static OrderIdVO getTransactionIdVO(Orders order)
+	{
+		order.setCurrency(Constants.CURRENCY_KRW);
+		order.setUnit(Constants.CURRENCY_UNIT_YUAN);
+		
+		OrdersBean bean = new OrdersBean();
+		String cburl = order.getCallbackUrl();
+		String payId;
+		if (cburl == null || cburl.equals(""))
+		{
+			payId = bean.CreateOrder(order);
+		}
+		else
+		{
+			if (cburl.indexOf("?") == -1)
+			{
+				cburl += "?pt=" + Constants.PAY_TYPE_FROMEST;
+			}
+			else
+			{
+				cburl += "&pt=" + Constants.PAY_TYPE_FROMEST;
+			}
+			cburl += "&currency=" + Constants.CURRENCY_KRW;
+			cburl += "&unit=" + Constants.CURRENCY_UNIT_YUAN;
+			
+			payId = bean.CreateOrder(order, cburl);
+		}
+		order.setCallbackUrl(cburl);
+		String date = DateUtil.formatDate(order.getCreateTime());
+		OrderIdVO orderIdVO = new OrderIdVO(payId, date);
+		
+		return orderIdVO;
+	}
+	
+	public static String checkOrdersStatus(String payIds)
+	{
+		String[] orderIds = payIds.split(",");
+
+		OrdersBean bean = new OrdersBean();
+		List<Orders> orders = bean.qureyOrders(orderIds);
+		List<OrderStatusVO> statusret = new ArrayList<OrderStatusVO>();
+		for (int i = 0 ; i < orders.size() ; i++)
+		{
+			Orders order = orders.get(i);
+			int status = order.getKStatus();
+			OrderStatusVO st = new OrderStatusVO();
+			st.setPayId(order.getOrderId());
+			if (status == Constants.K_STSTUS_DEFAULT || status == Constants.K_CON_ERROR)
+			{
+				//如果订单状态是初始订单或者是网络连接有问题状态，返回不知道
+				Calendar cal1 = DateUtil.getCalendar(order.getCreateTime());
+				Calendar cal2 = Calendar.getInstance();
+				if ((cal2.getTimeInMillis() - cal1.getTimeInMillis()) >= Constants.ORDER_TIMEOUT)
+				{
+					st.setStatus(4);
+				}
+				else
+				{
+					st.setStatus(3);
+				}
+			}
+			else if (status == Constants.K_STSTUS_SUCCESS)
+			{
+				//如果订单已经成功，直接返回订单状态
+				st.setStatus(1);
+			}
+			else
+			{
+				//订单已经失败，直接返回订单状态
+				st.setStatus(2);
+			}
+			statusret.add(st);
+		}
+		JSONArray arr = JSONArray.fromObject(statusret);
+		
+		return arr.toString();
+	}
+	
+	public static String getCallbackFromFromest(FromestOrderVO fovo)
+	{
+		String ret = "{\"code\": \"0\",\"tips\": \"success\"}";
+		System.out.println("fromest cb ->" + fovo.toString());
+		OrdersBean bean = new OrdersBean();
+		String miwen = "";
+		miwen += fovo.getFmorderid()+"|";
+		miwen += fovo.getOrderid()+"|";
+		miwen += fovo.getProductid()+"|";
+		miwen += fovo.getCardno()+"|";
+		miwen += fovo.getAmount()+"|";
+		miwen += fovo.getAmountunit()+"|";
+		miwen += fovo.getRet()+"|";
+		miwen += fovo.getCardStatus()+"|";
+		miwen += fovo.getMerPriv();
+		System.out.println("fromestmiwen1:"+miwen);
+		//System.out.println("fromest:"+Integer.parseInt(params.getParams(fovo.getProductid()).getAppkey()));
+		String sign = RSAUtil.decrypt(Integer.parseInt(params.getParams(fovo.getProductid()).getAppkey()), fovo.getVerifystring());
+		System.out.println("fromestmiwen2:"+sign);
+			try {
+				// 支付成功
+				Orders order = bean.qureyOrder(fovo.getOrderid());
+				if (order != null) {
+						if("1".equals(fovo.getRet()) && miwen.equals(sign)){
+							if (order.getKStatus() != Constants.K_STSTUS_SUCCESS) {
+								bean.updateOrderAmountPayIdExinfo(fovo.getOrderid(), fovo.getFmorderid(), fovo.getAmount(), "");
+								bean.updateOrderKStatus(fovo.getOrderid(),Constants.K_STSTUS_SUCCESS);
+							} else {
+								System.out.println("fromest order ("+ order.getOrderId() + ") had been succeed");
+							}
+						}else{
+							System.out.println("fromest order ("+ order.getOrderId() + ") ret or sign is error");
+							ret = "{\"code\": \"1\",\"tips\": \"error\"}";
+						}
+					}else{
+						System.out.println("fromest_order_"+ order.getOrderId() + "_bucunzai");
+					}
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+				ret = "{\"code\": \"1\",\"tips\": \"error\"}";
+			}
+			
+			System.out.println("fromest_cb ret->" + ret);
+
+			String path = OSUtil.getRootPath() + "../../logs/fromest/"
+					+ DateUtil.getCurTimeStr().substring(0, 8);
+			OSUtil.makeDirs(path);
+			String filename = path + "/" + fovo.getOrderid();
+
+			OSUtil.saveFile(filename, fovo.toString());
+		
+		return ret;
+	}
+	
+	public static void init()
+	{
+		params.initParams(FromestParams.CHANNEL_ID, new FromestParamsVO());
+	}
+	
+	public static void main(String args[]){
+		String sign = RSAUtil.decrypt(300001, "Sq9afmWVOty71LwAh6qRXMidgm8F3uHuZqtLHaEyqtgLx+WxSTsTi+AjHFMrOMIiPr1ZZ/I0MAaV\nLeFXsE4K90qpdJq1eZXqSzFA1OtYY2MmszgYpz69gErYZ6c//PcHx6AMY6iGf5m6dTc7R6fzV/4s\nW4YGFewAB0lh3EpU4X+9Ygvkg5CSZxyoPKntougDgASePqhdq476kCkR0spisZnkeu21g93Y38Ms\nTYGTtWjWqzyP8G3vvtCCu6G22WCpD2CC0LUhXLY7+FmEqNGsW6j2shpbknynq6swme0L6OuGtnBp\necZ+7pZtnslVtIBBVGx5NsIAsaiOhnP2vey0wQ==");
+		System.out.println(sign);
+	}
+}

@@ -1,0 +1,598 @@
+package noumena.payment.tencentY;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import noumena.payment.bean.OrdersBean;
+import noumena.payment.model.Orders;
+import noumena.payment.userverify.util.TrustAnyTrustManager;
+import noumena.payment.util.Constants;
+import noumena.payment.util.DateUtil;
+import noumena.payment.vo.OrderIdVO;
+import noumena.payment.vo.OrderStatusVO;
+import sun.misc.BASE64Encoder;
+
+public class TencentYCharge
+{
+	private static TencentYParams params = new TencentYParams();
+	private static boolean testmode = false;
+	
+	public static boolean isTestmode()
+	{
+		return testmode;
+	}
+	public static void setTestmode(boolean testmode)
+	{
+		TencentYCharge.testmode = testmode;
+	}
+	
+	public static String getTransactionId(Orders order)
+	{
+		OrderIdVO orderIdVO = getTransactionIdVO(order);
+		
+		JSONObject json = JSONObject.fromObject(orderIdVO);
+		return json.toString();
+	}
+	
+	public static OrderIdVO getTransactionIdVO(Orders order)
+	{
+		order.setCurrency(Constants.CURRENCY_TENCENT);
+		order.setUnit(Constants.CURRENCY_UNIT_JIAO);
+		
+		OrdersBean bean = new OrdersBean();
+		String cburl = order.getCallbackUrl();
+		String payId;
+		if (cburl == null || cburl.equals(""))
+		{
+			payId = bean.CreateOrder(order);
+		}
+		else
+		{
+			if (cburl.indexOf("?") == -1)
+			{
+				cburl += "?pt=" + Constants.PAY_TYPE_TENCENT;
+			}
+			else
+			{
+				cburl += "&pt=" + Constants.PAY_TYPE_TENCENT;
+			}
+			cburl += "&currency=" + Constants.CURRENCY_TENCENT;
+			cburl += "&unit=" + Constants.CURRENCY_UNIT_JIAO;
+			
+			payId = bean.CreateOrder(order, cburl);
+		}
+		order.setCallbackUrl(cburl);
+		String date = DateUtil.formatDate(order.getCreateTime());
+		OrderIdVO orderIdVO = new OrderIdVO(payId, date);
+		
+		return orderIdVO;
+	}
+	
+	public static String checkOrdersStatus(String payIds, TencentYOrderVO tencentvo)
+	{
+		String[] orderIds = payIds.split(",");
+
+		OrdersBean bean = new OrdersBean();
+		List<Orders> orders = bean.qureyOrders(orderIds);
+		List<OrderStatusVO> statusret = new ArrayList<OrderStatusVO>();
+		for (int i = 0 ; i < orders.size() ; i++)
+		{
+			Orders order = orders.get(i);
+			int status = order.getKStatus();
+			OrderStatusVO st = new OrderStatusVO();
+			st.setPayId(order.getOrderId());
+			if (status == Constants.K_STSTUS_DEFAULT || status == Constants.K_CON_ERROR)
+			{
+				Calendar cal1 = DateUtil.getCalendar(order.getCreateTime());
+				Calendar cal2 = Calendar.getInstance();
+				if ((cal2.getTimeInMillis() - cal1.getTimeInMillis()) >= Constants.ORDER_TIMEOUT)
+				{
+					st.setStatus(4);
+				}
+				else
+				{
+					tencentvo.setZoneid(order.getSign());
+					int balance = getBalance(order,tencentvo);
+					if(balance>=order.getAmount().intValue()){
+						int ret = purchase(order, tencentvo);
+						if (ret == 1)
+						{
+							//扣款成功
+							st.setStatus(1);
+						}else if(ret == 3){
+							st.setStatus(3);
+						}
+						else
+						{
+							st.setStatus(2);
+						}
+					}else{
+						st.setStatus(3);
+					}
+				}
+			}
+			else if (status == Constants.K_STSTUS_SUCCESS)
+			{
+				//如果订单已经成功，直接返回订单状态
+				st.setStatus(1);
+			}
+			else
+			{
+				//订单已经失败，直接返回订单状态
+				st.setStatus(2);
+			}
+			statusret.add(st);
+		}
+		JSONArray arr = JSONArray.fromObject(statusret);
+		
+		return arr.toString();
+	}
+	
+	
+	/*
+	 * 腾讯的扣除游戏币接口
+	 */
+	public static int purchase(Orders order, TencentYOrderVO ordervo)
+	{
+		int ret = 2;
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append("openid=").append(ordervo.getOpenid());
+		sb.append("&openkey=").append(ordervo.getOpenkey());
+		sb.append("&payitem=").append(ordervo.getPay_token());
+		sb.append("&appid=").append(ordervo.getAppid());
+		sb.append("&type=").append(ordervo.getType());
+		sb.append("&zoneid=").append(order.getSign());
+		sb.append("&pf=").append(ordervo.getPf());
+		sb.append("&pfkey=").append(ordervo.getPfkey());
+		String exinfo = sb.toString();
+		
+		//System.out.println("=====(" + DateUtil.getCurTimeStr() + ")=====channel(tencent_purchase_params)->" + sb.toString());
+		
+		try {
+			String appid = ordervo.getAppid();
+			long ts = Calendar.getInstance().getTimeInMillis()/1000;
+			String amt = String.valueOf(order.getAmount().intValue());
+			String session_id = "";
+			String session_type = "";
+			//String pay_token = "";
+			if (ordervo.getType().equals("qq"))
+			{
+				session_id = TencentYParams.QQ_SESSION_ID;
+				session_type = TencentYParams.QQ_SESSION_TYPE;
+				//pay_token = ordervo.getPay_token();
+			}
+			else
+			{
+				session_id = TencentYParams.WEIXIN_SESSION_ID;
+				session_type = TencentYParams.WEIXIN_SESSION_TYPE;
+				//pay_token = null;
+			}
+			String encryptKey = params.getParams(appid).getAppkey() + "&";
+			
+			String paramstr = "";
+			//paramstr += "accounttype=common&";
+			paramstr += "amt=" + amt;
+			paramstr += "&appid=" + appid;
+			//paramstr += "&appremark=beizhu";
+			paramstr += "&billno="+order.getOrderId();
+			//paramstr += "&format=json";
+			paramstr += "&openid=" + ordervo.getOpenid();
+			paramstr += "&openkey=" + ordervo.getOpenkey();
+			//paramstr += "&payitem=" + pay_token+"*10*1";
+			paramstr += "&pf=" + ordervo.getPf();
+			paramstr += "&pfkey=" + ordervo.getPfkey();
+			paramstr += "&ts=" + ts;
+			//paramstr += "&userip=" + ordervo.getUserip();
+			paramstr += "&zoneid=" + order.getSign();
+			String minwen = "";
+			//System.out.println("=====(" + DateUtil.getCurTimeStr() + ")====="+paramstr);
+			minwen += TencentYParams.METHOD.toUpperCase();
+			minwen += "&" + URLEncoder.encode("/v3/r"+TencentYParams.PURCHASE_URI, "utf-8").replace("*", "%2A").replace("+", "%20");
+			minwen += "&" + URLEncoder.encode(paramstr, "utf-8").replace("*", "%2A").replace("+", "%20");
+			//System.out.println("=====(" + DateUtil.getCurTimeStr() + ")=====channel(tencent_purchase_minwen)->" + minwen);
+			
+			byte[] sigbyte = TencentYSignUtils.HmacSHA1Encrypt(minwen, encryptKey);
+			BASE64Encoder base64 = new BASE64Encoder();
+			String sig = base64.encode(sigbyte);
+			sig = URLEncoder.encode(sig, "utf-8").replace("*", "%2A").replace("+", "%20");
+			
+			String cookiestr = "";
+			cookiestr += "session_id=" + URLEncoder.encode(session_id,"utf-8");
+			cookiestr += "; session_type=" + URLEncoder.encode(session_type,"utf-8");
+			cookiestr += "; org_loc=" + URLEncoder.encode(TencentYParams.PURCHASE_URI,"utf-8");
+			
+			String urlstr = "";
+			if (testmode) 
+			{
+				urlstr = TencentYParams.PURCHASE_URL_TEST;
+			}
+			else
+			{
+				urlstr = TencentYParams.PURCHASE_URL_RELEASE;
+			}
+			urlstr += "?";
+			urlstr += paramstr;
+			urlstr += "&sig=" + sig;
+			
+			System.out.println("=====(" + DateUtil.getCurTimeStr() + ")=====channel(tencent order("+order.getOrderId()+") purchase urlstr)->" + urlstr);
+			
+			SSLContext context = SSLContext.getInstance("SSL");
+			context.init
+				(
+					null,
+					new TrustManager[]
+					{
+						new TrustAnyTrustManager()
+					},
+					new java.security.SecureRandom()
+				);
+			HttpsURLConnection connection = (HttpsURLConnection) new URL(urlstr).openConnection();
+			connection.setConnectTimeout(10000);
+			connection.setReadTimeout(10000);
+			connection.setSSLSocketFactory(context.getSocketFactory());
+			connection.setHostnameVerifier
+				(
+					new HostnameVerifier()
+					{
+						@Override
+						public boolean verify(String arg0, SSLSession arg1)
+						{
+							return true; //不验证
+							//return false; // 验证
+						}
+					}
+				);
+
+			connection.setDoOutput(true);
+			connection.setUseCaches(false);
+			connection.setDoInput(true);
+			connection.setRequestProperty("Cookie", cookiestr);
+//			connection.setRequestProperty("Content-type", "application/json");
+			connection.setRequestProperty("Connection", "Keep-Alive");
+			connection.setRequestMethod("GET");
+			connection.connect();
+			
+			/*OutputStreamWriter outs = new OutputStreamWriter(connection.getOutputStream());
+			outs.write(content);
+			
+			outs.flush();
+			outs.close();*/
+			
+			BufferedReader in = new BufferedReader
+				(
+					new InputStreamReader(connection.getInputStream(), "utf8")
+				);
+			String res = "", line = null;
+			while ((line = in.readLine()) != null)
+			{
+				res += line;
+			}
+	
+			connection.disconnect();
+			
+			System.out.println("=====(" + DateUtil.getCurTimeStr() + ")=====channel(tencent_order("+order.getOrderId()+")_purchase_ret)->" + res);
+			
+			OrdersBean bean = new OrdersBean();
+			
+			//{"ret" : 0,"billno" : ""}
+			JSONObject json = JSONObject.fromObject(res);
+			int balance = json.getInt("balance");
+			if (json.getInt("ret")==0 && balance>=0)
+			{
+				ret = 1;
+				bean.updateOrderAmountPayIdExinfo(order.getOrderId(), json.getString("billno"), amt, exinfo + "#" + json.getString("balance"));
+				bean.updateOrderKStatus(order.getOrderId(), Constants.K_STSTUS_SUCCESS);
+				if(balance>0){
+					clearPurchase(order,ordervo,balance);
+				}
+			}else if(json.getInt("ret")==1004){
+				ret = 3;
+			}
+			else
+			{
+				bean.updateOrderKStatus(order.getOrderId(), Constants.K_STSTUS_ERROR);
+			}
+			
+		} 
+		catch (Exception e) {
+			System.out.println("tencentYerror:");
+			e.printStackTrace();
+			ret = 3;
+		} 
+		return ret;
+	}
+	
+	public static void clearPurchase(Orders order, TencentYOrderVO ordervo,int balance){
+		try {
+			String appid = ordervo.getAppid();
+			long ts = Calendar.getInstance().getTimeInMillis()/1000;
+			//String amt = String.valueOf(order.getAmount().intValue());
+			String session_id = "";
+			String session_type = "";
+			//String pay_token = "";
+			if (ordervo.getType().equals("qq"))
+			{
+				session_id = TencentYParams.QQ_SESSION_ID;
+				session_type = TencentYParams.QQ_SESSION_TYPE;
+				//pay_token = ordervo.getPay_token();
+			}
+			else
+			{
+				session_id = TencentYParams.WEIXIN_SESSION_ID;
+				session_type = TencentYParams.WEIXIN_SESSION_TYPE;
+				//pay_token = null;
+			}
+			String encryptKey = params.getParams(appid).getAppkey() + "&";
+			
+			String paramstr = "";
+			paramstr += "amt=" + balance;
+			paramstr += "&appid=" + appid;
+			paramstr += "&billno="+order.getOrderId();
+			paramstr += "&openid=" + ordervo.getOpenid();
+			paramstr += "&openkey=" + ordervo.getOpenkey();
+			paramstr += "&pf=" + ordervo.getPf();
+			paramstr += "&pfkey=" + ordervo.getPfkey();
+			paramstr += "&ts=" + ts;
+			paramstr += "&zoneid=" + order.getSign();
+			String minwen = "";
+			minwen += TencentYParams.METHOD.toUpperCase();
+			minwen += "&" + URLEncoder.encode("/v3/r"+TencentYParams.PURCHASE_URI, "utf-8").replace("*", "%2A").replace("+", "%20");
+			minwen += "&" + URLEncoder.encode(paramstr, "utf-8").replace("*", "%2A").replace("+", "%20");
+			
+			byte[] sigbyte = TencentYSignUtils.HmacSHA1Encrypt(minwen, encryptKey);
+			BASE64Encoder base64 = new BASE64Encoder();
+			String sig = base64.encode(sigbyte);
+			sig = URLEncoder.encode(sig, "utf-8").replace("*", "%2A").replace("+", "%20");
+			
+			String cookiestr = "";
+			cookiestr += "session_id=" + URLEncoder.encode(session_id,"utf-8");
+			cookiestr += "; session_type=" + URLEncoder.encode(session_type,"utf-8");
+			cookiestr += "; org_loc=" + URLEncoder.encode(TencentYParams.PURCHASE_URI,"utf-8");
+			
+			String urlstr = "";
+			if (testmode) 
+			{
+				urlstr = TencentYParams.PURCHASE_URL_TEST;
+			}
+			else
+			{
+				urlstr = TencentYParams.PURCHASE_URL_RELEASE;
+			}
+			urlstr += "?";
+			urlstr += paramstr;
+			urlstr += "&sig=" + sig;
+			
+			System.out.println("=====(" + DateUtil.getCurTimeStr() + ")=====channel(tencent_order("+order.getOrderId()+")_clear_purchase_urlstr)->" + urlstr);
+			
+			SSLContext context = SSLContext.getInstance("SSL");
+			context.init
+				(
+					null,
+					new TrustManager[]
+					{
+						new TrustAnyTrustManager()
+					},
+					new java.security.SecureRandom()
+				);
+			HttpsURLConnection connection = (HttpsURLConnection) new URL(urlstr).openConnection();
+			connection.setConnectTimeout(10000);
+			connection.setReadTimeout(10000);
+			connection.setSSLSocketFactory(context.getSocketFactory());
+			connection.setHostnameVerifier
+				(
+					new HostnameVerifier()
+					{
+						@Override
+						public boolean verify(String arg0, SSLSession arg1)
+						{
+							return true; //不验证
+							//return false; // 验证
+						}
+					}
+				);
+			connection.setDoOutput(true);
+			connection.setUseCaches(false);
+			connection.setDoInput(true);
+			connection.setRequestProperty("Cookie", cookiestr);
+			connection.setRequestProperty("Connection", "Keep-Alive");
+			connection.setRequestMethod("GET");
+			connection.connect();
+			BufferedReader in = new BufferedReader
+				(
+					new InputStreamReader(connection.getInputStream(), "utf8")
+				);
+			String res = "", line = null;
+			while ((line = in.readLine()) != null)
+			{
+				res += line;
+			}
+			connection.disconnect();
+			System.out.println("=====(" + DateUtil.getCurTimeStr() + ")=====channel(tencent_order("+order.getOrderId()+")_clear_purchase_ret)->" + res);
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		} 
+	}
+	
+	/*
+	 * 腾讯的查询余额接口
+	 */
+	public static int getBalance(Orders order,TencentYOrderVO ordervo)
+	{
+		int balance = 0;
+		
+		try {
+			long ts = Calendar.getInstance().getTimeInMillis()/1000;
+			String session_id = "";
+			String session_type = "";
+			if (ordervo.getType().equals("qq"))
+			{
+				session_id = TencentYParams.QQ_SESSION_ID;
+				session_type = TencentYParams.QQ_SESSION_TYPE;
+			}
+			else
+			{
+				session_id = TencentYParams.WEIXIN_SESSION_ID;
+				session_type = TencentYParams.WEIXIN_SESSION_TYPE;
+			}
+			
+			String encryptKey = params.getParams(ordervo.getAppid()).getAppkey() + "&";
+			//String encryptKey = "m4fplDSLXx9gywUFX9cNZc31QDpXpTQx&";
+			
+			String paramstr = "";;
+			paramstr += "appid=" + ordervo.getAppid();
+			paramstr += "&openid=" + ordervo.getOpenid();
+			paramstr += "&openkey=" + ordervo.getOpenkey();
+			//paramstr += "&pay_token=" + pay_token;
+			paramstr += "&pf=" + ordervo.getPf();
+			paramstr += "&pfkey=" + ordervo.getPfkey();
+			paramstr += "&ts=" + ts;
+			paramstr += "&zoneid=" + ordervo.getZoneid();
+			
+			String minwen = "";
+			minwen += TencentYParams.METHOD.toUpperCase();
+			minwen += "&" + URLEncoder.encode("/v3/r"+TencentYParams.GETBALANCE_URI, "utf-8").replace("*", "%2A").replace("+", "%20");
+			minwen += "&" + URLEncoder.encode(paramstr, "utf-8").replace("*", "%2A").replace("+", "%20");
+			
+			//System.out.println("tencent getBalance minwen-->"+ minwen);
+			byte[] sigbyte = TencentYSignUtils.HmacSHA1Encrypt(minwen, encryptKey);
+			BASE64Encoder base64 = new BASE64Encoder();
+			String sig = base64.encode(sigbyte);
+			sig = URLEncoder.encode(sig, "utf-8").replace("*", "%2A").replace("+", "%20");
+			
+			String cookiestr = "";
+			cookiestr += "session_id=" + URLEncoder.encode(session_id,"utf-8");
+			cookiestr += "; session_type=" + URLEncoder.encode(session_type,"utf-8");
+			cookiestr += "; org_loc=" + URLEncoder.encode(TencentYParams.GETBALANCE_URI,"utf-8");
+			
+			String urlstr = "";
+			if (testmode) 
+			{
+				urlstr = TencentYParams.GETBALANCE_URL_TEST;
+			}
+			else
+			{
+				urlstr = TencentYParams.GETBALANCE_URL_RELEASE;
+			}
+			urlstr += "?";
+			urlstr += paramstr;
+			urlstr += "&sig=" + sig;
+			
+			System.out.println("tencent_order("+order.getOrderId()+")_getBalance_urlstr-->"+ urlstr);			
+			
+			SSLContext context = SSLContext.getInstance("SSL");
+			context.init
+				(
+					null,
+					new TrustManager[]
+					{
+						new TrustAnyTrustManager()
+					},
+					new java.security.SecureRandom()
+				);
+			HttpsURLConnection connection = (HttpsURLConnection) new URL(urlstr).openConnection();
+			connection.setConnectTimeout(10000);
+			connection.setReadTimeout(10000);
+			connection.setSSLSocketFactory(context.getSocketFactory());
+			connection.setHostnameVerifier
+				(
+					new HostnameVerifier()
+					{
+						@Override
+						public boolean verify(String arg0, SSLSession arg1)
+						{
+							return true; //不验证
+							//return false; // 验证
+						}
+					}
+				);
+
+			connection.setDoOutput(true);
+			connection.setUseCaches(false);
+			connection.setDoInput(true);
+			connection.setRequestProperty("Cookie", cookiestr);
+//			connection.setRequestProperty("Content-type", "application/json");
+			connection.setRequestProperty("Connection", "Keep-Alive");
+			connection.setRequestMethod("GET");
+			connection.connect();
+			
+			/*OutputStreamWriter outs = new OutputStreamWriter(connection.getOutputStream());
+			outs.write(content);
+			
+			outs.flush();
+			outs.close();*/
+			
+			BufferedReader in = new BufferedReader
+				(
+					new InputStreamReader(connection.getInputStream(), "utf8")
+				);
+			String res = "", line = null;
+			while ((line = in.readLine()) != null)
+			{
+				res += line;
+			}
+	
+			connection.disconnect();
+			
+			System.out.println("tencent_order("+order.getOrderId()+")_getBalance_ret-->"+ res);
+			
+			//{"ret" : 0,"balance" : ""}
+			JSONObject json = JSONObject.fromObject(res);
+			if (json.getInt("ret")==0)
+			{
+				balance = json.getInt("balance");
+			}
+			
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		} 
+		return balance;
+	}
+	
+	public static String getTransactionIdAndStatus(Orders vo,TencentYOrderVO tencentvo)
+	{
+		OrderIdVO orderIdVO = getTransactionIdVO(vo);
+		String payIds = "";
+		if (orderIdVO != null)
+		{
+			payIds = orderIdVO.getPayId();
+		}
+		return checkOrdersStatus(payIds,tencentvo);
+	}
+
+	public static void init()
+	{
+		params.initParams(TencentYParams.CHANNEL_ID, new TencentYParamsVO());
+	}
+	
+	public static void main(String args[]){
+		//>pf=&pfkey=&ts=1464083429&zoneid=3999&sig=oSzFd%2F5RrUOaQqTWdvvLiIsQF%2BY%3D
+		/*TencentYOrderVO vo = new TencentYOrderVO();
+		vo.setAppid("1105285057");
+		vo.setOpenid("opnFdwH0N-656_LHMtiuVjaX3jxg");
+		vo.setOpenkey("OezXcEiiBSKSxW0eoylIeF3fsmX53crxnEk9mfKu22Q81FpmbrPjle0QBxtYREdVE0-M3MJa9w2KKC2SYYnKEsutcj3okmGJ3FikSZb4Iudv_R1W4lqlBlWPsprJKAeBPOp6G-yAQVEwOjjlQd7VMg");
+		vo.setPf("myapp_m_wx-00000000-android-00000000-ysdk");
+		vo.setPfkey("6ea4619b5560a159ecdd609989b86666");
+		vo.setType("");
+		vo.setZoneid("3999");
+		getBalance(vo);*/
+		String a = URLDecoder.decode("%257B%2522platform%2522%253A%2522uERZvRCHiI%255C%252FqyPHk2ZtzjViXMcEUI80tTj0jQbn%255C%252FO0doswnJEAJZLEiGYJ2sn7sb%2522%252C%2522time%2522%253A%25221470984805%2522%252C%2522game%2522%253A%2522fktjd%2522%252C%2522adId%2522%253A%25220%2522%252C%2522deviceId%2522%253A%2522a85a56b76f6ffbb90850d26abb88672e%2522%252C%2522adCid%2522%253A%25220%2522%252C%2522channelParam%2522%253A%2522%257B%255C%2522token%255C%2522%253A%255C%25223g7Y7LFRW3dYnCeRu8wQ8ldZ861d75DcB9vMUcApiChunkOBZK7hKfV9SWH0cR9ChLQ8T8SrPnvsIUcApiChunkVRhqy4e76WrnuWqAlosYFv1mDyH5eb2z4jxLfyAqe0wBrfdXAjQ6BFcYfZeEFc3PZDYxfdHksr6OTNRcWWrG79ZTsR8Gi8AASKggG4xPwHTo5vYW%255C%255C%255C%252FhvnwRRm9oQUcApiChunkyVCJO%255C%255C%255C%252Fd3cwNMI0NFWMDj2cyHfQUcPBJh93Hr9PuQbvSNZ86X43xSo4FmY%255C%255C%255C%252FYhNbrYAWjQUcApiChunkz22TGo1A%253D%253D%255C%2522%257D%2522%257D");
+		System.out.println(a);
+	}
+}

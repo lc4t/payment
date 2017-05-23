@@ -1,0 +1,36 @@
+2017-02-10 11:35:10 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-02-10 11:35:10 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-02-10 11:37:17 [org.springframework.web.context.support.XmlWebApplicationContext]-[INFO] Closing application context [Root WebApplicationContext]
+2017-02-10 11:37:17 [org.springframework.beans.factory.support.DefaultListableBeanFactory]-[INFO] Destroying singletons in factory {org.springframework.beans.factory.support.DefaultListableBeanFactory defining beans [dataSourcetarget,dataSource,sessionFactory,CreateOrderIdDao,OrdersDAO,CallbackDAO,PayinfoDao,PayGameDao,PayServerDao,GashPayGameDao,GashPayServerDao,PayItemsDao,ParamsDao,ShieldingDao,SpringContextUtil,CronBean,ConDB,CallBackGameServBean,OrdersBean,PayinfoBean,TaskBean,tesk1,cronTrigger,org.springframework.scheduling.quartz.SchedulerFactoryBean,tesk2,cronTrigger2,org.springframework.scheduling.quartz.SchedulerFactoryBean#1,tesk3,cronTrigger3,org.springframework.scheduling.quartz.SchedulerFactoryBean#2]; root of BeanFactory hierarchy}
+2017-02-10 11:37:17 [org.springframework.orm.hibernate3.LocalSessionFactoryBean]-[INFO] Closing Hibernate SessionFactory
+2017-02-10 11:37:17 [org.hibernate.impl.SessionFactoryImpl]-[INFO] closing
+2017-02-10 11:37:17 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-02-10 11:37:17 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutting down.
+2017-02-10 11:37:17 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED paused.
+2017-02-10 11:37:17 [org.quartz.core.QuartzScheduler]-[INFO] Scheduler DefaultQuartzScheduler_$_NON_CLUSTERED shutdown complete.
+2017-02-10 11:37:17 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-02-10 11:37:17 [org.springframework.scheduling.quartz.SchedulerFactoryBean]-[INFO] Shutting down Quartz scheduler
+2017-02-10 11:37:34 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-02-10 11:37:34 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-02-10 11:39:02 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-02-10.txt (系统找不到指定的路径。)
+2017-02-10 11:39:02 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-02-10.txt (系统找不到指定的路径。)
+2017-02-10 11:41:02 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-02-10 11:41:02 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-02-10 11:42:22 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-02-10.txt (系统找不到指定的路径。)
+2017-02-10 11:42:22 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-02-10.txt (系统找不到指定的路径。)
+2017-02-10 11:42:28 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-02-10.txt (系统找不到指定的路径。)
+2017-02-10 11:42:28 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-02-10.txt (系统找不到指定的路径。)
+2017-02-10 11:43:26 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-02-10.txt (系统找不到指定的路径。)
+2017-02-10 11:43:26 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-02-10.txt (系统找不到指定的路径。)
+2017-02-10 11:46:55 [org.springframework.beans.factory.xml.XmlBeanDefinitionReader]-[INFO] Loading XML bean definitions from class path resource [org/springframework/jdbc/support/sql-error-codes.xml]
+2017-02-10 11:46:55 [org.springframework.jdbc.support.SQLErrorCodesFactory]-[INFO] SQLErrorCodes loaded: [DB2, HSQL, MS-SQL, MySQL, Oracle, Informix, PostgreSQL, Sybase]
+2017-02-10 11:47:15 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-02-10.txt (系统找不到指定的路径。)
+2017-02-10 11:47:15 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-02-10.txt (系统找不到指定的路径。)
+2017-02-10 11:52:06 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-02-10.txt (系统找不到指定的路径。)
+2017-02-10 11:52:07 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-02-10.txt (系统找不到指定的路径。)
+2017-02-10 11:53:14 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-02-10.txt (系统找不到指定的路径。)
+2017-02-10 11:53:14 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-02-10.txt (系统找不到指定的路径。)
+2017-02-10 11:54:29 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-02-10.txt (系统找不到指定的路径。)
+2017-02-10 11:54:29 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-02-10.txt (系统找不到指定的路径。)
+2017-02-10 12:02:53 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-02-10.txt (系统找不到指定的路径。)
+2017-02-10 12:02:53 [noumena.mgsplus.logs.bean.MgsplusLogFile]-[ERROR] java.io.FileNotFoundException: D:\mywork\payment\WebRoot\logs\exlog2\smartphone.game.order.2017-02-10.txt (系统找不到指定的路径。)

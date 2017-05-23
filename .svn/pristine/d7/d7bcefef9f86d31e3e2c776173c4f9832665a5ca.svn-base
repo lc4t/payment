@@ -1,0 +1,23 @@
+package noumena.payment.c777hwan;
+
+import noumena.payment.util.ChannelParams;
+import noumena.payment.util.ChannelParamsVO;
+
+public class C777hwanParams extends ChannelParams
+{
+	public static String CHANNEL_ID		= "c777wan";
+	
+	public C777hwanVO getParams(String appid)
+	{
+		ChannelParamsVO vo = super.getParamsVO(appid);
+		if (vo == null)
+		{
+			return new C777hwanVO();
+		}
+		else
+		{
+			return (C777hwanVO) vo;
+		}
+	}
+	
+}

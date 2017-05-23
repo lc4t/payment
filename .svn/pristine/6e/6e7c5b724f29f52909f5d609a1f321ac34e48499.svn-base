@@ -1,0 +1,482 @@
+package noumena.payment.ios;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import noumena.pay.server.service.ReceiptService;
+import noumena.pay.server.vo.ResultVO;
+import noumena.payment.bean.CallbackBean;
+import noumena.payment.bean.OrdersBean;
+import noumena.payment.model.Callback;
+import noumena.payment.model.Orders;
+import noumena.payment.util.Constants;
+import noumena.payment.util.DateUtil;
+import noumena.payment.util.NotifyPurchase;
+import noumena.payment.util.Post;
+import noumena.payment.util.StringEncrypt;
+import noumena.payment.vo.OrderIdVO;
+import noumena.payment.vo.OrderStatusVO;
+import sun.misc.BASE64Encoder;
+
+public class IOSCharge
+{
+	private static boolean testmode = false;
+	public static String heartbeat = "";
+	
+	public static boolean isTestmode()
+	{
+		return testmode;
+	}
+	public static void setTestmode(boolean testmode)
+	{
+		IOSCharge.testmode = testmode;
+	}
+	
+	public static String getTransactionId(Orders order)
+	{
+		OrderIdVO orderIdVO = getTransactionIdVO(order);
+		
+		JSONObject json = JSONObject.fromObject(orderIdVO);
+		return json.toString();
+	}
+	
+	public static OrderIdVO getTransactionIdVO(Orders order)
+	{
+		order.setCurrency(Constants.CURRENCY_DIVERSE);
+		order.setUnit(Constants.CURRENCY_UNIT_FEN);
+		
+		OrdersBean bean = new OrdersBean();
+		String cburl = order.getCallbackUrl();
+		String payId;
+		if (cburl == null || cburl.equals(""))
+		{
+			payId = bean.CreateOrder(order);
+		}
+		else
+		{
+			if ("com.hongdian.ios.lybns".equals(order.getAppId()))
+			{
+				if (cburl.contains("passport-stage.kongzhong.com")) 
+				{
+					cburl = cburl.replace("passport-stage.kongzhong.com", "passport.kongzhong.com");
+					order.setCallbackUrl(cburl);
+				}
+				else if (cburl.contains("passport-temp.kongzhong.com")) 
+				{
+					cburl = cburl.replace("passport-temp.kongzhong.com", "passport-stage.kongzhong.com");
+					order.setCallbackUrl(cburl);
+				}
+			}
+			
+			if (cburl.indexOf("?") == -1)
+			{
+				cburl += "?pt=" + Constants.PAY_TYPE_IOS;
+			}
+			else
+			{
+				cburl += "&pt=" + Constants.PAY_TYPE_IOS;
+			}
+			cburl += "&currency=" + Constants.CURRENCY_DIVERSE;
+			cburl += "&unit=" + Constants.CURRENCY_UNIT_FEN;
+			
+			payId = bean.CreateOrder(order, cburl);
+		}
+		order.setCallbackUrl(cburl);
+		String date = DateUtil.formatDate(order.getCreateTime());
+		return new OrderIdVO(payId, date);
+	}
+	
+	public static String checkOrdersStatus(String payIds)
+	{
+		String[] orderIds = payIds.split(",");
+
+		OrdersBean bean = new OrdersBean();
+		List<Orders> orders = bean.qureyOrders(orderIds);
+		List<OrderStatusVO> statusret = new ArrayList<OrderStatusVO>();
+		for (int i = 0 ; i < orders.size() ; i++)
+		{
+			Orders order = orders.get(i);
+			int status = order.getKStatus();
+			OrderStatusVO st = new OrderStatusVO();
+			st.setPayId(order.getOrderId());
+			if (status == Constants.K_STSTUS_SUCCESS)
+			{
+				//如果订单已经成功，直接返回订单状态
+				st.setStatus(1);
+			}
+			else if (status == Constants.K_STSTUS_DEFAULT || status == Constants.K_CON_ERROR)
+			{
+				//订单没有结果
+				st = _verifyReceipt(order.getOrderId(), order.getExInfo());
+			}
+			else
+			{
+				//订单已经失败，直接返回订单状态
+				st.setStatus(2);
+			}
+			statusret.add(st);
+		}
+		JSONArray arr = JSONArray.fromObject(statusret);
+		
+		return arr.toString();
+	}
+	
+	private static int checkOrderFromApple(String orderid, String receipt, String product, float fprice, String suid, String channel, OrderStatusVO retst)
+	{
+		try
+		{
+			ReceiptService rs = new ReceiptService(false);
+			ResultVO ret = null;
+			int price = (int) Double.parseDouble("" + fprice);
+			int uid = 0;
+			if (channel != null && channel.length() > 1 && channel.substring(0, 3).equals("126"))
+			{
+				uid = (int) Guid.oUId(suid);
+			}
+			else if (channel == null)
+			{
+				uid = 0;
+			}
+			else
+			{
+				uid = Integer.parseInt(suid);
+			}
+			
+			if (receipt.indexOf("purchase-info") >= 0)
+			{
+				ret = rs.verify1(receipt, price, uid);	//0： 验证成功，-1： Apple验证失败，1： 客户端已通知过， -3：发生异常
+			}
+			if (ret == null || ret.getStatus() < 0)
+			{
+				rs = new ReceiptService(true);
+			}
+			if (receipt.indexOf("purchase-info") >= 0)
+			{
+				ResultVO ret2 = null;
+				ret2 = rs.verify1(receipt, price, uid);	//0： 验证成功，-1： Apple验证失败，1： 客户端已通知过， -3：发生异常
+				
+				if (ret2 != null && ret2.getStatus() == 0)
+				{
+					ret = null;
+					ret = ret2;
+				}
+			}
+			if (ret == null)
+			{
+				//发生异常，不給道具，返回失败，以后重连
+				return 1;
+			}
+	
+			if (ret.getStatus() == 0)
+			{
+				String productId = ret.getProductId();
+				retst.setPid(ret.getProductId());
+				retst.setTid(ret.getTransactionId());
+				if (productId.equals(""))
+				{
+					//没有productid，有可能是苹果修改了关键字，导致没有找到，不能销毁订单
+					System.out.println("ios charge productid did not found :" + orderid + "-" + uid);
+					return 1;
+				}
+				else
+				{
+					int pos = productId.lastIndexOf(".");
+					if (pos >= 0)
+					{
+						productId = productId.substring(pos+1);
+					}
+					if (!productId.equals(product))
+					{
+						//玩家给苹果的道具id和客户端给的id不一致，不给道具
+						System.out.println("ios charge productid had been changed :" + orderid + "-" + uid);
+						return -1;
+					}
+				}
+				//验证成功，需要給道具，并且通知掌魔，并且返回成功，销毁订单
+				rs.notice(ret.getTransactionId());
+				return 0;
+			}
+			else if (ret.getStatus() == -1)
+			{
+				//Apple验证失败，不給道具，并且返回成功，销毁订单
+				return -1;
+			}
+			else if (ret.getStatus() == 1)
+			{
+				//Apple验证成功并且已经通知给过道具，不給道具，返回成功，销毁订单
+				System.out.println("ios charge dup order :" + orderid + "-" + uid);
+				return 2;
+			}
+			else if (ret.getStatus() == -3)
+			{
+				//发生异常，不給道具，返回失败，以后重连
+				System.out.println("ios charge exception :" + orderid + "-" + uid);
+				return 1;
+			}
+			else if (ret.getStatus() == -100)
+			{
+				//玩家给的订单中的道具id和客户端想要购买的不一致，返回成功，销毁订单
+				System.out.println("ios charge productid had been changed2 :" + orderid + "-" + uid);
+				return -1;
+			}
+			else if (ret.getStatus() == -101)
+			{
+				//玩家给的订单中的道具id异常，返回成功，销毁订单
+				System.out.println("ios charge productid is failed :" + orderid + "-" + uid);
+				return -1;
+			}
+			else if (ret.getStatus() == -110)
+			{
+				//玩家给的订单中的道具id不存在，返回失败，以后重连
+				System.out.println("ios charge uid did not found :" + orderid + "-" + uid);
+				return 1;
+			}
+			else
+			{
+				//其他错误
+				System.out.println("ios charge other failed :" + orderid + "-" + uid);
+				return -1;
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
+	public static String getTransactionIdAndStatus(Orders vo)
+	{
+		String receipt = vo.getExInfo();
+		if (receipt == null || receipt.length() < 30)
+		{
+			List<OrderStatusVO> statusret = new ArrayList<OrderStatusVO>();
+			OrderStatusVO st = new OrderStatusVO();
+			st.setPayId("0");
+			st.setStatus(2);
+			statusret.add(st);
+			JSONArray arr = JSONArray.fromObject(statusret);
+			return arr.toString();
+		}
+		OrderIdVO orderIdVO = getTransactionIdVO(vo);
+		String ids = "";
+		if (orderIdVO != null)
+		{
+			ids = orderIdVO.getPayId();
+		}
+		return checkOrdersStatus(ids);
+	}
+
+	public static String verifyReceipt(String orderid, String receipt)
+	{
+		List<OrderStatusVO> statusret = new ArrayList<OrderStatusVO>();
+		OrderStatusVO osvo = _verifyReceipt(orderid, receipt);
+		statusret.add(osvo);
+		JSONArray arr = JSONArray.fromObject(statusret);
+		return arr.toString();
+	}
+
+	private static OrderStatusVO _verifyReceipt(String orderid, String receipt)
+	{
+		OrdersBean bean = new OrdersBean();
+		Orders order = bean.qureyOrder(orderid);
+		int status = Constants.K_STSTUS_DEFAULT;
+		String productId = "", transid = "";
+		
+		System.out.println("ios1->" + orderid);
+
+		try
+		{
+			if (order == null)
+			{
+				status = 2;
+				System.out.println("$$$$$(" + DateUtil.getCurTimeStr() + ")$$$$$IOS verify receipt order not exist, orderid->" + orderid);
+			}
+			else
+			{
+				boolean isShaXIang = false;
+				ResultVO ret = checkReceiptFromApple(receipt, false);
+				if (ret.getStatus() == -1)
+				{
+					ret = checkReceiptFromApple(receipt, true);
+					//记录沙箱支付
+					order.setPayType(Constants.PAY_TYPE_SHAXIANG_TEST);
+					bean.updateOrder(orderid, order);
+					isShaXIang = true;
+				}
+				if (ret.getStatus() == -1)
+				{
+					status = 2;
+					bean.updateOrderAmountPayIdExinfo(orderid, transid, order.getAmount() + "", receipt);
+					System.out.println("$$$$$(" + DateUtil.getCurTimeStr() + ")$$$$$IOS verify receipt failed, orderid->" + orderid);
+				}
+				else
+				{
+					productId = ret.getProductId();
+					transid = ret.getTransactionId();
+					
+					if (order.getIscallback() == Constants.CALLBACK_ON) 
+					{
+						String sign = StringEncrypt.Encrypt(transid + orderid).toLowerCase();
+						sign = StringEncrypt.Encrypt(sign + IOSParams.KEY).toLowerCase();
+						
+						CallbackBean callbackBean = new CallbackBean();
+						Callback callbackvo = callbackBean.qureyCallback(orderid);
+						String cburl = callbackvo.getCallbackUrl();
+						if (cburl != null && !cburl.equals(""))
+						{
+							if (cburl.indexOf("?") == -1)
+							{
+								cburl += "?sign=" + sign;
+							}
+							else
+							{
+								cburl += "&sign=" + sign;
+							}
+							if(isShaXIang && cburl.contains("&pt=")){
+								cburl = cburl.replace("&pt="+Constants.PAY_TYPE_IOS, "&pt="+Constants.PAY_TYPE_SHAXIANG_TEST);
+							}
+							callbackvo.setCallbackUrl(cburl);
+							callbackBean.updateCallback(callbackvo);
+						}
+					}
+					
+					if (productId.equals(""))
+					{
+						status = 2;
+						bean.updateOrderAmountPayIdExinfo(orderid, transid, order.getAmount() + "", receipt);
+						System.out.println("$$$$$(" + DateUtil.getCurTimeStr() + ")$$$$$IOS verify receipt item not exist, orderid->" + orderid);
+					}
+					else
+					{
+						int pos = order.getItemId().lastIndexOf(".");
+						String productId1 = "";
+						if (pos >= 0)
+						{
+							//客户端传入的是全路径itemid，需要全比
+							productId1 = productId;
+						}
+						else
+						{
+							pos = productId.lastIndexOf(".");
+							if (pos >= 0){
+								productId1 = productId.substring(pos+1);
+							}else{
+								productId1 = productId;
+							}
+						}
+						if (!productId1.equals(order.getItemId()))
+						{
+							//玩家给苹果的道具id和客户端给的id不一致，不给道具
+							status = 2;
+							bean.updateOrderAmountPayIdExinfo(orderid, transid, order.getAmount() + "", receipt);
+							System.out.println("$$$$$(" + DateUtil.getCurTimeStr() + ")$$$$$IOS verify receipt item be changed, orderid->" + orderid + ",apple item->" + productId + ",query item->" + order.getItemId());
+						}
+						else
+						{
+							status = 1;
+						}
+					}
+				}
+			}
+
+			System.out.println("ios5->" + status);
+			if (status == 1)
+			{
+				//如果验证合法，通知游戏服务器
+				List<Orders> orders = bean.qureyOrdersByPayId(transid);
+				if (orders.size() > 0)
+				{
+					status = 4;	//重复订单
+					System.out.println("$$$$$(" + DateUtil.getCurTimeStr() + ")$$$$$IOS verify receipt order have existed, orderid->" + orderid);
+				}
+				else
+				{
+					bean.updateOrderAmountPayIdExinfo(orderid, transid, order.getAmount() + "", receipt);
+					bean.updateOrderKStatus(orderid, Constants.K_STSTUS_SUCCESS);
+					
+					//通知kakao成功的订单
+					NotifyPurchase.notify(orderid);
+				}
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		OrderStatusVO st = new OrderStatusVO();
+		st.setPayId(orderid);
+		st.setStatus(status);
+		st.setPid(productId);
+		st.setTid(transid);
+		
+		return st;
+	}
+public static void main(String[] args) {
+	String receipt= "{\"signature\" = \"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\";\"purchase-info\" = \"ewoJIm9yaWdpbmFsLXB1cmNoYXNlLWRhdGUtcHN0IiA9ICIyMDE2LTA5LTA3IDA4OjI0OjAwIEFtZXJpY2EvTG9zX0FuZ2VsZXMiOwoJInB1cmNoYXNlLWRhdGUtbXMiID0gIjE0NzMyNjE4NDA1OTEiOwoJInVuaXF1ZS1pZGVudGlmaWVyIiA9ICIyNzI5MjcyNTE3YjdmYzRjZTEzZWIzYTFlNDcwMTIzMDM3YzZiNGQ0IjsKCSJvcmlnaW5hbC10cmFuc2FjdGlvbi1pZCIgPSAiMzkwMDAwMTIwNDE5MjA4IjsKCSJidnJzIiA9ICIzIjsKCSJhcHAtaXRlbS1pZCIgPSAiMTE0NzA5OTc0MSI7CgkidHJhbnNhY3Rpb24taWQiID0gIjM5MDAwMDEyMDQxOTIwOCI7CgkicXVhbnRpdHkiID0gIjEiOwoJIm9yaWdpbmFsLXB1cmNoYXNlLWRhdGUtbXMiID0gIjE0NzMyNjE4NDA1OTEiOwoJInVuaXF1ZS12ZW5kb3ItaWRlbnRpZmllciIgPSAiMzkzREQxRjAtNzUxMi00QjhBLUE4RjEtNDRDMkVFMDhEQkY5IjsKCSJpdGVtLWlkIiA9ICIxMTQ3MTA1MjQ5IjsKCSJ2ZXJzaW9uLWV4dGVybmFsLWlkZW50aWZpZXIiID0gIjgxODYzMjU2NSI7CgkicHJvZHVjdC1pZCIgPSAiY29tLmtvbmd6aG9uZy5pb3MubTEwbmV3Lm0xMF8wMF82IjsKCSJwdXJjaGFzZS1kYXRlIiA9ICIyMDE2LTA5LTA3IDE1OjI0OjAwIEV0Yy9HTVQiOwoJIm9yaWdpbmFsLXB1cmNoYXNlLWRhdGUiID0gIjIwMTYtMDktMDcgMTU6MjQ6MDAgRXRjL0dNVCI7CgkiYmlkIiA9ICJjb20ua29uZ3pob25nLmlvcy5tMTBuZXciOwoJInB1cmNoYXNlLWRhdGUtcHN0IiA9ICIyMDE2LTA5LTA3IDA4OjI0OjAwIEFtZXJpY2EvTG9zX0FuZ2VsZXMiOwp9\";\"pod\" = \"39\";\"signing-status\" = \"0\";}";
+	IOSCharge.checkReceiptFromApple(receipt,false);
+	//String s = "http://m6iosuc01.ko.cn:7001/UserCenter/action/pay.jsp?uid=10170090000001&p=600&it=m6_00_1&oid=M5-10170090000001-1453364991310&num=1&pt=5000&currency=DIVERSE&unit=1&sign=6ad845807492e0c0bbb66e5df2e627f6";
+	//System.out.println(s.replace("&pt="+Constants.PAY_TYPE_IOS, "&pt="+Constants.PAY_TYPE_SHAXIANG_TEST));
+}
+	private static ResultVO checkReceiptFromApple(String receipt, boolean isTest)
+	{
+		ResultVO result = new ResultVO();
+		String url = "";
+		int status = -1;
+		String transactionId = "";
+		String productId = "";
+		
+		if (isTest == true)
+		{
+			url = IOSParams.APPLEURL_TEST;
+		}
+		else
+		{
+			url = IOSParams.APPLEURL;
+		}
+		
+		BASE64Encoder encoder = new BASE64Encoder();
+		String encodeReceipt = encoder.encode(receipt.getBytes());	//BASE64编码
+		encodeReceipt = "{\"receipt-data\" : \"" + encodeReceipt + "\"}";
+		try
+		{
+			String verifyReceipt = Post.doPost(url, encodeReceipt);	//请求Apple验证，返回json(status为0则成功，否则失败)
+			
+			//将JSON转化为Bean
+			JSONObject jsonObj = JSONObject.fromObject(verifyReceipt);
+			status = jsonObj.getInt("status");
+			System.out.println(verifyReceipt);
+			Object receiptObj = jsonObj.get("receipt");
+			if(status == 0)
+			{	//Apple验证通过
+				if(receiptObj != null)
+				{
+					jsonObj = JSONObject.fromObject(receiptObj);
+					
+					transactionId = jsonObj.getString("transaction_id");
+					productId = jsonObj.getString("product_id");
+//					String purchaseDate = jsonObj.getString("purchase_date");
+//					String quantity = jsonObj.getString("quantity");
+				}
+			}
+			else
+			{
+				status = -1;
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			status = -1;
+			System.out.println("$$$$$(" + DateUtil.getCurTimeStr() + ")$$$$$IOS(" + isTest + ") verify receipt exception");
+		}
+		
+		result.setStatus(status);
+		result.setTransactionId(transactionId);
+		result.setProductId(productId);
+		return result;
+	}
+}

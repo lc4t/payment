@@ -1,0 +1,5 @@
+package noumena.payment.unionpay;
+
+public class UnionpayOrderVO
+{
+}

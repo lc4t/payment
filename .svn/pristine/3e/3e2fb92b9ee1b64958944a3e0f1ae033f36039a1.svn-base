@@ -1,0 +1,136 @@
+package noumena.pay;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+
+import net.sf.json.JSONObject;
+
+
+public class NowSubmit extends HttpServlet {
+	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+	
+	//appkey参数
+	public static String appKey = "";
+	
+	private static final String GATEWAY = "https://api.ipaynow.cn";
+	
+	// 服务器异步通知页面路径  需http://格式的完整路径，必须外网可以正常访问
+	//public static String notifyUrl = "http://p.ko.cn/pay/nowcb";
+	public static String notifyUrl = "http://paystage.ko.cn:6001/paymentsystem/nowcb";
+	// 页面跳转同步通知页面路径 需http://格式的完整路径，必须外网可以正常访问
+	//public static String frontNotifyUrl = "http://p.ko.cn/pay/nowhtmlcb";
+	public static String frontNotifyUrl = "http://paystage.ko.cn:6001/paymentsystem/nowhtmlcb";
+	
+	public static String mhtOrderStartTime = dateFormat.format(new Date());
+	
+	// 字符编码格式
+	public static String input_charset = "UTF-8";
+	
+	public static String mhtCurrencyType = "156";
+	
+	public static String mhtOrderType = "01";
+	
+	public static String payChannelType = "13";
+	
+	public static String mhtSignType = "MD5";
+	
+	public static String funcode = "WP001";
+	
+	public static String deviceType = "06";
+	
+	
+	/**
+     * 建立请求，以表单HTML形式构造（默认）
+     * @param sParaTemp 请求参数数组
+     * @param strMethod 提交方式。两个值可选：post、get
+     * @param strButtonName 确认按钮显示文字
+     * @return 提交表单HTML文本
+     */
+    public static String buildRequest(Map<String, String> sPara, String strMethod, String strButtonName) {
+        //待请求参数数组
+        List<String> keys = new ArrayList<String>(sPara.keySet());
+
+        StringBuffer sbHtml = new StringBuffer();
+
+        sbHtml.append("<form id=\"submit\" name=\"submit\" action=\"" + GATEWAY
+                      + "_input_charset=" + input_charset + "\" method=\"" + strMethod
+                      + "\">");
+
+        for (int i = 0; i < keys.size(); i++) {
+            String name = (String) keys.get(i);
+            String value = (String) sPara.get(name);
+
+            sbHtml.append("<input type=\"hidden\" name=\"" + name + "\" value=\"" + value + "\"/>");
+        }
+
+        //submit按钮控件请不要含有name属性
+        sbHtml.append("<input type=\"submit\" value=\"" + strButtonName + "\" style=\"display:none;\"></form>");
+        sbHtml.append("<script>document.forms['submit'].submit();</script>");
+        
+        return sbHtml.toString();
+    }
+	
+	public static String getOrderId(String uid,String pkgid,String itemid,String price,String cburl,String channel){
+		String orderid="";
+		String urlstr = "http://p.ko.cn/pay/now";
+		urlstr += "?model=1";
+		urlstr += "&uid="+uid;//角色ID
+		urlstr += "&pkgid="+pkgid;//包名
+		urlstr += "&itemid="+itemid;//商品ID
+		urlstr += "&price="+price;//价格
+		urlstr += "&cburl="+cburl;//回调地址
+		urlstr += "&channel="+channel;//渠道号
+		try {
+			URL url = new URL(urlstr);
+		
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setReadTimeout(5000);
+			connection.setDoOutput(true);
+			OutputStreamWriter outs = new OutputStreamWriter(connection.getOutputStream());
+			outs.flush();
+			outs.close();
+			BufferedReader in = new BufferedReader
+			(
+				new InputStreamReader(connection.getInputStream())
+			);
+		String res = "", line = null;
+		while ((line = in.readLine()) != null)
+		{
+			res += line;
+		}
+		connection.disconnect();
+		JSONObject json = JSONObject.fromObject(res);
+		orderid = json.getString("payId");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return orderid;
+	}
+	/**
+	 * Initialization of the servlet. <br>
+	 *
+	 * @throws ServletException if an error occurs
+	 */
+	public void init() throws ServletException {
+		
+	}
+
+}
